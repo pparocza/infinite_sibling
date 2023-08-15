@@ -11,6 +11,7 @@ InstrumentConstructorTemplate.prototype = {
 
 	// connect the output of this node to the input of another
 	connect: function(audioNode){
+
 		if (audioNode.hasOwnProperty('input') == 1){
 			this.output.connect(audioNode.input);
 		}
@@ -18,6 +19,7 @@ InstrumentConstructorTemplate.prototype = {
 			this.output.connect(audioNode);
 		}
 	},
+	
 }
 
 //--------------------------------------------------------------
@@ -2413,8 +2415,20 @@ SemiOpenPipe.prototype = {
 	output: this.output,
 
 	length: this.length,
+	lengthMultiplierArray: this.lengthMultiplierArray,
 
 	lengthInlet: this.lengthInlet,
+
+	setLengthAtTime: function(newLength, time){
+
+		this.length = newLength;
+		this.time = time;
+
+		for(var i=0; i<4; i++){
+			this.filters[i].filter.frequency.setValueAtTime(this.length*this.lengthMultiplierArray[i], this.time);
+		}
+
+	},
 
 	// connect the output node of this object to the input of another
 	connect: function(audioNode){
@@ -3832,7 +3846,7 @@ FmBasic.prototype = {
 
 //--------------------------------------------------------------
 
-// synthesizer based on the Moog MiniMoog
+
 function MiniMoog(){
 
 	this.output = audioCtx.createGain();
@@ -3881,6 +3895,1412 @@ function MiniMoog(){
 	this.filter.connect(this.amplitudeGain);
 
 	this.amplitudeGain.connect(this.output);
+
+}
+
+MiniMoog.prototype = {
+
+	output: this.output,
+
+	osc1: this.osc1,
+	osc2: this.osc2,
+	osc3: this.osc3,
+	noise: this.noise,
+
+	octave1: this.octave1,
+	octave2: this.octave2,
+	octave3: this.octave3,
+
+	gain1: this.gain1,
+	gain2: this.gain2,
+	gain3: this.gain3,
+	noiseGain: this.noiseGain,
+
+	amplitudeEnvelope: this.amplitudeEnvelope,
+	amplitudeAttack: this.amplitudeAttack,
+	amplitudeDecay: this.amplitudeDecay,
+	amplitudeSustain: this.amplitudeSustain,
+	amplitudeSustainLevel: this.amplitudeSustainLevel,
+
+	filterEnvelope: this.filterEnvelope,
+	filterAttack: this.filterAttack,
+	filterAttackTarget: this.filterAttackTarget,
+	filterDecay: this.filterDecay,
+	filterSustain: this.filterSustain,
+	filterSustainLevel: this.filterSustainLevel,
+
+	filter: this.filter,
+
+	amplitudeGain: this.amplitudeGain,
+
+	playLoopAtTime: function(freq, time){
+
+		this.freq = freq;
+		this.time = time;
+
+		this.amplitudeEnvelope.loop = true;
+		this.filterEnvelope.loop = true;
+
+		this.amplitudeEnvelope.connect(this.amplitudeGain.gain.gain);
+		this.filterEnvelope.connect(this.filter.biquad.frequency);
+
+		this.osc1.osc.frequency.setValueAtTime(this.freq*this.octave1, this.time);
+		this.osc2.osc.frequency.setValueAtTime(this.freq*this.octave2, this.time);
+		this.osc3.osc.frequency.setValueAtTime(this.freq*this.octave3, this.time);
+
+		this.amplitudeEnvelope.startAtTime(this.time);
+		this.filterEnvelope.startAtTime(this.time);
+
+
+	},
+
+	startAtTime: function(time){
+
+		this.time = time;
+
+		this.amplitudeEnvelope.connect(this.amplitudeGain.gain.gain);
+		this.filterEnvelope.connect(this.filter.biquad.frequency);
+
+		this.osc1.osc.frequency.setValueAtTime(this.freq*this.octave1, this.time);
+		this.osc2.osc.frequency.setValueAtTime(this.freq*this.octave2, this.time);
+		this.osc3.osc.frequency.setValueAtTime(this.freq*this.octave3, this.time);
+
+		this.amplitudeEnvelope.startAtTime(this.time);
+		this.filterEnvelope.startAtTime(this.time);
+
+	},
+
+	start: function(){
+
+		this.amplitudeEnvelope.connect(this.amplitudeGain.gain.gain);
+		this.filterEnvelope.connect(this.filter.biquad.frequency);
+
+		this.osc1.osc.frequency.value = this.freq*this.octave1;
+		this.osc2.osc.frequency.value = this.freq*this.octave2;
+		this.osc3.osc.frequency.value = this.freq*this.octave3;
+
+		this.amplitudeEnvelope.start();
+		this.filterEnvelope.start();
+
+	},
+
+	stop: function(){
+
+		this.osc1.stop();
+		this.osc2.stop();
+		this.osc3.stop();
+
+	},
+
+	stopAtTime: function(time){
+
+		this.time = time;
+
+		this.osc1.stopAtTime(this.time);
+		this.osc2.stopAtTime(this.time);
+		this.osc3.stopAtTime(this.time);
+
+	},
+
+	presetTemplate: function(){
+
+		this.osc1.start();
+		this.osc2.start();
+		this.osc3.start();
+		this.noise.start();
+
+		this.octave1 = 1;
+		this.octave2 = 1;
+		this.octave3 = 1;
+
+		this.osc1.osc.type = "sawtooth";
+		this.osc2.osc.type = "sine";
+		this.osc3.osc.type = "sine";
+
+		this.gain1.gain.gain.value = 1;
+		this.gain2.gain.gain.value = 0;
+		this.gain3.gain.gain.value = 0;
+		this.noiseGain.gain.value = 0;
+
+		this.filterAttackTarget=22000;
+		this.filter.biquad.Q.value = 0;
+		this.filterAttack=1;
+		this.filterDecay=1;
+		this.filterSustainLevel=1*this.filterAttackTarget;
+		this.filterSustain = 1;
+
+		this.amplitudeAttack=1;
+		this.amplitudeDecay=1;
+		this.amplitudeSustainLevel=0.5;
+		this.amplitudeSustain = 1;
+
+		this.amplitudeEnvelope = new Envelope([
+			1, this.amplitudeAttack,
+			this.amplitudeSustainLevel, this.amplitudeDecay,
+			this.amplitudeSustainLevel, this.amplitudeSustain,
+			0, this.amplitudeDecay,
+		]);
+
+		this.filterEnvelope = new Envelope([
+			this.filterAttackTarget, this.filterAttack,
+			this.filterSustainLevel, this.filterDecay,
+			this.filterSustainLevel, this.filterSustain,
+			0, this.filterDecay,
+		]);
+
+	},
+
+	trSteelDrum: function(){
+
+		this.osc1.start();
+		this.osc2.start();
+		this.osc3.start();
+		this.noise.start();
+
+		this.octave1 = 1;
+		this.octave2 = 2;
+		this.octave3 = 0.5;
+
+		this.osc1.osc.type = "triangle";
+		this.osc2.osc.type = "triangle";
+		this.osc3.osc.type = "triangle";
+
+		this.osc2.osc.detune.value = 300;
+		this.osc3.osc.detune.value = 350;
+
+		this.gain1.gain.gain.value = 0.8;
+		this.gain2.gain.gain.value = 0.8;
+		this.gain3.gain.gain.value = 0;
+		this.noiseGain.gain.value = 0;
+
+		this.filterAttackTarget=80;
+		this.filter.biquad.Q.value = 0;
+		this.filterAttack=0.001;
+		this.filterDecay=0.8;
+		this.filterSustainLevel=0*this.filterAttackTarget;
+		this.filterSustain = 0;
+
+		this.amplitudeAttack=0.001;
+		this.amplitudeDecay=0.4;
+		this.amplitudeSustainLevel=0.6;
+		this.amplitudeSustain = 1;
+
+		this.amplitudeEnvelope = new Envelope([
+			1, this.amplitudeAttack,
+			this.amplitudeSustainLevel, this.amplitudeDecay,
+			this.amplitudeSustainLevel, this.amplitudeSustain,
+			0, this.amplitudeDecay,
+		]);
+
+		this.filterEnvelope = new Envelope([
+			this.filterAttackTarget, this.filterAttack,
+			this.filterSustainLevel, this.filterDecay,
+			this.filterSustainLevel, this.filterSustain,
+			0, this.filterDecay,
+		]);
+
+	},
+
+	trThunder: function(){
+
+		this.osc1.start();
+		this.osc2.start();
+		this.osc3.start();
+		this.noise.start();
+
+		this.octave1 = 1;
+		this.octave2 = 1;
+		this.octave3 = 1;
+
+		this.osc1.osc.type = "sawtooth";
+		this.osc2.osc.type = "sine";
+		this.osc3.osc.type = "sine";
+
+		this.gain1.gain.gain.value = 0;
+		this.gain2.gain.gain.value = 0;
+		this.gain3.gain.gain.value = 0;
+		this.noiseGain.gain.value = 0.8;
+
+		this.filterAttackTarget=155;
+		this.filter.biquad.Q.value = 0;
+		this.filterAttack=0.001;
+		this.filterDecay=0.8;
+		this.filterSustainLevel=0*this.filterAttackTarget;
+		this.filterSustain = 0;
+
+		this.amplitudeAttack=0.001;
+		this.amplitudeDecay=5;
+		this.amplitudeSustainLevel=0;
+		this.amplitudeSustain = 0;
+
+		this.amplitudeEnvelope = new Envelope([
+			1, this.amplitudeAttack,
+			this.amplitudeSustainLevel, this.amplitudeDecay,
+			this.amplitudeSustainLevel, this.amplitudeSustain,
+			0, this.amplitudeDecay,
+		]);
+
+		this.filterEnvelope = new Envelope([
+			this.filterAttackTarget, this.filterAttack,
+			this.filterSustainLevel, this.filterDecay,
+			this.filterSustainLevel, this.filterSustain,
+			0, this.filterDecay,
+		]);
+
+	},
+
+	trSurf: function(){
+
+		this.osc1.start();
+		this.osc2.start();
+		this.osc3.start();
+		this.noise.start();
+
+		this.octave1 = 1;
+		this.octave2 = 1;
+		this.octave3 = 1;
+
+		this.osc1.osc.type = "sawtooth";
+		this.osc2.osc.type = "sine";
+		this.osc3.osc.type = "sine";
+
+		this.gain1.gain.gain.value = 0;
+		this.gain2.gain.gain.value = 0;
+		this.gain3.gain.gain.value = 0;
+		this.noiseGain.gain.value = 0.8;
+
+		this.filterAttackTarget=290;
+		this.filter.biquad.Q.value = 0;
+		this.filterAttack=3;
+		this.filterDecay=1;
+		this.filterSustainLevel=0.2*this.filterAttackTarget;
+		this.filterSustain = 1;
+
+		this.amplitudeAttack=0.8;
+		this.amplitudeDecay=3;
+		this.amplitudeSustainLevel=0;
+		this.amplitudeSustain = 0;
+
+		this.amplitudeEnvelope = new Envelope([
+			1, this.amplitudeAttack,
+			this.amplitudeSustainLevel, this.amplitudeDecay,
+			this.amplitudeSustainLevel, this.amplitudeSustain,
+			0, this.amplitudeDecay,
+		]);
+
+		this.filterEnvelope = new Envelope([
+			this.filterAttackTarget, this.filterAttack,
+			this.filterSustainLevel, this.filterDecay,
+			this.filterSustainLevel, this.filterSustain,
+			0, this.filterDecay,
+		]);
+
+	},
+
+	trMoonChord: function(){
+
+		// nice around 224Hz
+
+		this.osc1.start();
+		this.osc2.start();
+		this.osc3.start();
+		this.noise.start();
+
+		this.octave1 = 1;
+		this.octave2 = 1;
+		this.octave3 = 1;
+
+		this.osc1.osc.type = "square";
+		this.osc2.osc.type = "sawtooth";
+		this.osc3.osc.type = "square";
+
+		this.osc3.osc.detune.value = 500;
+
+		this.gain1.gain.gain.value = 0.3;
+		this.gain2.gain.gain.value = 0.6;
+		this.gain3.gain.gain.value = 0.3;
+		this.noiseGain.gain.value = 0;
+
+		this.filterAttackTarget=540;
+		this.filter.biquad.Q.value = 7;
+		this.filterAttack=0.6;
+		this.filterDecay=0.6;
+		this.filterSustainLevel=0.5*this.filterAttackTarget;
+		this.filterSustain = 1;
+
+		this.amplitudeAttack=0.0005;
+		this.amplitudeDecay=2;
+		this.amplitudeSustainLevel=1;
+		this.amplitudeSustain = 1;
+
+		this.amplitudeEnvelope = new Envelope([
+			1, this.amplitudeAttack,
+			this.amplitudeSustainLevel, this.amplitudeDecay,
+			this.amplitudeSustainLevel, this.amplitudeSustain,
+			0, this.amplitudeDecay,
+		]);
+
+		this.filterEnvelope = new Envelope([
+			this.filterAttackTarget, this.filterAttack,
+			this.filterSustainLevel, this.filterDecay,
+			this.filterSustainLevel, this.filterSustain,
+			0, this.filterDecay,
+		]);
+
+	},
+
+	trGoom: function(){
+
+		this.osc1.start();
+		this.osc2.start();
+		this.osc3.start();
+		this.noise.start();
+
+		this.octave1 = 1;
+		this.octave2 = 1;
+		this.octave3 = 1;
+
+		this.osc1.osc.type = "square";
+		this.osc2.osc.type = "square";
+		this.osc3.osc.type = "square";
+
+		this.gain1.gain.gain.value = 0.6;
+		this.gain2.gain.gain.value = 0.6;
+		this.gain3.gain.gain.value = 0.6;
+		this.noiseGain.gain.value = 0;
+
+		this.filterAttackTarget=400;
+		this.filter.biquad.Q.value = 0;
+		this.filterAttack=0.0005;
+		this.filterDecay=0.8;
+		this.filterSustainLevel=0.8*this.filterAttackTarget;
+		this.filterSustain = 1;
+
+		this.amplitudeAttack=0.01;
+		this.amplitudeDecay=1;
+		this.amplitudeSustainLevel=0.5;
+		this.amplitudeSustain = 1;
+
+		this.amplitudeEnvelope = new Envelope([
+			1, this.amplitudeAttack,
+			this.amplitudeSustainLevel, this.amplitudeDecay,
+			this.amplitudeSustainLevel, this.amplitudeSustain,
+			0, this.amplitudeDecay,
+		]);
+
+		this.filterEnvelope = new Envelope([
+			this.filterAttackTarget, this.filterAttack,
+			this.filterSustainLevel, this.filterDecay,
+			this.filterSustainLevel, this.filterSustain,
+			0, this.filterDecay,
+		]);
+
+	},
+
+	trGoodSound: function(){
+
+		this.osc1.start();
+		this.osc2.start();
+		this.osc3.start();
+		this.noise.start();
+
+		this.octave1 = 1;
+		this.octave2 = 2;
+		this.octave3 = 4;
+
+		this.osc2.osc.detune.value = 300;
+		this.osc3.osc.detune.value = 600;
+
+		this.osc1.osc.type = "sawtooth";
+		this.osc2.osc.type = "square";
+		this.osc3.osc.type = "sawtooth";
+
+		this.gain1.gain.gain.value = 0.5;
+		this.gain2.gain.gain.value = 0.5;
+		this.gain3.gain.gain.value = 0.5;
+		this.noiseGain.gain.value = 0;
+
+		this.filterAttackTarget=123;
+		this.filter.biquad.Q.value=3;
+		this.filterAttack=0.0005;
+		this.filterDecay=0.2;
+		this.filterSustainLevel=0.5*this.filterAttackTarget;
+		this.filterSustain = 1;
+
+		this.amplitudeAttack=0.0005;
+		this.amplitudeDecay=0.6;
+		this.amplitudeSustainLevel=0.5;
+		this.amplitudeSustain = 1;
+
+		this.amplitudeEnvelope = new Envelope([
+			1, this.amplitudeAttack,
+			this.amplitudeSustainLevel, this.amplitudeDecay,
+			this.amplitudeSustainLevel, this.amplitudeSustain,
+			0, this.amplitudeDecay,
+		]);
+
+		this.filterEnvelope = new Envelope([
+			this.filterAttackTarget, this.filterAttack,
+			this.filterSustainLevel, this.filterDecay,
+			this.filterSustainLevel, this.filterSustain,
+			0, this.filterDecay,
+		]);
+
+	},
+
+	trFatBass: function(){
+
+		this.osc1.start();
+		this.osc2.start();
+		this.osc3.start();
+		this.noise.start();
+
+		this.octave1 = 0.25;
+		this.octave2 = 0.5;
+		this.octave3 = 0.5;
+
+		this.osc1.osc.type = "sawtooth";
+		this.osc2.osc.type = "sawtooth";
+		this.osc3.osc.type = "sawtooth";
+
+		this.gain1.gain.gain.value = 1;
+		this.gain2.gain.gain.value = 1;
+		this.gain3.gain.gain.value = 1;
+		this.noiseGain.gain.value = 0;
+
+		this.filterAttackTarget=300;
+		this.filter.biquad.Q.value = 5;
+		this.filterAttack=0.0005;
+		this.filterDecay=0.3;
+		this.filterSustainLevel=0*this.filterAttackTarget;
+		this.filterSustain = 0;
+
+		this.amplitudeAttack=0.0005;
+		this.amplitudeDecay=0.6;
+		this.amplitudeSustainLevel=0.5;
+		this.amplitudeSustain = 0;
+
+		this.amplitudeEnvelope = new Envelope([
+			1, this.amplitudeAttack,
+			this.amplitudeSustainLevel, this.amplitudeDecay,
+			this.amplitudeSustainLevel, this.amplitudeSustain,
+			0, this.amplitudeDecay,
+		]);
+
+		this.filterEnvelope = new Envelope([
+			this.filterAttackTarget, this.filterAttack,
+			this.filterSustainLevel, this.filterDecay,
+			this.filterSustainLevel, this.filterSustain,
+			0, this.filterDecay,
+		]);
+
+	},
+
+	trTrilogy: function(){
+
+		this.osc1.start();
+		this.osc2.start();
+		this.osc3.start();
+		this.noise.start();
+
+		this.octave1 = 0.5;
+		this.octave2 = 4;
+		this.octave3 = 0.5;
+
+		this.osc1.osc.type = "square";
+		this.osc2.osc.type = "square";
+		this.osc3.osc.type = "square";
+
+		this.gain1.gain.gain.value = 0.2;
+		this.gain2.gain.gain.value = 0.8;
+		this.gain3.gain.gain.value = 0.2;
+		this.noiseGain.gain.value = 0;
+
+		this.filterAttackTarget=530;
+		this.filter.biquad.Q.value = 6;
+		this.filterAttack=0.0005;
+		this.filterDecay=0.8;
+		this.filterSustainLevel=0*this.filterAttackTarget;
+		this.filterSustain = 0;
+
+		this.amplitudeAttack=0.0005;
+		this.amplitudeDecay=0.4;
+		this.amplitudeSustainLevel=1;
+		this.amplitudeSustain = 1;
+
+		this.amplitudeEnvelope = new Envelope([
+			1, this.amplitudeAttack,
+			this.amplitudeSustainLevel, this.amplitudeDecay,
+			this.amplitudeSustainLevel, this.amplitudeSustain,
+			0, this.amplitudeDecay,
+		]);
+
+		this.filterEnvelope = new Envelope([
+			this.filterAttackTarget, this.filterAttack,
+			this.filterSustainLevel, this.filterDecay,
+			this.filterSustainLevel, this.filterSustain,
+			0, this.filterDecay,
+		]);
+
+	},
+
+	trBassDrum: function(){
+
+		// cool at 224
+
+		this.osc1.start();
+		this.osc2.start();
+		this.osc3.start();
+		this.noise.start();
+
+		this.octave1 = 1;
+		this.octave2 = 1;
+		this.octave3 = 1;
+
+		this.osc2.osc.detune.value = -200;
+		this.osc3.osc.detune.value = -500;
+
+		this.osc1.osc.type = "sawtooth";
+		this.osc2.osc.type = "sawtooth";
+		this.osc3.osc.type = "sawtooth";
+
+		this.gain1.gain.gain.value = 0.8;
+		this.gain2.gain.gain.value = 0.8;
+		this.gain3.gain.gain.value = 0.8;
+		this.noiseGain.gain.value = 0;
+
+		this.filterAttackTarget=80;
+		this.filter.biquad.Q.value = 0;
+		this.filterAttack=0.001;
+		this.filterDecay=0.6;
+		this.filterSustainLevel=0*this.filterAttackTarget;
+		this.filterSustain = 0;
+
+		this.amplitudeAttack=0.001;
+		this.amplitudeDecay=0.8;
+		this.amplitudeSustainLevel=0;
+		this.amplitudeSustain = 0;
+
+		this.amplitudeEnvelope = new Envelope([
+			1, this.amplitudeAttack,
+			this.amplitudeSustainLevel, this.amplitudeDecay,
+			this.amplitudeSustainLevel, this.amplitudeSustain,
+			0, this.amplitudeDecay,
+		]);
+
+		this.filterEnvelope = new Envelope([
+			this.filterAttackTarget, this.filterAttack,
+			this.filterSustainLevel, this.filterDecay,
+			this.filterSustainLevel, this.filterSustain,
+			0, this.filterDecay,
+		]);
+
+	},
+
+	trTuba: function(){
+
+		this.osc1.start();
+		this.osc2.start();
+		this.osc3.start();
+		this.noise.start();
+
+		this.octave1 = 1;
+		this.octave2 = 1;
+		this.octave3 = 1;
+
+		this.osc1.osc.type = "sawtooth";
+		this.osc2.osc.type = "sine";
+		this.osc3.osc.type = "sine";
+
+		this.gain1.gain.gain.value = 1;
+		this.gain2.gain.gain.value = 0;
+		this.gain3.gain.gain.value = 0;
+		this.noiseGain.gain.value = 0;
+
+		this.filterAttackTarget=155;
+		this.filter.biquad.Q.value = 0;
+		this.filterAttack=0.4;
+		this.filterDecay=0.4;
+		this.filterSustainLevel=0.8*this.filterAttackTarget;
+		this.filterSustain = 1;
+
+		this.amplitudeAttack=0.2;
+		this.amplitudeDecay=0.35;
+		this.amplitudeSustainLevel=0.7;
+		this.amplitudeSustain = 1;
+
+		this.amplitudeEnvelope = new Envelope([
+			1, this.amplitudeAttack,
+			this.amplitudeSustainLevel, this.amplitudeDecay,
+			this.amplitudeSustainLevel, this.amplitudeSustain,
+			0, this.amplitudeDecay,
+		]);
+
+		this.filterEnvelope = new Envelope([
+			this.filterAttackTarget, this.filterAttack,
+			this.filterSustainLevel, this.filterDecay,
+			this.filterSustainLevel, this.filterSustain,
+			0, this.filterDecay,
+		]);
+
+	},
+
+	trHarpsichord: function(){
+
+		this.osc1.start();
+		this.osc2.start();
+		this.osc3.start();
+		this.noise.start();
+
+		this.octave1 = 1;
+		this.octave2 = 1;
+		this.octave3 = 1;
+
+		this.osc1.osc.type = "sawtooth";
+		this.osc2.osc.type = "square";
+		this.osc3.osc.type = "sine";
+
+		this.gain1.gain.gain.value = 0.3;
+		this.gain2.gain.gain.value = 0.5;
+		this.gain3.gain.gain.value = 0;
+		this.noiseGain.gain.value = 0;
+
+		this.filterAttackTarget=20000;
+		this.filter.biquad.Q.value = 7;
+		this.filterAttack=0.0005;
+		this.filterDecay=0.3;
+		this.filterSustainLevel=1*this.filterAttackTarget;
+		this.filterSustain = 0;
+
+		this.amplitudeAttack=0.0005;
+		this.amplitudeDecay=0.3;
+		this.amplitudeSustainLevel=0;
+		this.amplitudeSustain = 0;
+
+		this.amplitudeEnvelope = new Envelope([
+			1, this.amplitudeAttack,
+			this.amplitudeSustainLevel, this.amplitudeDecay,
+			this.amplitudeSustainLevel, this.amplitudeSustain,
+			0, this.amplitudeDecay,
+		]);
+
+		this.filterEnvelope = new Envelope([
+			this.filterAttackTarget, this.filterAttack,
+			this.filterSustainLevel, this.filterDecay,
+			this.filterSustainLevel, this.filterSustain,
+			0, this.filterDecay,
+		]);
+
+	},
+
+	trAquatarkus: function(){
+
+		this.osc1.start();
+		this.osc2.start();
+		this.osc3.start();
+		this.noise.start();
+
+		this.octave1 = 1;
+		this.octave2 = 1;
+		this.octave3 = 1;
+
+		this.osc2.osc.detune.value = 400;
+		this.osc3.osc.detune.value = 700;
+
+		this.osc1.osc.type = "sawtooth";
+		this.osc2.osc.type = "sawtooth";
+		this.osc3.osc.type = "sawtooth";
+
+		this.gain1.gain.gain.value = 0.8;
+		this.gain2.gain.gain.value = 0.8;
+		this.gain3.gain.gain.value = 0.8;
+		this.noiseGain.gain.value = 0;
+
+		this.filterAttackTarget=123.7;
+		this.filter.biquad.Q.value = 6;
+		this.filterAttack=0.01;
+		this.filterDecay=0.2;
+		this.filterSustainLevel=0.5*this.filterAttackTarget;
+		this.filterSustain = 1;
+
+		this.amplitudeAttack=0;
+		this.amplitudeDecay=0.4;
+		this.amplitudeSustainLevel=0.3;
+		this.amplitudeSustain = 1;
+
+		this.amplitudeEnvelope = new Envelope([
+			1, this.amplitudeAttack,
+			this.amplitudeSustainLevel, this.amplitudeDecay,
+			this.amplitudeSustainLevel, this.amplitudeSustain,
+			0, this.amplitudeDecay,
+		]);
+
+		this.filterEnvelope = new Envelope([
+			this.filterAttackTarget, this.filterAttack,
+			this.filterSustainLevel, this.filterDecay,
+			this.filterSustainLevel, this.filterSustain,
+			0, this.filterDecay,
+		]);
+
+	},
+
+	trSteelDrum: function(){
+
+		this.osc1.start();
+		this.osc2.start();
+		this.osc3.start();
+		this.noise.start();
+
+		this.octave1 = 4;
+		this.octave2 = 4;
+		this.octave3 = 0.5;
+
+		this.osc3.osc.detune.value = 700;
+
+		this.osc1.osc.type = "triangle";
+		this.osc2.osc.type = "triangle";
+		this.osc3.osc.type = "triangle";
+
+		this.gain1.gain.gain.value = 0.8;
+		this.gain2.gain.gain.value = 0.8;
+		this.gain3.gain.gain.value = 0.4;
+		this.noiseGain.gain.value = 0;
+
+		this.filterAttackTarget=300;
+		this.filter.biquad.Q.value = 5;
+		this.filterAttack=0.0005;
+		this.filterDecay=0.4;
+		this.filterSustainLevel=0*this.filterAttackTarget;
+		this.filterSustain = 0;
+
+		this.amplitudeAttack=0.0005;
+		this.amplitudeDecay=0.4;
+		this.amplitudeSustainLevel=1;
+		this.amplitudeSustain = 0;
+
+		this.amplitudeEnvelope = new Envelope([
+			1, this.amplitudeAttack,
+			this.amplitudeSustainLevel, this.amplitudeDecay,
+			this.amplitudeSustainLevel, this.amplitudeSustain,
+			0, this.amplitudeDecay,
+		]);
+
+		this.filterEnvelope = new Envelope([
+			this.filterAttackTarget, this.filterAttack,
+			this.filterSustainLevel, this.filterDecay,
+			this.filterSustainLevel, this.filterSustain,
+			0, this.filterDecay,
+		]);
+
+	},
+
+	myBlock: function(){
+
+		// very nice at 280Hz - much like the attack of the Ben Babbitt
+		// Dark Rum Noir block
+
+		this.osc1.start();
+		this.osc2.start();
+		this.osc3.start();
+		this.noise.start();
+
+		this.octave1 = 4;
+		this.octave2 = 4;
+		this.octave3 = 0.5;
+
+		this.osc3.osc.detune.value = 700;
+
+		this.osc1.osc.type = "sawtooth";
+		this.osc2.osc.type = "sawtooth";
+		this.osc3.osc.type = "sawtooth";
+
+		this.gain1.gain.gain.value = 1;
+		this.gain2.gain.gain.value = 1;
+		this.gain3.gain.gain.value = 0;
+		this.noiseGain.gain.value = 0;
+
+		this.filterAttackTarget=300;
+		this.filter.biquad.Q.value = 5;
+		this.filterAttack=0.001;
+		this.filterDecay=0.01;
+		this.filterSustainLevel=0*this.filterAttackTarget;
+		this.filterSustain = 0;
+
+		this.amplitudeAttack=0.001;
+		this.amplitudeDecay=0.4;
+		this.amplitudeSustainLevel=1;
+		this.amplitudeSustain = 0;
+
+		this.amplitudeEnvelope = new Envelope([
+			1, this.amplitudeAttack,
+			this.amplitudeSustainLevel, this.amplitudeDecay,
+			this.amplitudeSustainLevel, this.amplitudeSustain,
+			0, this.amplitudeDecay,
+		]);
+
+		this.filterEnvelope = new Envelope([
+			this.filterAttackTarget, this.filterAttack,
+			this.filterSustainLevel, this.filterDecay,
+			this.filterSustainLevel, this.filterSustain,
+			0, this.filterDecay,
+		]);
+
+	},
+
+	trCatherineOfAragon: function(){
+
+		// very very nice bass (really nice quality around 280Hz and 140Hz)
+
+		this.osc1.start();
+		this.osc2.start();
+		this.osc3.start();
+		this.noise.start();
+
+		this.octave1 = 0.25;
+		this.octave2 = 0.5;
+		this.octave3 = 1;
+
+		this.osc1.osc.type = "sawtooth";
+		this.osc2.osc.type = "sawtooth";
+		this.osc3.osc.type = "sine";
+
+		this.gain1.gain.gain.value = 0.6;
+		this.gain2.gain.gain.value = 0.6;
+		this.gain3.gain.gain.value = 0;
+		this.noiseGain.gain.value = 0;
+
+		this.filterAttackTarget=159.92;
+		this.filter.biquad.Q.value = 6.8;
+		this.filterAttack=0.0005;
+		this.filterDecay=0.8;
+		this.filterSustainLevel=0*this.filterAttackTarget;
+		this.filterSustain = 0;
+
+		this.amplitudeAttack=0.0005;
+		this.amplitudeDecay=1;
+		this.amplitudeSustainLevel=0;
+		this.amplitudeSustain = 0;
+
+		this.amplitudeEnvelope = new Envelope([
+			1, this.amplitudeAttack,
+			this.amplitudeSustainLevel, this.amplitudeDecay,
+			this.amplitudeSustainLevel, this.amplitudeSustain,
+			0, this.amplitudeDecay,
+		]);
+
+		this.filterEnvelope = new Envelope([
+			this.filterAttackTarget, this.filterAttack,
+			this.filterSustainLevel, this.filterDecay,
+			this.filterSustainLevel, this.filterSustain,
+			0, this.filterDecay,
+		]);
+
+	},
+
+	trCoALongDecay: function(){
+
+		// very very nice bass (really nice quality around 280Hz and 140Hz)
+
+		this.osc1.start();
+		this.osc2.start();
+		this.osc3.start();
+		this.noise.start();
+
+		this.octave1 = 0.25;
+		this.octave2 = 0.5;
+		this.octave3 = 1;
+
+		this.osc1.osc.type = "sawtooth";
+		this.osc2.osc.type = "sawtooth";
+		this.osc3.osc.type = "sine";
+
+		this.gain1.gain.gain.value = 0.6;
+		this.gain2.gain.gain.value = 0.6;
+		this.gain3.gain.gain.value = 0;
+		this.noiseGain.gain.value = 0;
+
+		this.filterAttackTarget=159.92;
+		this.filter.biquad.Q.value = 6.8;
+		this.filterAttack=0.0005;
+		this.filterDecay=0.8;
+		this.filterSustainLevel=0.5*this.filterAttackTarget;
+		this.filterSustain = 0;
+
+		this.amplitudeAttack=0.0005;
+		this.amplitudeDecay=20;
+		this.amplitudeSustainLevel=0.1;
+		this.amplitudeSustain = 0;
+
+		this.amplitudeEnvelope = new Envelope([
+			1, this.amplitudeAttack,
+			this.amplitudeSustainLevel, this.amplitudeDecay,
+			this.amplitudeSustainLevel, this.amplitudeSustain,
+			0, this.amplitudeDecay,
+		]);
+
+		this.filterEnvelope = new Envelope([
+			this.filterAttackTarget, this.filterAttack,
+			this.filterSustainLevel, this.filterDecay,
+			this.filterSustainLevel, this.filterSustain,
+			0, this.filterDecay,
+		]);
+
+	},
+
+	trHommageABadings: function(){
+
+		this.osc1.start();
+		this.osc2.start();
+		this.osc3.start();
+		this.noise.start();
+
+		this.octave1 = 1;
+		this.octave2 = 1;
+		this.octave3 = 2;
+
+		this.osc1.osc.type = "triangle";
+		this.osc2.osc.type = "triangle";
+		this.osc3.osc.type = "triangle";
+
+		this.osc2.osc.detune.value = 300;
+		this.osc3.osc.detune.value = -300;
+
+		this.gain1.gain.gain.value = 0.8;
+		this.gain2.gain.gain.value = 0.8;
+		this.gain3.gain.gain.value = 0.8;
+		this.noiseGain.gain.value = 0;
+
+		this.filterAttackTarget=40;
+		this.filter.biquad.Q.value = 0;
+		this.filterAttack=0.4;
+		this.filterDecay=0.7;
+		this.filterSustainLevel=1*this.filterAttackTarget;
+		this.filterSustain = 1;
+
+		this.amplitudeAttack=0.4;
+		this.amplitudeDecay=0.7;
+		this.amplitudeSustainLevel=0.5;
+		this.amplitudeSustain = 1;
+
+		this.amplitudeEnvelope = new Envelope([
+			1, this.amplitudeAttack,
+			this.amplitudeSustainLevel, this.amplitudeDecay,
+			this.amplitudeSustainLevel, this.amplitudeSustain,
+			0, this.amplitudeDecay,
+		]);
+
+		this.filterEnvelope = new Envelope([
+			this.filterAttackTarget, this.filterAttack,
+			this.filterSustainLevel, this.filterDecay,
+			this.filterSustainLevel, this.filterSustain,
+			0, this.filterDecay,
+		]);
+
+	},
+
+	trRingModulatorEffects: function(){
+
+		this.osc1.start();
+		this.osc2.start();
+		this.osc3.start();
+		this.noise.start();
+
+		this.octave1 = 1;
+		this.octave2 = 1;
+		this.octave3 = 0.25;
+
+		this.osc1.osc.type = "square";
+		this.osc2.osc.type = "sine";
+		this.osc3.osc.type = "square";
+
+		this.gain1.gain.gain.value = 0.8;
+		this.gain2.gain.gain.value = 0;
+		this.gain3.gain.gain.value = 0;
+		this.noiseGain.gain.value = 0;
+
+		this.filterAttackTarget=40;
+		this.filter.biquad.Q.value = 0;
+		this.filterAttack=0.2;
+		this.filterDecay=0.7;
+		this.filterSustainLevel=0.5*this.filterAttackTarget;
+		this.filterSustain = 1;
+
+		this.amplitudeAttack=0.2;
+		this.amplitudeDecay=0.7;
+		this.amplitudeSustainLevel=0.5;
+		this.amplitudeSustain = 1;
+
+		this.amplitudeEnvelope = new Envelope([
+			1, this.amplitudeAttack,
+			this.amplitudeSustainLevel, this.amplitudeDecay,
+			this.amplitudeSustainLevel, this.amplitudeSustain,
+			0, this.amplitudeDecay,
+		]);
+
+		this.filterEnvelope = new Envelope([
+			this.filterAttackTarget, this.filterAttack,
+			this.filterSustainLevel, this.filterDecay,
+			this.filterSustainLevel, this.filterSustain,
+			0, this.filterDecay,
+		]);
+
+	},
+
+	trJetPlane: function(){
+
+		this.osc1.start();
+		this.osc2.start();
+		this.osc3.start();
+		this.noise.start();
+
+		this.octave1 = 1;
+		this.octave2 = 1;
+		this.octave3 = 1;
+
+		this.osc1.osc.type = "sawtooth";
+		this.osc2.osc.type = "sine";
+		this.osc3.osc.type = "sine";
+
+		this.gain1.gain.gain.value = 0;
+		this.gain2.gain.gain.value = 0;
+		this.gain3.gain.gain.value = 0;
+		this.noiseGain.gain.value = 1;
+
+		this.filterAttackTarget=40;
+		this.filter.biquad.Q.value = 0;
+		this.filterAttack=10;
+		this.filterDecay=10;
+		this.filterSustainLevel=1*this.filterAttackTarget;
+		this.filterSustain = 1;
+
+		this.amplitudeAttack=5;
+		this.amplitudeDecay=10;
+		this.amplitudeSustainLevel=1;
+		this.amplitudeSustain = 1;
+
+		this.amplitudeEnvelope = new Envelope([
+			1, this.amplitudeAttack,
+			this.amplitudeSustainLevel, this.amplitudeDecay,
+			this.amplitudeSustainLevel, this.amplitudeSustain,
+			0, this.amplitudeDecay,
+		]);
+
+		this.filterEnvelope = new Envelope([
+			this.filterAttackTarget, this.filterAttack,
+			this.filterSustainLevel, this.filterDecay,
+			this.filterSustainLevel, this.filterSustain,
+			0, this.filterDecay,
+		]);
+
+	},
+
+	trExplodingBomb: function(){
+
+		this.osc1.start();
+		this.osc2.start();
+		this.osc3.start();
+		this.noise.start();
+
+		this.octave1 = 1;
+		this.octave2 = 1;
+		this.octave3 = 1;
+
+		this.osc1.osc.type = "triangle";
+		this.osc2.osc.type = "triangle";
+		this.osc3.osc.type = "sine";
+
+		this.osc2.osc.detune.value = -100;
+
+		this.gain1.gain.gain.value = 0.4;
+		this.gain2.gain.gain.value = 0.4;
+		this.gain3.gain.gain.value = 0;
+		this.noiseGain.gain.value = 0.8;
+
+		this.filterAttackTarget=40;
+		this.filter.biquad.Q.value = 0;
+		this.filterAttack=0;
+		this.filterDecay=0.001;
+		this.filterSustainLevel=1*this.filterAttackTarget;
+		this.filterSustain = 0;
+
+		this.amplitudeAttack=0;
+		this.amplitudeDecay=0.005;
+		this.amplitudeSustainLevel=0.5;
+		this.amplitudeSustain = 0.5;
+
+		this.amplitudeEnvelope = new Envelope([
+			1, this.amplitudeAttack,
+			this.amplitudeSustainLevel, this.amplitudeDecay,
+			this.amplitudeSustainLevel, this.amplitudeSustain,
+			0, this.amplitudeDecay,
+		]);
+
+		this.filterEnvelope = new Envelope([
+			this.filterAttackTarget, this.filterAttack,
+			this.filterSustainLevel, this.filterDecay,
+			this.filterSustainLevel, this.filterSustain,
+			0, this.filterDecay,
+		]);
+
+	},
+
+	trClarinet: function(){
+
+		this.osc1.start();
+		this.osc2.start();
+		this.osc3.start();
+		this.noise.start();
+
+		this.octave1 = 1;
+		this.octave2 = 1;
+		this.octave3 = 1;
+
+		this.osc1.osc.type = "square";
+		this.osc2.osc.type = "sine";
+		this.osc3.osc.type = "sine";
+
+		this.gain1.gain.gain.value = 0.5;
+		this.gain2.gain.gain.value = 0;
+		this.gain3.gain.gain.value = 0;
+		this.noiseGain.gain.value = 0.03;
+
+		this.filterAttackTarget=1040.24;
+		this.filter.biquad.Q.value = 5;
+		this.filterAttack=0.2;
+		this.filterDecay=0.4;
+		this.filterSustainLevel=0.8*this.filterAttackTarget;
+		this.filterSustain = 1;
+
+		this.amplitudeAttack=0.2;
+		this.amplitudeDecay=0.3;
+		this.amplitudeSustainLevel=0.8;
+		this.amplitudeSustain = 1;
+
+		this.amplitudeEnvelope = new Envelope([
+			1, this.amplitudeAttack,
+			this.amplitudeSustainLevel, this.amplitudeDecay,
+			this.amplitudeSustainLevel, this.amplitudeSustain,
+			0, this.amplitudeDecay,
+		]);
+
+		this.filterEnvelope = new Envelope([
+			this.filterAttackTarget, this.filterAttack,
+			this.filterSustainLevel, this.filterDecay,
+			this.filterSustainLevel, this.filterSustain,
+			0, this.filterDecay,
+		]);
+
+	},
+
+	trTrumpet: function(){
+
+		this.osc1.start();
+		this.osc2.start();
+		this.osc3.start();
+		this.noise.start();
+
+		this.octave1 = 1;
+		this.octave2 = 1;
+		this.octave3 = 1;
+
+		this.osc1.osc.type = "sawtooth";
+		this.osc2.osc.type = "sawtooth";
+		this.osc3.osc.type = "sawtooth";
+
+		this.gain1.gain.gain.value = 0.5;
+		this.gain2.gain.gain.value = 0.7;
+		this.gain3.gain.gain.value = 0.9;
+		this.noiseGain.gain.value = 0;
+
+		this.filterAttackTarget=151.96;
+		this.filter.biquad.Q.value = 0;
+		this.filterAttack=0.4;
+		this.filterDecay=0.4;
+		this.filterSustainLevel=1*this.filterAttackTarget;
+		this.filterSustain = 1;
+
+		this.amplitudeAttack=0.2;
+		this.amplitudeDecay=0.4;
+		this.amplitudeSustainLevel=1;
+		this.amplitudeSustain = 1;
+
+		this.amplitudeEnvelope = new Envelope([
+			1, this.amplitudeAttack,
+			this.amplitudeSustainLevel, this.amplitudeDecay,
+			this.amplitudeSustainLevel, this.amplitudeSustain,
+			0, this.amplitudeDecay,
+		]);
+
+		this.filterEnvelope = new Envelope([
+			this.filterAttackTarget, this.filterAttack,
+			this.filterSustainLevel, this.filterDecay,
+			this.filterSustainLevel, this.filterSustain,
+			0, this.filterDecay,
+		]);
+
+	},
+
+	trXylophone: function(fund){
+
+		this.freq = fund;
+
+		this.osc1.start();
+		this.osc2.start();
+		this.osc3.start();
+		this.noise.start();
+
+		this.osc1.osc.type = "triangle";
+		this.osc2.osc.type = "sine";
+		this.osc3.osc.type = "sine";
+
+		this.octave1 = 1;
+		this.octave2 = 1;
+		this.octave3 = 1;
+
+		this.gain1.gain.gain.value = 1;
+		this.gain2.gain.gain.value = 0;
+		this.gain3.gain.gain.value = 0;
+		this.noiseGain.gain.value = 0;
+
+		this.amplitudeAttack=0.005;
+		this.amplitudeDecay=0.6;
+		this.amplitudeSustain = 0;
+		this.amplitudeSustainLevel=0;
+
+		this.filterAttack=0.005;
+		this.filterAttackTarget=80;
+		this.filterDecay=0.2;
+		this.filterSustain = 0;
+		this.filterSustainLevel=0;
+
+		this.filter.biquad.Q.value = 4;
+
+		this.amplitudeEnvelope = new Envelope([
+			1, this.amplitudeAttack,
+			this.amplitudeSustainLevel, this.amplitudeDecay,
+			this.amplitudeSustainLevel, this.amplitudeSustain,
+			0, this.amplitudeDecay,
+		]);
+
+		this.filterEnvelope = new Envelope([
+			this.filterAttackTarget, this.filterAttack,
+			this.filterSustainLevel, this.filterDecay,
+			this.filterSustainLevel, this.filterSustain,
+			0, this.filterDecay,
+		]);
+
+	},
+
+	trTempleBlocks: function(){
+
+		// nice percussion - cool mellow knock around 108 Hz
+
+		this.osc1.start();
+		this.osc2.start();
+		this.osc3.start();
+		this.noise.start();
+
+		this.osc1.osc.type = "triangle";
+		this.osc2.osc.type = "triangle";
+		this.osc3.osc.type = "sine";
+
+		this.octave1 = 1;
+		this.octave2 = 1;
+		this.octave3 = 1;
+
+		this.gain1.gain.gain.value = 1;
+		this.gain2.gain.gain.value = 1;
+		this.gain3.gain.gain.value = 0;
+		this.noiseGain.gain.value = 0;
+
+		this.amplitudeAttack=0.005;
+		this.amplitudeDecay=0.010;
+		this.amplitudeSustain = 0;
+		this.amplitudeSustainLevel=0;
+
+		this.filterAttack=0;
+		this.filterAttackTarget=1901.85;
+		this.filterDecay=0;
+		this.filterSustain = 0.015;
+		this.filterSustainLevel=1901.85;
+
+		this.filter.biquad.Q.value = 0;
+
+		this.amplitudeEnvelope = new Envelope([
+			1, this.amplitudeAttack,
+			this.amplitudeSustainLevel, this.amplitudeDecay,
+			this.amplitudeSustainLevel, this.amplitudeSustain,
+			0, this.amplitudeDecay,
+		]);
+
+		this.filterEnvelope = new Envelope([
+			this.filterAttackTarget, this.filterAttack,
+			this.filterSustainLevel, this.filterDecay,
+			this.filterSustainLevel, this.filterSustain,
+			0, this.filterDecay,
+		]);
+
+	},
+
+	trHorn: function(){
+
+		// pretty nice in the sub range
+
+		this.osc1.start();
+		this.osc2.start();
+		this.osc3.start();
+		this.noise.start();
+
+		this.osc1.osc.type = "sawtooth";
+		this.osc2.osc.type = "sine";
+		this.osc3.osc.type = "sine";
+
+		this.octave1 = 1;
+		this.octave2 = 1;
+		this.octave3 = 1;
+
+		this.gain1.gain.gain.value = 1;
+		this.gain2.gain.gain.value = 0;
+		this.gain3.gain.gain.value = 0;
+		this.noiseGain.gain.gain.value = 0;
+
+		this.amplitudeAttack=0.01;
+		this.amplitudeDecay=0.3;
+		this.amplitudeSustain = 2;
+		this.amplitudeSustainLevel=0.9;
+
+		this.filterAttack=0.37;
+		this.filterAttackTarget=271.1;
+		this.filterDecay=0.3;
+		this.filterSustain = 2;
+		this.filterSustainLevel=271.1*0.8;
+
+		this.filter.biquad.Q.value = 0;
+
+		this.amplitudeEnvelope = new Envelope([
+			1, this.amplitudeAttack,
+			this.amplitudeSustainLevel, this.amplitudeDecay,
+			this.amplitudeSustainLevel, this.amplitudeSustain,
+			0, this.amplitudeDecay,
+		]);
+
+		this.filterEnvelope = new Envelope([
+			this.filterAttackTarget, this.filterAttack,
+			this.filterSustainLevel, this.filterDecay,
+			this.filterSustainLevel, this.filterSustain,
+			0, this.filterDecay,
+		]);
+
+	},
+
+	connect: function(audioNode){
+		if (audioNode.hasOwnProperty('input') == 1){
+			this.output.connect(audioNode.input);
+		}
+		else {
+			this.output.connect(audioNode);
+		}
+	},
 
 }
 
@@ -7290,7 +8710,7 @@ MyBuffer.prototype = {
 	// place portion of one buffer in another buffer
 	spliceBuffer: function(otherBuffer, cropStart, cropEnd, newStart){
 
-		this.otherBuffer = otherBuffer.buffer;
+		this.otherBuffer = otherBuffer;
 
 		this.cropStart = cropStart;
 		this.cropEnd = cropEnd;
@@ -7358,6 +8778,35 @@ MyBuffer.prototype = {
 
 	},
 
+	movingAverage: function(windowSize){
+
+		this.windowSize = windowSize;
+		this.newBuffers = [];
+		this.acc = 0;
+
+		this.hW = parseInt(this.windowSize*0.5);
+
+		for(var i=0; i<this.buffer.numberOfChannels; i++){
+			this.bufferArray = this.buffer.getChannelData(i);
+			this.newBuffers[i] = new Float32Array(this.buffer.length);
+				for(var j=0; j<this.buffer.length; j++){
+					for(var k=0; k<this.windowSize; k++){
+						this.idx = (j+k)-this.hW;
+							if(this.idx>0){
+							  this.acc += this.bufferArray[this.idx%this.buffer.length];
+							}
+							else if (this.idx<0){
+								this.acc += this.bufferArray[this.buffer.length+this.idx];
+							}
+				}
+						this.newBuffers[i][j] = this.acc/this.windowSize;
+						this.acc = 0;
+			}
+			this.buffer.copyToChannel(this.newBuffers[i], i);
+		}
+
+	},
+
 	// multiply buffer contents by specified value
 	multiply: function(value){
 
@@ -7385,6 +8834,33 @@ MyBuffer.prototype = {
 
 	},
 
+	// multiply buffer contents by specified value
+	divide: function(value){
+
+		this.value = value;
+
+		for(var i=0; i<this.buffer.numberOfChannels; i++){
+			this.bufferArray = this.buffer.getChannelData(i);
+			for(var j=0; j<this.buffer.length; j++){
+				this.bufferArray[j] *= this.value;
+			}
+		}
+	},
+
+	// add value to buffer contents
+	subtract: function(value){
+
+		this.value = value;
+
+		for(var i=0; i<this.buffer.numberOfChannels; i++){
+			this.bufferArray = this.buffer.getChannelData(i);
+			for(var j=0; j<this.buffer.length; j++){
+				this.bufferArray[j] += this.value;
+			}
+		}
+
+	},
+
 	// reverse contents of buffer
 	reverse: function(){
 
@@ -7392,6 +8868,717 @@ MyBuffer.prototype = {
 			this.bufferArray = this.buffer.getChannelData(i);
 			this.bufferArray.reverse();
 		}
+	},
+
+	// move portion of buffer to another location
+	edit: function(cropStart, cropEnd, newStart){
+
+		this.cropStart = cropStart;
+		this.cropEnd = cropEnd;
+		this.newStart = newStart;
+
+		this.cSP = parseInt(this.buffer.length*this.cropStart);
+		this.cEP = parseInt(this.buffer.length*this.cropEnd);
+
+		this.cL = this.cEP-this.cSP;
+
+		this.nSP = parseInt(this.buffer.length*this.newStart);
+
+		this.cA = [];
+
+		console.log()
+
+		for(var i=0; i<this.buffer.numberOfChannels; i++){
+			this.bufferArray = this.buffer.getChannelData(i);
+
+			// crop the buffer values
+			for(var j=0; j<this.cL; j++){
+
+				this.cA[j] = this.bufferArray[j+this.cSP];
+
+			}
+
+			// reinsert the cropped values at the new position
+			for(var h=0; h<this.cL; h++){
+
+				if(h+this.nSP<=this.bufferArray.length){
+					this.bufferArray[h+this.nSP] = this.cA[h];
+				}
+
+			}
+
+		}
+
+	},
+
+}
+
+//--------------------------------------------------------------
+
+// adaptation of the Web Audio API AudioBuffer node
+function MyBuffer2(nChannels, length, sRate){
+
+	this.output = audioCtx.createGain();
+
+	this.nChannels = nChannels;
+	this.length = length;
+	this.sRate = sRate;
+
+	this.buffer = audioCtx.createBuffer(this.nChannels, this.sRate*this.length, this.sRate);
+	this.shape = new Float32Array(this.length*this.sRate);
+
+}
+
+MyBuffer2.prototype = {
+
+	output: this.output,
+	buffer: this.buffer,
+	shape: this.shape,
+
+	nChannels: this.nChannels,
+	length: this.length,
+	sRate: this.sRate,
+
+	playbackRate: this.playbackRate,
+	loop: this.loop,
+
+	// output buffer contents immediately
+	start: function(){
+
+		this.bufferSource = audioCtx.createBufferSource();
+		this.bufferSource.loop = this.loop;
+		this.bufferSource.playbackRate.value = this.playbackRate;
+		this.bufferSource.buffer = this.buffer;
+		this.bufferSource.connect(this.output);
+		this.bufferSource.start();
+
+	},
+
+	// stop outputting buffer contents immediately
+	stop: function(){
+
+		this.bufferSource.stop();
+
+	},
+
+	// output buffer contents at specified time (in seconds)
+	startAtTime: function(time){
+
+		this.time = time;
+
+		this.bufferSource = audioCtx.createBufferSource();
+		this.bufferSource.loop = this.loop;
+		this.bufferSource.playbackRate.value = this.playbackRate;
+		this.bufferSource.buffer = this.buffer;
+		this.bufferSource.connect(this.output);
+		this.bufferSource.start(this.time);
+
+	},
+
+	// stop outputting buffer contents at specified time (in seconds)
+	stopAtTime: function(time){
+
+		this.time = time;
+
+		this.bufferSource.stop(this.time);
+
+	},
+
+	// connect the output node of this object to the input of another
+	connect: function(audioNode){
+		if (audioNode.hasOwnProperty('input') == 1){
+			this.output.connect(audioNode.input);
+		}
+		else {
+			this.output.connect(audioNode);
+		}
+	},
+
+	fill: function( channel ){
+
+			this.nowBuffering = this.buffer.getChannelData( channel );
+			for (let i=0; i<this.buffer.length; i++){
+				
+				this.nowBuffering[i] = this.shape[i];
+			
+			}
+
+	},
+
+	insert: function( channel, insertStart, insertEnd ){
+
+		const startSample = parseInt( this.buffer.length * insertStart );
+		const endSample = parseInt( this.buffer.length * insertEnd );
+
+			this.nowBuffering = this.buffer.getChannelData(channel);
+			for (let i=0; i<this.buffer.length; i++){
+				
+				if( i > startSample && i < endSample ){
+					this.nowBuffering[i] += this.shape[i];
+				}
+			
+			}
+
+	},
+
+	add: function( channel ){
+
+			this.nowBuffering = this.buffer.getChannelData(channel);
+			for (let i=0; i<this.buffer.length; i++){
+				
+				this.nowBuffering[i] += this.shape[i];
+			
+			}
+
+	},
+
+	multiply: function( channel ){
+
+			this.nowBuffering = this.buffer.getChannelData(channel);
+			for (let i=0; i<this.buffer.length; i++){
+				
+				this.nowBuffering[i] *= this.shape[i];
+			
+			}
+
+	},
+
+	divide: function( channel ){
+
+			this.nowBuffering = this.buffer.getChannelData(channel);
+			for (let i=0; i<this.buffer.length; i++){
+				
+				this.nowBuffering[i] /= this.shape[i];
+			
+			}
+
+	},
+
+	subtract: function( channel ){
+
+			this.nowBuffering = this.buffer.getChannelData(channel);
+			for (let i=0; i<this.buffer.length; i++){
+				
+				this.nowBuffering[i] -= this.shape[i];
+			
+			}
+
+	},
+
+	impulse: function(){
+
+		for(let i=0; i<this.shape.length; i++){
+			this.shape[i] = i == 0 ? 1 : 0;
+		}
+
+		return this;
+
+	},
+
+	sine: function( freq , amp ){
+
+		const twoPi = Math.PI*2;
+		let t = 0;
+		let v = 0;
+
+		for(let i=0; i<this.shape.length; i++){
+
+			t = i/this.shape.length;
+			v = amp * (Math.sin( freq * twoPi * t ));
+
+			this.shape[i] = Math.abs(v) <= 0.00013089969352576765 ? 0 : v; 
+
+		}
+
+		return this;
+
+	},
+
+	unipolarSine: function( freq , amp ){
+
+		const twoPi = Math.PI*2;
+		let t = 0;
+		let v = 0;
+		this.p;
+		this.v;
+
+		for (let i=0; i<this.shape.length; i++){
+
+			t = i/this.shape.length;
+			v = amp * ( ( 0.5 * ( Math.sin( freq * twoPi * t ) ) ) + 0.5 );
+
+			this.shape[i] = Math.abs(v) <= 0.00013089969352576765 ? 0 : v;
+
+		}
+
+		return this;
+
+	},
+
+	constant: function( value ){
+
+		for(let i=0; i<this.shape.length; i++){
+
+			this.shape[i] = value;
+
+		}
+
+		return this;
+
+	},
+
+	sawtooth: function(exp){
+
+		for (let i=0; i<this.shape.length; i++){
+			this.shape[i] = Math.pow((i/this.shape.length), exp);
+		}
+
+		return this;
+
+	},
+
+	inverseSawtooth: function(exp){
+
+		for (let i=0; i<this.shape.length; i++){
+			this.shape[i] = Math.pow( ( 1 - ( i/this.shape.length ) ) , exp);
+		}
+
+		return this;
+
+	},
+
+	triangle: function(){
+
+		for (let i=0; i<this.shape.length; i++){
+
+			this.shape[i] = i <= (this.shape.length * 0.5) ? i / ( this.shape.length * 0.5 ) : 1 - ( ( i - ( this.shape.length * 0.5 ) ) / ( this.shape.length * 0.5 ) );
+
+		}
+
+		return this;
+
+	},
+
+	noise: function(){
+
+		for (let i=0; i<this.shape.length; i++){
+			this.shape[i] = Math.random() * 2 - 1;
+		}
+
+		return this;
+
+	},
+	
+	bufferShape: function(inBuffer){
+
+		this.shape = inBuffer.getChannelData(0);
+
+		return this;
+
+	},
+
+	unipolarNoise: function(){
+
+		for (let i=0; i<this.shape.length; i++){
+			this.shape[i] = Math.random();
+		}
+
+		return this;
+
+	},
+
+	square: function(dutyCycle){
+
+		for (let i=0; i<this.shape.length; i++){
+
+			this.shape[i] = i < ( this.shape.length * dutyCycle ) ? 1 : 0;
+
+		}
+
+		return this;
+
+	},
+
+	floatingCycleSquare: function(cycleStart, cycleEnd){
+
+		for (let i=0; i<this.shape.length; i++){
+
+			this.shape[i] = (i>=this.shape.length*cycleStart && i<=this.shape.length*cycleEnd) ? 1 : 0;
+
+		}
+
+		return this;
+
+	},
+
+	fm: function(cFreq, mFreq, mGain){
+
+		const twoPi = Math.PI*2;
+		let p = 0;
+		let v = 0;
+		let t = 0;
+		let a2 = 0;
+
+		for (let i=0; i<this.shape.length; i++){
+
+			p = i/this.shape.length;
+			t = p*twoPi;
+			a2 = mGain * ( Math.sin( mFreq * t ) );
+			v = Math.sin( ( cFreq + a2 ) * t );
+
+			this.shape[i] = Math.abs(v) <= 0.00013089969352576765 ? 0 : v;
+
+		}
+
+		return this;
+
+	},
+
+	am: function(cFreq, mFreq, mGain){
+
+		const twoPi = Math.PI*2;
+		let p = 0;
+		let v = 0;
+		let t = 0;
+		let a2 = 0;
+
+		for (let i=0; i<this.shape.length; i++){
+
+			p = i/this.shape.length;
+			t = p*twoPi;
+			a2 = mGain * ( Math.sin( mFreq * t ) );
+			v = a2 * Math.sin( cFreq * t );
+
+			this.shape[i] = Math.abs(v) <= 0.00013089969352576765 ? 0 : v;
+
+		}
+
+		return this;
+
+	},
+
+	quantizedArrayBuffer: function(quant, valueArray){
+
+	    let n_samples = this.shape.length;
+	    let curve = new Float32Array(n_samples);
+	    let mod = n_samples/quant;
+	    let modVal = 0;
+	    let value = 0;
+
+		let j = 0;
+
+		for (let i=0; i<this.shape.length; i++){
+
+			modVal = i%mod;
+
+			if(modVal==0){
+				value = valueArray[j%valueArray.length];
+				j++;
+			}
+
+			this.shape[i] = value;
+
+		}
+
+		return this;
+
+ 	},
+
+	ramp: function(startPoint, endPoint, upEnd, downStart, upExp, downExp){
+
+		const rampStart = parseInt( this.shape.length * startPoint );
+		const rampEnd = parseInt( this.shape.length * endPoint );
+
+		const rampLength = rampEnd - rampStart;
+
+		const upLength = parseInt( upEnd * rampLength );
+		const downLength = parseInt( rampLength - ( rampLength * downStart ) );
+
+		const upPoint = rampStart + upLength;
+		const downPoint = rampEnd - downLength;
+
+		for (let i=0; i<this.shape.length; i++){
+
+			if(i<rampStart){
+				this.shape[i] = 0;
+			}
+
+			else if(i>=rampStart && i<=upPoint){
+				this.shape[i] = Math.pow( ( i - rampStart ) / upLength , upExp );
+			}
+
+			else if(i>upPoint && i<downPoint){
+				this.shape[i] = 1;
+			}
+
+			else if(i>=downPoint && i<rampEnd){
+				this.shape[i] = Math.pow(1-( ( i - downPoint ) / downLength ) , downExp );
+			}
+
+			else if(i>=rampEnd){
+				this.shape[i] = 0;
+			}
+		}
+
+		return this;
+
+	},
+
+	noiseBand: function(cFreq, bandwidth, tuningRange, ampMin, ampMax){
+
+		let cF = cFreq;
+		let bW = bandwidth;
+		let aMin = ampMin;
+		let aMax = ampMax;
+		let hB = parseInt(bW*0.5);
+
+		const bandBuffer = new MyBuffer(this.nChannels, this.length, this.sRate);
+
+		let f = 0;
+		let a = 0;
+
+		for(let i=0; i<bW; i++){
+
+			f = ( cF + i ) - ( hB );
+			a = randomFloat( aMin , aMax );
+
+			bandBuffer.sine( f * randomFloat( tuningRange[0], tuningRange[1] ), a ).add();
+
+		}
+
+		this.nowBuffering = bandBuffer.buffer.getChannelData(0);
+		for(let i=0; i<this.shape.length; i++){
+			this.shape[i] = this.nowBuffering[i];
+		}
+
+		return this;
+
+	},
+
+	rampBand: function(cFreq, bandwidth, upHarmonics, midHarmonics, downHarmonics, upTuningRange, midTuningRange, downTuningRange, upEnd, downStart, upExp, downExp, upRange, midRange, downRange){
+
+		const cF = cFreq;
+		const bW = bandwidth;
+
+		const hB = parseInt( bW * 0.5 );
+
+		const upPoint = parseInt( bW * upEnd);
+		const downPoint = parseInt( bW * downStart);
+
+		const upLength = upPoint;
+		const downLength = bW - downPoint;
+
+		const lB = cF - hB;
+
+		const bandBuffer = new MyBuffer(this.nChannels, this.length, this.sRate);
+
+		let f = 0;
+		let a = 0;
+
+		for(let i=0; i<bW; i++){
+
+			f = ( cF + i ) - ( hB );
+
+			if(i<=upPoint){
+
+				a = Math.pow( i/upLength , upExp) * ( randomFloat( upRange[0], upRange[1] ) );
+				bandBuffer.sine( f * randomArrayValue( upHarmonics ) * randomFloat( upTuningRange[0], upTuningRange[1] ), a).add();
+
+			}
+
+			else if(i>upPoint && i<downPoint){
+
+				a = randomFloat( midRange[0], midRange[1] );
+				bandBuffer.sine( f * randomArrayValue( midHarmonics ) * randomFloat( midTuningRange[0], midTuningRange[1]), a).add();
+
+			}
+
+			else if(i>=downPoint){
+
+				a = Math.pow( 1- ( ( i - downPoint )/downLength), downExp) * (randomFloat( downRange[0], downRange[1] ));
+				bandBuffer.sine( f * randomArrayValue( downHarmonics ) * randomFloat( downTuningRange[0], downTuningRange[1] ), a).add();
+
+			}
+
+		}
+
+		this.nowBuffering = bandBuffer.buffer.getChannelData(0);
+		for(let i=0; i<this.shape.length; i++){
+			this.shape[i] = this.nowBuffering[i];
+		}
+
+		return this;
+
+	},
+
+	// add contents of a buffer to this buffer
+	addBuffer: function(newBuffer){
+
+		this.newBuffer = newBuffer;
+
+		for(var i=0; i<this.buffer.numberOfChannels; i++){
+			this.nowBuffering = this.buffer.getChannelData(i);
+			this.newBuffer = this.newBuffer.getChannelData(i);
+			for(var j=0; j<this.buffer.length; j++){
+				this.nowBuffering[j] += this.newBuffer[j];
+			}
+		}
+
+	},
+
+	// multiply contents of this buffer by a buffer
+	multiplyBuffer: function(newBuffer){
+
+		this.newBuffer = newBuffer;
+
+		for(var i=0; i<this.buffer.numberOfChannels; i++){
+			this.nowBuffering = this.buffer.getChannelData(i);
+			this.newBuffer = this.newBuffer.getChannelData(i);
+			for(var j=0; j<this.buffer.length; j++){
+				this.nowBuffering[j] *= this.newBuffer[j];
+			}
+		}
+
+	},
+
+	// divide contents of this buffer by a buffer
+	divideBuffer: function(newBuffer){
+
+		this.newBuffer = newBuffer;
+
+		for(var i=0; i<this.buffer.numberOfChannels; i++){
+			this.nowBuffering = this.buffer.getChannelData(i);
+			this.newBuffer = this.newBuffer.getChannelData(i);
+			for(var j=0; j<this.buffer.length; j++){
+				this.nowBuffering[j] /= this.newBuffer[j];
+			}
+		}
+
+	},
+
+	// subtract contents of a buffer from this buffer
+	subtractBuffer: function(newBuffer){
+
+		this.newBuffer = newBuffer;
+
+		for(var i=0; i<this.buffer.numberOfChannels; i++){
+			this.nowBuffering = this.buffer.getChannelData(i);
+			this.newBuffer = this.newBuffer.getChannelData(i);
+			for(var j=0; j<this.buffer.length; j++){
+				this.nowBuffering[j] -= this.newBuffer[j];
+			}
+		}
+
+	},
+
+	// place portion of one buffer in another buffer
+	spliceBuffer: function(otherBuffer, cropStart, cropEnd, newStart){
+
+		this.otherBuffer = otherBuffer;
+
+		this.cropStart = cropStart;
+		this.cropEnd = cropEnd;
+		this.newStart = newStart;
+
+		this.cSP = parseInt(this.otherBuffer.length*this.cropStart);
+		this.cEP = parseInt(this.otherBuffer.length*this.cropEnd);
+
+		this.cL = this.cEP-this.cSP;
+
+		this.nSP = parseInt(this.buffer.length*this.newStart);
+
+		this.cA = [];
+
+		console.log()
+
+		for(var i=0; i<this.buffer.numberOfChannels; i++){
+			this.bufferArray = this.buffer.getChannelData(i);
+			this.otherBufferArray = this.otherBuffer.getChannelData(i);
+
+			// crop the buffer values
+			for(var j=0; j<this.cL; j++){
+
+				this.cA[j] = this.otherBufferArray[j+this.cSP];
+
+			}
+
+			// reinsert the cropped values at the new position
+			for(var h=0; h<this.cL; h++){
+
+				if(h+this.nSP<=this.bufferArray.length){
+					this.bufferArray[h+this.nSP] += this.cA[h];
+				}
+
+			}
+
+		}
+
+	},
+
+	// normalize buffer contents to specified range
+	normalize: function(min, max){
+
+		this.min = min;
+		this.max = max;
+		this.range = this.max-this.min;
+		this.offset = this.min;
+		this.bufferArray;
+		this.bAMax;
+		this.bAMin;
+		this.normVal;
+
+		for(var i=0; i<this.buffer.numberOfChannels; i++){
+
+			this.bufferArray = this.buffer.getChannelData(i);
+			this.bAMax = arrayMax(this.bufferArray);
+			this.bAMin = arrayMin(this.bufferArray);
+
+			for(var j=0; j<this.buffer.length; j++){
+				this.normVal = (this.bufferArray[j]-this.bAMin)/(this.bAMax-this.bAMin);
+				this.bufferArray[j] = (this.range*this.normVal)+this.offset;
+			}
+
+		}
+
+	},
+
+	movingAverage: function(windowSize){
+
+		this.windowSize = windowSize;
+		this.newBuffers = [];
+		this.acc = 0;
+
+		this.hW = parseInt(this.windowSize*0.5);
+
+		for(var i=0; i<this.buffer.numberOfChannels; i++){
+			this.bufferArray = this.buffer.getChannelData(i);
+			this.newBuffers[i] = new Float32Array(this.buffer.length);
+				for(var j=0; j<this.buffer.length; j++){
+					for(var k=0; k<this.windowSize; k++){
+						this.idx = (j+k)-this.hW;
+							if(this.idx>0){
+							  this.acc += this.bufferArray[this.idx%this.buffer.length];
+							}
+							else if (this.idx<0){
+								this.acc += this.bufferArray[this.buffer.length+this.idx];
+							}
+				}
+						this.newBuffers[i][j] = this.acc/this.windowSize;
+						this.acc = 0;
+			}
+			this.buffer.copyToChannel(this.newBuffers[i], i);
+		}
+
+	},
+
+	// reverse contents of buffer
+	reverse: function(){
+
+		for(var i=0; i<this.buffer.numberOfChannels; i++){
+			this.bufferArray = this.buffer.getChannelData(i);
+			this.bufferArray.reverse();
+		}
+
 	},
 
 	// move portion of buffer to another location
@@ -7486,18 +9673,12 @@ MyCompressor.prototype = {
 
 //--------------------------------------------------------------
 
-// adaptation of the Web Audio API ConvolverNode
-function MyConvolver(nChannels, length, sRate){
-
-	this.nChannels = nChannels;
-	this.length = length;
-	this.sRate = sRate;
+function MyConvolver(){
 
 	this.input = audioCtx.createGain();
 	this.output = audioCtx.createGain();
 
 	this.convolver = audioCtx.createConvolver();
-	this.buffer = audioCtx.createBuffer(this.nChannels, this.sRate*this.length, this.sRate);
 
 	this.input.connect(this.convolver);
 	this.convolver.connect(this.output);
@@ -7511,6 +9692,14 @@ MyConvolver.prototype = {
 	convolver: this.convolver,
 	buffer: this.buffer,
 
+	setBuffer: function( buffer ){
+
+		this.buffer = buffer;
+
+		this.convolver.buffer = this.buffer;
+
+	},
+
 	// connect the output node of this object to the input of another
 	connect: function(audioNode){
 		if (audioNode.hasOwnProperty('input') == 1){
@@ -7521,547 +9710,7 @@ MyConvolver.prototype = {
 		}
 	},
 
-	// fill buffer with a sine wave
-	makeSine: function(){
-
-		this.twoPi = Math.PI*2;
-		this.p;
-		this.v;
-
-		for (this.channel = 0; this.channel<this.buffer.numberOfChannels; this.channel++){
-			this.nowBuffering = this.buffer.getChannelData(this.channel);
-			for (this.i=0; this.i<this.buffer.length; this.i++){
-				this.p = this.i/this.buffer.length;
-				this.v = Math.sin(this.twoPi*this.p);
-				if(Math.abs(this.v) <= 0.00013089969352576765){
-					this.nowBuffering[this.i] = 0;
-				}
-				else if(Math.abs(this.v) > 0.00013089969352576765){
-					this.nowBuffering[this.i] = this.v
-				}
-			}
-		}
-
-		this.convolver.buffer = this.buffer;
-
-	},
-
-	// fill buffer a frequency-modulated sine wave
-	makeFm: function(cFreq, mFreq, mGain){
-
-		this.twoPi = Math.PI*2;
-		this.p;
-		this.v;
-		this.t;
-		this.cFreq = cFreq;
-		this.mFreq = mFreq;
-		this.mGain = mGain;
-
-		for (this.channel = 0; this.channel<this.buffer.numberOfChannels; this.channel++){
-			this.nowBuffering = this.buffer.getChannelData(this.channel);
-			for (this.i=0; this.i<this.buffer.length; this.i++){
-				this.p = this.i/this.buffer.length;
-				this.t = this.p*this.twoPi
-				this.a2 = this.mGain*(Math.sin(this.mFreq*this.t));
-				this.v = Math.sin((this.cFreq+this.a2)*this.t);
-				if(Math.abs(this.v) <= 0.00013089969352576765){
-					this.nowBuffering[this.i] = 0;
-				}
-				else if(Math.abs(this.v) > 0.00013089969352576765){
-					this.nowBuffering[this.i] = this.v
-				}
-			}
-		}
-
-		this.convolver.buffer = this.buffer;
-
-	},
-
-	// fill buffer with an amplitude modulated sine wave
-	makeAm: function(cFreq, mFreq, mGain){
-
-		this.twoPi = Math.PI*2;
-		this.p;
-		this.v;
-		this.t;
-		this.cFreq = cFreq;
-		this.mFreq = mFreq;
-		this.mGain = mGain;
-
-		for (this.channel = 0; this.channel<this.buffer.numberOfChannels; this.channel++){
-			this.nowBuffering = this.buffer.getChannelData(this.channel);
-			for (this.i=0; this.i<this.buffer.length; this.i++){
-				this.p = this.i/this.buffer.length;
-				this.t = this.p*this.twoPi
-				this.a2 = this.mGain*(Math.sin(this.mFreq*this.t));
-				this.v = this.a2*Math.sin(this.cFreq*this.t);
-				if(Math.abs(this.v) <= 0.00013089969352576765){
-					this.nowBuffering[this.i] = 0;
-				}
-				else if(Math.abs(this.v) > 0.00013089969352576765){
-					this.nowBuffering[this.i] = this.v
-				}
-			}
-		}
-
-		this.convolver.buffer = this.buffer;
-
-	},
-
-	// fill buffer with a unipolar sine wave
-	makeUnipolarSine: function(){
-
-		this.twoPi = Math.PI*2;
-		this.p;
-		this.v;
-
-		for (this.channel = 0; this.channel<this.buffer.numberOfChannels; this.channel++){
-			this.nowBuffering = this.buffer.getChannelData(this.channel);
-			for (this.i=0; this.i<this.buffer.length; this.i++){
-				this.p = this.i/this.buffer.length;
-				this.v = (0.5*(Math.sin(this.twoPi*(this.p))))+0.5;
-				if(Math.abs(this.v) <= 0.00013089969352576765){
-					this.nowBuffering[this.i] = 0;
-				}
-				else if(Math.abs(this.v) > 0.00013089969352576765){
-					this.nowBuffering[this.i] = this.v
-				}
-			}
-		}
-
-		this.convolver.buffer = this.buffer;
-
-	},
-
-	// fill buffer with a sigmoid function
- 	makeSigmoid: function(amount){
-
- 	this.k = amount;
-    this.deg = Math.PI / 180;
-    this.x;
-    this.nSamples = audioCtx.sampleRate;
-
-	  for (this.channel = 0; this.channel<this.buffer.numberOfChannels; this.channel++){
-			this.nowBuffering = this.buffer.getChannelData(this.channel);
-			for (this.i=0; this.i<this.buffer.length; this.i++){
-					this.x = this.i * 2 / this.nSamples - 1;
-					this.nowBuffering[this.i] = ( 3 + this.k ) * this.x * 20 * this.deg / ( Math.PI + this.k * Math.abs(this.x) );
-			}
-		}
-
-		this.convolver.buffer = this.buffer;
- 	},
-
-	// fill buffer with a sawtooth wave
-	makeSawtooth: function(exp){
-
-		this.exp = exp;
-
-		for (this.channel = 0; this.channel<this.buffer.numberOfChannels; this.channel++){
-			this.nowBuffering = this.buffer.getChannelData(this.channel);
-			for (this.i=0; this.i<this.buffer.length; this.i++){
-					this.nowBuffering[this.i] = Math.pow((this.i/this.buffer.length), this.exp);
-			}
-		}
-
-		this.convolver.buffer = this.buffer;
-	},
-
-	// fill buffer with an inverse sawtooth wave
-	makeInverseSawtooth: function(exp){
-
-		this.exp = exp;
-
-		for (this.channel = 0; this.channel<this.buffer.numberOfChannels; this.channel++){
-			this.nowBuffering = this.buffer.getChannelData(this.channel);
-			for (this.i=0; this.i<this.buffer.length; this.i++){
-					this.nowBuffering[this.i] = Math.pow(1-(this.i/this.buffer.length), this.exp);
-			}
-		}
-
-		this.convolver.buffer = this.buffer;
-
-	},
-
-	// fill buffer with random values
-	makeNoise: function(){
-
-		for (this.channel = 0; this.channel<this.buffer.numberOfChannels; this.channel++){
-			this.nowBuffering = this.buffer.getChannelData(this.channel);
-			for (this.i=0; this.i<this.buffer.length; this.i++){
-					this.nowBuffering[this.i] = Math.random() * 2 - 1;
-			}
-		}
-
-		this.convolver.buffer = this.buffer;
-	},
-
-	// fill buffer with a single value
-	makeConstant: function(value){
-
-		this.value = value;
-
-		for (this.channel = 0; this.channel<this.buffer.numberOfChannels; this.channel++){
-			this.nowBuffering = this.buffer.getChannelData(this.channel);
-			for (this.i=0; this.i<this.buffer.length; this.i++){
-					this.nowBuffering[this.i] = this.value;
-			}
-		}
-
-		this.convolver.buffer = this.buffer;
-	},
-
-	// fill buffer with a square wave
-	makeSquare: function(dutyCycle){
-
-		this.dutyCycle = dutyCycle;
-
-		for (this.channel = 0; this.channel<this.buffer.numberOfChannels; this.channel++){
-			this.nowBuffering = this.buffer.getChannelData(this.channel);
-			for (this.i=0; this.i<this.buffer.length; this.i++){
-
-				if(this.i<this.buffer.length*this.dutyCycle){
-					this.nowBuffering[this.i] = 1;
-				}
-
-				else if(this.i>this.buffer.length*this.dutyCycle){
-					this.nowBuffering[this.i] = 0;
-				}
-			}
-		}
-
-		this.convolver.buffer = this.buffer;
-
-	},
-
-	// fill buffer with a square wave with custom
-	// start and end points
-	floatingCycleSquare: function(cycleStart, cycleEnd){
-
-		this.cycleStart = cycleStart;
-		this.cycleEnd = cycleEnd;
-
-		for (this.channel = 0; this.channel<this.buffer.numberOfChannels; this.channel++){
-			this.nowBuffering = this.buffer.getChannelData(this.channel);
-			for (this.i=0; this.i<this.buffer.length; this.i++){
-
-				if(this.i>=this.buffer.length*this.cycleStart && this.i<=this.buffer.length*this.cycleEnd){
-					this.nowBuffering[this.i] = 1;
-				}
-				else if(this.i<=this.buffer.length*this.cycleStart || this.i>=this.buffer.length*this.cycleEnd){
-					this.nowBuffering[this.i] = 0;
-				}
-			}
-		}
-	},
-
-	// fill buffer with a custom triangle wave
-	makeRamp: function(peakPoint, upExp, downExp){
-
-		this.peakPoint = parseInt(this.buffer.length*peakPoint);
-		this.upExp = upExp;
-		this.downExp = downExp;
-
-		for (this.channel = 0; this.channel<this.buffer.numberOfChannels; this.channel++){
-			this.nowBuffering = this.buffer.getChannelData(this.channel);
-			for (this.i=0; this.i<this.buffer.length; this.i++){
-
-				if(this.i<=this.peakPoint){
-					this.nowBuffering[this.i] = Math.pow(this.i/this.peakPoint, this.upExp);
-				}
-
-				else if(this.i>this.peakPoint){
-					this.nowBuffering[this.i] = Math.pow(1-((this.i-this.peakPoint)/(this.buffer.length-this.peakPoint)), this.downExp);
-				}
-			}
-		}
-	},
-
-	// fill buffer with a random arrangment of a series of values,
-	// with the number of values specified by "quant"
-	quantizedArrayBuffer: function(quant, valueArray){
-
-		this.quant = quant;
-		this.valueArray = valueArray;
-
-	    this.n_samples = this.buffer.length;
-	    this.curve = new Float32Array(this.n_samples);
-	    this.mod = this.n_samples/this.quant;
-	    this.modVal;
-	    this.value;
-			this.j = 0;
-
-		for (this.channel = 0; this.channel<this.buffer.numberOfChannels; this.channel++){
-
-			this.nowBuffering = this.buffer.getChannelData(this.channel);
-
-			for (this.i=0; this.i<this.buffer.length; this.i++){
-
-				this.modVal = this.i%this.mod;
-
-				if(this.modVal==0){
-	  				this.value = this.valueArray[this.j%this.valueArray.length];
-						this.j++;
-	  			}
-
-				this.nowBuffering[this.i] = this.value;
-
-			}
-		}
-
-		this.convolver.buffer = this.buffer;
- 	},
-
-	// multiply buffer values by a line with negative slope
-	applyDecay: function(exp){
-
-		this.exp = exp;
-		this.l;
-
-		for (this.channel = 0; this.channel<this.buffer.numberOfChannels; this.channel++){
-			this.nowBuffering = this.buffer.getChannelData(this.channel);
-			for (this.i=0; this.i<this.buffer.length; this.i++){
-					this.l = Math.pow(1-(this.i/this.buffer.length), this.exp);
-					this.nowBuffering[this.i] *= this.l;
-			}
-		}
-		this.convolver.buffer = this.buffer;
-	},
-
-	// multiply buffer values by a line with positive slope
-	applyRamp: function(peakPoint, upExp, downExp){
-
-		this.peakPoint = parseInt(this.buffer.length*peakPoint);
-		this.upExp = upExp;
-		this.downExp = downExp;
-
-		for (this.channel = 0; this.channel<this.buffer.numberOfChannels; this.channel++){
-			this.nowBuffering = this.buffer.getChannelData(this.channel);
-			for (this.i=0; this.i<this.buffer.length; this.i++){
-
-				if(this.i<=this.peakPoint){
-					this.nowBuffering[this.i] *= Math.pow(this.i/this.peakPoint, this.upExp);
-				}
-
-				else if(this.i>this.peakPoint){
-					this.nowBuffering[this.i] *= Math.pow(1-((this.i-this.peakPoint)/(this.buffer.length-this.peakPoint)), this.downExp);
-				}
-			}
-		}
-		this.convolver.buffer = this.buffer;
-	},
-
-	// add 1-(currentBufferValue) to all values in the buffer
-	// corresponding to the active portion of the square wave
-	applySquare: function(dutyCycle){
-
-		this.dutyCycle = dutyCycle;
-
-		for (this.channel = 0; this.channel<this.buffer.numberOfChannels; this.channel++){
-			this.nowBuffering = this.buffer.getChannelData(this.channel);
-			for (this.i=0; this.i<this.buffer.length; this.i++){
-
-				if(this.i<this.buffer.length*this.dutyCycle){
-					this.nowBuffering[this.i] = this.nowBuffering[this.i]+(1-this.nowBuffering[this.i]);
-				}
-			}
-		}
-
-		this.convolver.buffer = this.buffer;
-
-	},
-
-	// multiply buffer values by a sine of specified frequency
-	applySine: function(freq){
-
-		this.twoPi = Math.PI*2;
-		this.p;
-		this.v;
-		this.f = freq;
-
-		for (this.channel = 0; this.channel<this.buffer.numberOfChannels; this.channel++){
-			this.nowBuffering = this.buffer.getChannelData(this.channel);
-			for (this.i=0; this.i<this.buffer.length; this.i++){
-				this.p = this.i/this.buffer.length;
-				this.v = Math.sin(this.twoPi*(this.p*this.f));
-				if(Math.abs(this.v) <= 0.00013089969352576765){
-					this.nowBuffering[this.i] *= 0;
-				}
-				else if(Math.abs(this.v) > 0.00013089969352576765){
-					this.nowBuffering[this.i] *= this.v
-				}
-			}
-		}
-
-		this.convolver.buffer = this.buffer;
-
-	},
-
-	// multiply buffer values by a unipolar sine of specified frequency
-	applyUnipolarSine: function(freq){
-
-		this.twoPi = Math.PI*2;
-		this.p;
-		this.v;
-		this.f = freq;
-
-		for (this.channel = 0; this.channel<this.buffer.numberOfChannels; this.channel++){
-			this.nowBuffering = this.buffer.getChannelData(this.channel);
-			for (this.i=0; this.i<this.buffer.length; this.i++){
-				this.p = this.i/this.buffer.length;
-				this.v = (0.5*(Math.sin(this.twoPi*(this.p*this.f))))+0.5;
-				if(Math.abs(this.v) <= 0.00013089969352576765){
-					this.nowBuffering[this.i] *= 0;
-				}
-				else if(Math.abs(this.v) > 0.00013089969352576765){
-					this.nowBuffering[this.i] *= this.v
-				}
-			}
-		}
-
-		this.convolver.buffer = this.buffer;
-
-	},
-
-	// multiply buffer values by a random arrangment of a series of values,
-	// with the number of values specified by "quant"
-	applyQuantizedArrayBuffer: function(quant, valueArray){
-
-		this.quant = quant;
-		this.valueArray = valueArray;
-
-			this.n_samples = this.buffer.length;
-			this.curve = new Float32Array(this.n_samples);
-			this.mod = this.n_samples/this.quant;
-			this.modVal;
-			this.value;
-			this.j = 0;
-
-		for (this.channel = 0; this.channel<this.buffer.numberOfChannels; this.channel++){
-
-			this.nowBuffering = this.buffer.getChannelData(this.channel);
-
-			for (this.i=0; this.i<this.buffer.length; this.i++){
-
-				this.modVal = this.i%this.mod;
-
-				if(this.modVal==0){
-						this.value = this.valueArray[this.j%this.valueArray.length];
-						this.j++;
-					}
-
-				this.nowBuffering[this.i] *= this.value;
-
-			}
-		}
-
-		this.convolver.buffer = this.buffer;
-	},
-
-	// multiply buffer values by random values within a specified range
-	applyNoise: function(amount){
-
-		this.a = amount;
-		this.r;
-		this.v;
-
-		for (this.channel = 0; this.channel<this.buffer.numberOfChannels; this.channel++){
-			this.nowBuffering = this.buffer.getChannelData(this.channel);
-			for (this.i=0; this.i<this.buffer.length; this.i++){
-					this.r = Math.random() * 2 - 1;
-					this.v = 1-(this.r*this.a);
-					this.nowBuffering[this.i] *= this.v;
-			}
-		}
-
-		this.convolver.buffer = this.buffer;
-	},
-
-	// add 1-(currentBufferValue) to all values in the buffer
-	// corresponding to the active portion of the square wave
-	applyFloatingCycleSquare: function(cycleStart, cycleEnd){
-
-		this.cycleStart = cycleStart;
-		this.cycleEnd = cycleEnd;
-
-		for (this.channel = 0; this.channel<this.buffer.numberOfChannels; this.channel++){
-			this.nowBuffering = this.buffer.getChannelData(this.channel);
-			for (this.i=0; this.i<this.buffer.length; this.i++){
-
-				if(this.i>=this.buffer.length*this.cycleStart && this.i<=this.buffer.length*this.cycleEnd){
-					this.nowBuffering[this.i] = this.nowBuffering[this.i]+(1-this.nowBuffering[this.i]);
-				}
-			}
-		}
-
-		this.convolver.buffer = this.buffer;
-
-	},
-
-	// multiply buffer values by a frequency-modulated sine wave
-	applyFm: function(cFreq, mFreq, mGain){
-
-		this.twoPi = Math.PI*2;
-		this.p;
-		this.v;
-		this.t;
-		this.cFreq = cFreq;
-		this.mFreq = mFreq;
-		this.mGain = mGain;
-
-		for (this.channel = 0; this.channel<this.buffer.numberOfChannels; this.channel++){
-			this.nowBuffering = this.buffer.getChannelData(this.channel);
-			for (this.i=0; this.i<this.buffer.length; this.i++){
-				this.p = this.i/this.buffer.length;
-				this.t = this.p*this.twoPi
-				this.a2 = this.mGain*(Math.sin(this.mFreq*this.t));
-				this.v = Math.sin((this.cFreq+this.a2)*this.t);
-				if(Math.abs(this.v) <= 0.00013089969352576765){
-					this.nowBuffering[this.i] *= 0;
-				}
-				else if(Math.abs(this.v) > 0.00013089969352576765){
-					this.nowBuffering[this.i] *= this.v
-				}
-			}
-		}
-
-		this.convolver.buffer = this.buffer;
-
-	},
-
-	// multiply buffer values by an amplitude modulated sine wave
-	applyAm: function(cFreq, mFreq, mGain){
-
-		this.twoPi = Math.PI*2;
-		this.p;
-		this.v;
-		this.t;
-		this.cFreq = cFreq;
-		this.mFreq = mFreq;
-		this.mGain = mGain;
-
-		for (this.channel = 0; this.channel<this.buffer.numberOfChannels; this.channel++){
-			this.nowBuffering = this.buffer.getChannelData(this.channel);
-			for (this.i=0; this.i<this.buffer.length; this.i++){
-				this.p = this.i/this.buffer.length;
-				this.t = this.p*this.twoPi
-				this.a2 = this.mGain*(Math.sin(this.mFreq*this.t));
-				this.v = this.a2*Math.sin(this.cFreq*this.t);
-				if(Math.abs(this.v) <= 0.00013089969352576765){
-					this.nowBuffering[this.i] *= 0;
-				}
-				else if(Math.abs(this.v) > 0.00013089969352576765){
-					this.nowBuffering[this.i] *= this.v
-				}
-			}
-		}
-
-		this.convolver.buffer = this.buffer;
-
-	},
-
 }
-
 //--------------------------------------------------------------
 
 // adaptation of the Web Audio API DelayNode
@@ -8520,6 +10169,15 @@ MyWaveShaper.prototype = {
 		this.waveShaper.curve = this.curve;
 	},
 
+	// fill waveshaper with a single value
+	bufferShape: function(buffer){
+
+		this.nSamples = audioCtx.sampleRate;
+		this.curve = buffer.getChannelData(0);
+
+		this.waveShaper.curve = this.curve;
+	},
+
 	// fill waveshaper with random values
 	makeNoise: function(rangeMin, rangeMax){
 
@@ -8830,6 +10488,12 @@ MyWaveShaper.prototype = {
 			}
 
 		this.waveShaper.curve = this.curve;
+
+	},
+
+	setCurve( curveArray ){
+
+		this.waveShaper.curve = curveArray;
 
 	},
 

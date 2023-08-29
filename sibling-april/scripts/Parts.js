@@ -380,12 +380,10 @@ var oG3;
 var oAmG1;
 var oAmG2;
 
-function initSKPad(fund){
+function initSKPad(){
 
 	output = audioCtx.createGain();
 	output.gain.value = 1.25;
-
-	var fund = fund;
 
 	var nNodes = 5;
 
@@ -628,7 +626,7 @@ function initBassFX(){
 function initBass(){
 
 	var output = audioCtx.createGain();
-	output.gain.value = 0.125;
+	output.gain.value = 0.1;
 
 	// SOURCE
 
@@ -637,11 +635,14 @@ function initBass(){
 	eB.start();
 
 	var f = new MyBiquad("highpass", 80, 0);
+	var f2 = new MyBiquad("lowshelf", 200, 0)
+	f2.biquad.gain.value = -3;
 
 	var fxG = new MyGain(1);
 
 	eB.connect(f);
-	f.connect(output);
+	f.connect(f2);
+	f2.connect(output);
 
 	// FX CONNECTIONS
 
@@ -838,10 +839,6 @@ var mK3FX;
 function initMalletKey3(){
 
 	output = audioCtx.createGain();
-
-	var fund = 0.25*432*(P5);
-	var c1 = new MyArray([1/M2, M2*2, P5, M6, P5*2]);
-	c1 = c1.multiply(fund);
 
 	var rateArray = new MyArray([0.125, 0.25, 0.125, 0.25, 0.125]);
 	rateArray.multiply(32);

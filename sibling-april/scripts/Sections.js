@@ -4,7 +4,7 @@
 
 //--------------------------------------------------------------
 
-function playMainKey(startTime, now, mmKey, octave, possOnsetDurations){
+function playMainKey(startTime, now, mmKey, fund, octave, possOnsetDurations){
 
 	var startTime = startTime;
 	var now = now;
@@ -12,7 +12,7 @@ function playMainKey(startTime, now, mmKey, octave, possOnsetDurations){
 	var possOnsetDurations = possOnsetDurations;
 	var octave = octave;
 
-	var fund = octave*432*(P5);
+	var fund = fund * octave;
 
 	var sequenceLength = 8;
 	var mC1 = new MyArray([1/M2, M2, P5, M6]);
@@ -47,7 +47,7 @@ function playMainKey(startTime, now, mmKey, octave, possOnsetDurations){
 
 //--------------------------------------------------------------
 
-function playMainKeyOffline(startTime, now, mmKey, octave, possOnsetDurations){
+function playMainKeyOffline(startTime, now, mmKey, fund, octave, possOnsetDurations){
 
 	var startTime = startTime;
 	var now = now;
@@ -55,7 +55,7 @@ function playMainKeyOffline(startTime, now, mmKey, octave, possOnsetDurations){
 	var possOnsetDurations = possOnsetDurations;
 	var octave = octave;
 
-	var fund = octave*432*(P5);
+	var fund = fund * octave;
 
 	var sequenceLength = 8;
 	var mC1 = new MyArray([1/M2, M2, P5, M6]);
@@ -152,15 +152,6 @@ function eLines(startTime, now){
 // SK PAD
 
 //--------------------------------------------------------------
-
-var sKFund = 0.25*432*(P5);
-
-var c1 = new MyArray([1/M2, M2*2, P5, M6, P5*2]);
-var c2 = new MyArray([1, P5, P4, 1/m3, P4*2]);
-c1 = c1.multiply(sKFund);
-c2 = c2.multiply(sKFund);
-
-var cArray = [c1, c2];
 
 function playSKPad(startTime, now){
 
@@ -301,7 +292,7 @@ function bassLineSection(fund, startTime, now){
 	var sL = 64;
 	var fxSL = 64;
 	var onsetBase = 2;
-	var onsetExpArray = [-3, -2];
+	var onsetExpArray = [-2, -3];
 	var durationBase = 2;
 	var durationExpArray = [0, -1, -2, -3];
 	var c1 = [M2, P4, M6, P5];
@@ -312,31 +303,31 @@ function bassLineSection(fund, startTime, now){
 	// inst, sequenceLength, fund, iArray, onsetBase, onsetExpArray, durationBase, durationExpArray, timbreMin, timbreMax
 
 	// A
-		bassSequence(startTime, now, eB, sL, fund, c1, onsetBase, onsetExpArray, durationBase, durationExpArray, 0.05, 0.08);
-		// fxSequence(startTime+s1, now, eBFX1A, fxSL);
+		bassSequence(startTime, now, eB, sL, fund, c1, onsetBase, onsetExpArray, durationBase, durationExpArray, 0.03, 0.065);
+		fxSequence(startTime+s1, now, eBFX1A, fxSL);
 
 
 	// B
-		bassSequence(startTime+s2, now, eB, sL, fund, c2, onsetBase, onsetExpArray, durationBase, durationExpArray, 0.05, 0.08);
-		// fxSequence(startTime+s2, now, eBFX1A, fxSL);
+		bassSequence(startTime+s2, now, eB, sL, fund, c2, onsetBase, onsetExpArray, durationBase, durationExpArray, 0.03, 0.065);
+		fxSequence(startTime+s2, now, eBFX1A, fxSL);
 
 
 	// A
-		bassSequence(startTime+s3, now, eB, sL, fund, c1, onsetBase, onsetExpArray, durationBase, durationExpArray, 0.05, 0.08);
+		bassSequence(startTime+s3, now, eB, sL, fund, c1, onsetBase, onsetExpArray, durationBase, durationExpArray, 0.03, 0.065);
 		fxSequence(startTime+s3, now, eBFX1A, fxSL);
 
 
 	// B
-		bassSequence(startTime+s4, now, eB, sL, fund, c2, onsetBase, onsetExpArray, durationBase, durationExpArray, 0.05, 0.08);
+		bassSequence(startTime+s4, now, eB, sL, fund, c2, onsetBase, onsetExpArray, durationBase, durationExpArray, 0.03, 0.065);
 		fxSequence(startTime+s4, now, eBFX1A, fxSL);
 
 	// A
-		bassSequence(startTime+s5, now, eB, sL, fund/2, c1, onsetBase, onsetExpArray, durationBase, durationExpArray, 0.05, 0.08);
+		bassSequence(startTime+s5, now, eB, sL, fund/2, c1, onsetBase, onsetExpArray, durationBase, durationExpArray, 0.03, 0.065);
 		fxSequence(startTime+s5, now, eBFX1A, fxSL);
 
 
 	// B
-		bassSequence(startTime+s6, now, eB, sL, fund/2, c2, onsetBase, onsetExpArray, durationBase, durationExpArray, 0.05, 0.08);
+		bassSequence(startTime+s6, now, eB, sL, fund/2, c2, onsetBase, onsetExpArray, durationBase, durationExpArray, 0.03, 0.065);
 		fxSequence(startTime+s6, now, eBFX1A, fxSL);
 
 }
@@ -347,11 +338,12 @@ function bassLineSection(fund, startTime, now){
 
 //--------------------------------------------------------------
 
-function playFlutterXylophone(startTime, now){
+function playFlutterXylophone(startTime, fund, now){
 
 	var startTime = startTime;
 	var now = now;
-	var fund = 0.25*432*P5;
+
+	var fund = 0.25*fund;
 
 	var scaleArray = [1/M2, M2*2, P5, M6, P5*2];
 	var scaleArray2 = [1, P5, P4, 1/m3, P4*2];
@@ -398,13 +390,13 @@ function fKChordPlayer(time, idx, chord, fund, key){
 
 //--------------------------------------------------------------
 
-function playMalletKeys(startTime, duration, now){
+function playMalletKeys(startTime, duration, fund, now){
 
 	var startTime = startTime;
 	var duration = duration;
 	var now = now;
 
-	var fund = 0.25*432*(P5);
+	var fund = 0.25*fund;
 
 	var c1 = new MyArray([1/M2, M2*2, P5, M6, P5*2]);
 	var c2 = new MyArray([1, P5, P4, 1/m3, P4*2]);
@@ -469,7 +461,7 @@ function playMalletKeys(startTime, duration, now){
 
 //--------------------------------------------------------------
 
-function playMMRibbons(startTime, now, mmKey, octave, possOnsetDurations){
+function playMMRibbons(startTime, now, mmKey, fund, octave, possOnsetDurations){
 
 	var startTime = startTime;
 	var now = now;
@@ -477,7 +469,7 @@ function playMMRibbons(startTime, now, mmKey, octave, possOnsetDurations){
 	var possOnsetDurations = possOnsetDurations;
 	var octave = octave;
 
-	var fund = octave*432*(P5);
+	var fund = octave*fund;
 
 	var sequenceLength = 8;
 	var c1 = new MyArray([m7, M2*2, P5, M6, P5*2]);
@@ -515,6 +507,6 @@ function playMMRibbons(startTime, now, mmKey, octave, possOnsetDurations){
 	dR2A.startAtTime(startTime+now);
 	dR3A.startAtTime(startTime+now);
 
-	mmKey.stopAtTime(16+startTime+now);
+	mmKey.stopAtTime(32+startTime+now);
 
 }

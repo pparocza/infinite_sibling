@@ -5,7 +5,28 @@ var offlineBuffer;
 
 setTimeout(function(){bufferLoaded();}, 1000);
 
+var fund;
+var sKFund;
+
+var c1 = new MyArray([1/M2, M2*2, P5, M6, P5*2]);
+var c2 = new MyArray([1, P5, P4, 1/m3, P4*2]);
+
+var cArray;
+
+function initFund()
+{
+	fund = randomFloat(432*P4, 432*m6);
+	sKFund = 0.25 * fund;
+
+	c1 = c1.multiply(sKFund);
+	c2 = c2.multiply(sKFund);
+
+	cArray = [c1, c2];
+}
+
 function bufferLoaded(){
+
+	initFund();
 
 	var gain = audioCtx.createGain();
 	gain.gain.value = 5;
@@ -36,9 +57,6 @@ function bufferLoaded(){
 	gain.connect(fadeFilter.input);
 	fadeFilter.connect(f);
 	f.connect(audioCtx.destination);
-
-	// INITIALIZE
-	var fund = 432;
 
 	mixerInit();
 
@@ -83,12 +101,11 @@ function runPatch(){
 function runPatchOnline(){
 
 	var now = audioCtx.currentTime;
-	var fund = 432*P5;
 
 	mixerAutomation(now);
 
 	// KEY
-	playMainKey(0, now, mmKey1, 1, [0.125, 0.25]);
+	playMainKey(0, now, mmKey1, fund, 1, [0.125, 0.25]);
 
 	// ELINE NOISE
 	eLines(16, now);
@@ -103,13 +120,13 @@ function runPatchOnline(){
 	bassLineSection(fund, 48, now);
 
 	// FLUTTER XYLOPHONE
-	setTimeout(function(){playFlutterXylophone(80, now);}, 80*1000);
+	setTimeout(function(){playFlutterXylophone(80, fund, now);}, 80*1000);
 
 	// KEY MALLETS
-	playMalletKeys(80, 32, now);
+	playMalletKeys(80, 32, fund, now);
 
 	// KEY RIBBON
-	setTimeout(function(){playMMRibbons(112, now, mmKey2, 2, [0.0625]);}, 112*1000);
+	setTimeout(function(){playMMRibbons(80, now, mmKey2, fund, 2, [0.0625]);}, 80*1000);
 
 	// DELAY FADE
 	dE.startAtTime(20+now);
@@ -121,12 +138,11 @@ function runPatchOnline(){
 function runPatchOffline(){
 
 	var now = audioCtx.currentTime;
-	var fund = 432*P5;
 
 	mixerAutomation(now);
 
 	// KEY
-	playMainKeyOffline(0, now, mmKey1, 1, [0.125, 0.25]);
+	playMainKeyOffline(0, now, mmKey1, fund, 1, [0.125, 0.25]);
 
 	// ELINE NOISE
 	eLines(16, now);

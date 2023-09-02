@@ -282,6 +282,8 @@ var s3 = s2+8;
 var s4 = s3+8;
 var s5 = s4+8
 var s6 = s5+8;
+var s7 = s6+8;
+var s8 = s6+8;
 
 function bassLineSection(fund, startTime, now){
 
@@ -329,6 +331,14 @@ function bassLineSection(fund, startTime, now){
 	// B
 		bassSequence(startTime+s6, now, eB, sL, fund/2, c2, onsetBase, onsetExpArray, durationBase, durationExpArray, 0.03, 0.065);
 		fxSequence(startTime+s6, now, eBFX1A, fxSL);
+
+	// A
+		bassSequence(startTime+s7, now, eB, sL, fund/2, c1, onsetBase, onsetExpArray, durationBase, durationExpArray, 0.03, 0.065);
+		fxSequence(startTime+s7, now, eBFX1A, fxSL);
+
+	// B
+		bassSequence(startTime+s8, now, eB, sL, fund/2, c2, onsetBase, onsetExpArray, durationBase, durationExpArray, 0.03, 0.065);
+		fxSequence(startTime+s8, now, eBFX1A, fxSL);
 
 }
 
@@ -507,6 +517,6 @@ function playMMRibbons(startTime, now, mmKey, fund, octave, possOnsetDurations){
 	dR2A.startAtTime(startTime+now);
 	dR3A.startAtTime(startTime+now);
 
-	mmKey.stopAtTime(32+startTime+now);
+	mmKey.stopAtTime(112+startTime+now);
 
 }

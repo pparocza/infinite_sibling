@@ -181,8 +181,8 @@ function mixerAutomation(now){
 	bLDG.gain.gain.setValueAtTime(0.3, now+64);
 	bLF2.biquad.frequency.setValueAtTime(22000, now+64);
 
-	bLG.gain.gain.setValueAtTime(0, now+80);
-	bLFXG.gain.gain.setValueAtTime(0, now+80);
+	bLG.gain.gain.setValueAtTime(0, now+96);
+	bLFXG.gain.gain.setValueAtTime(0, now+96);
 
 }
 

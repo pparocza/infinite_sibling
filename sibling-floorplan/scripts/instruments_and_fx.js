@@ -1,11 +1,11 @@
 // template for an instrument or effect object
-function InstrumentConstructorTemplate(){
+function Instrument(){
 
 	this.output = audioCtx.createGain();
 
 }
 
-InstrumentConstructorTemplate.prototype = {
+Instrument.prototype = {
 
 	output: this.output,
 
@@ -298,14 +298,170 @@ Effect.prototype = {
 
 //--------------------------------------------------------------
 
+class InstrumentClass{
+	input;
+	output;
+
+	constructor(){
+		this.input = audioCtx.createGain();
+		this.output = audioCtx.createGain();
+	}
+
+	connect(audioNode){
+		if(audioNode.hasOwnProperty('input') == 1){
+			this.output.connect(audioNode.input)
+		}
+		else{
+			this.output.connect(audioNode);
+		}
+	}
+}
+
+class HeavenRamp extends InstrumentClass{
+    buffer;
+    lfo;
+    rampLFO;
+    sqB;
+    invSaw;
+
+    constructor(fund){
+        super();
+
+        this.buffer = new MyBuffer2(1, 1, audioCtx.sampleRate);
+        this.buffer.noise().fill(0);
+        this.buffer.loop = true;
+        this.buffer.playbackRate = 1;
+    
+        var lfoRates = [1/*, 2, 4*/] // original: 2
+        var rampRates = [0.5, 0.25, 0.125] // original: 0.25
+        var rateIndex = 2;
+    
+        this.lfo = new MyBuffer2(1, 1, audioCtx.sampleRate);
+        this.lfo.sine(1, 1).fill(0);
+        this.lfo.playbackRate = lfoRates[randomInt(0, lfoRates.length)]
+        this.lfo.loop = true;
+    
+        this.rampLFO = new MyBuffer2(1, 1, audioCtx.sampleRate);
+        this.rampLFO.playbackRate = rampRates[randomInt(0, rampRates.length)];
+        this.rampLFO.sawtooth(8).fill(0);
+        var rampGain = new MyGain(0);
+        this.rampLFO.connect(rampGain.gain.gain);
+        this.rampLFO.loop = true;
+    
+        var gain = new MyGain(0)
+    
+        var inverseGain = new MyGain(-1)
+    
+        var pan = new MyPanner2(0);
+    
+        // 442; // randomFloat(400, 475)
+    
+        // here is where if you did an actual frequency modulation and modulated 
+        // the modulation gain (modulate modulate modulate), you could get a more 
+        // active contour of brightness (can't since you can't fm the convolution)
+        var convolver = new MyConvolver();
+        var cBuffer = new MyBuffer(1, 1, audioCtx.sampleRate);
+        cBuffer.makeFm(fund * 0.5, fund * 0.5 * 0.501, 0.25);
+        convolver.setBuffer(cBuffer.buffer);
+    
+        var convolver2 = new MyConvolver();
+        var cBuffer2 = new MyBuffer(1, 1, audioCtx.sampleRate);
+        cBuffer2.makeFm(fund * M3, fund * 0.5 * M3, 0.125);
+        convolver2.setBuffer(cBuffer2.buffer);
+        convolver2.output.gain.gain = 0.125;
+    
+        var convolver3 = new MyConvolver();
+        var cBuffer3 = new MyBuffer(1, 1, audioCtx.sampleRate);
+        cBuffer3.makeFm(fund * P5 * 0.5, fund * 0.5 * 0.501 * P5, 0.5);
+        convolver3.setBuffer(cBuffer3.buffer);
+    
+        var convolver4 = new MyConvolver();
+        var cBuffer4 = new MyBuffer(1, 1, audioCtx.sampleRate);
+        cBuffer4.makeFm(fund * M3 * 0.5, fund * 0.5 * 0.501 * M3, 0.25);
+        convolver4.setBuffer(cBuffer4.buffer);
+    
+        var delay = new MyStereoDelay(0.25, 0.5, 0.25, 0.5);
+    
+        var sc = new SchwaBox("i");
+        sc.output.gain.gain = 0/*0.00625*/;
+    
+        this.buffer.connect(convolver); this.buffer.connect(convolver2); this.buffer.connect(convolver3); this.buffer.connect(convolver4);
+        convolver.connect(gain); convolver2.connect(gain); convolver3.connect(gain); convolver4.connect(gain);
+        gain.connect(pan);
+        this.lfo.connect(inverseGain); 
+        inverseGain.connect(pan.gainR.gain);
+        this.lfo.connect(gain.gain.gain); 
+        this.lfo.connect(pan.gainL.gain);
+        pan.connect(rampGain);
+        rampGain.connect(delay);
+        delay.connect(masterGain)
+    
+        delay.connect(sc);
+        // sc.connect(masterGain)
+    
+        var reverb = new MyConvolver()
+        var rBuf = new MyBuffer2(2, 1, audioCtx.sampleRate);
+        rBuf.noise().fill(0); rBuf.noise().fill(1);
+        rBuf.inverseSawtooth(3).multiply(0); rBuf.inverseSawtooth(3).multiply(1);
+        reverb.setBuffer(rBuf.buffer);
+        reverb.output.gain.gain = 0.1;
+    
+        delay.connect(reverb);
+        // rampGain.connect(reverb);
+        // sc.connect(reverb);
+        reverb.connect(masterGain);
+        
+        var squareSc = new SchwaBox("ae");
+        this.sqB = new MyBuffer2(1, 1, audioCtx.sampleRate);
+        this.sqB.floatingCycleSquare(0.1, 0.3).add(0); this.sqB.floatingCycleSquare(0.6, 0.8).add(0);
+        this.sqB.playbackRate = 0.25;
+        this.sqB.loop = true;
+        var sqG = new MyGain(0);
+    
+        rampGain.connect(squareSc); 
+        // squareSc.connect(sqG); sqB.connect(sqG.gain.gain);
+        sqG.connect(delay);
+        sqG.connect(reverb);
+    
+        this.invSaw = new MyBuffer2(1, 1, audioCtx.sampleRate);
+        this.invSaw.sine(440).fill(0);
+        this.invSaw.inverseSawtooth(4).multiply(0);
+        this.invSaw.loop = true;
+        this.invSaw.playbackRate = 10;
+        // invSaw.connect(masterGain);
+    }
+
+    start(startTime){
+        this.buffer.startAtTime(startTime);
+        this.lfo.startAtTime(startTime);
+        this.rampLFO.startAtTime(startTime);
+        this.sqB.startAtTime(startTime);
+        this.invSaw.startAtTime(startTime);
+    }
+}
+
+class BasicOsc extends InstrumentClass{
+	osc;
+
+	constructor(){
+		super();
+		this.osc = new MyBuffer2(1, 1, audioCtx.sampleRate);
+		this.osc.sine(432, 1).fill(0);
+		this.osc.playbackRate = 1;
+		this.osc.connect(this.output);
+	}
+
+	start(){
+		this.osc.start();
+	}
+}
+
 // object within which to design signal-generating chains, which are
 // stored as methods
 function Instrument(){
-
 	this.input = audioCtx.createGain();
 	this.output = audioCtx.createGain();
 	this.startArray = [];
-
 }
 
 Instrument.prototype = {

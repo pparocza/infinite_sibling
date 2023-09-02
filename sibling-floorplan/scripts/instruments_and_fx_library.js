@@ -1,11 +1,11 @@
 // template for an instrument or effect object
-function InstrumentConstructorTemplate(){
+function Instrument(){
 
 	this.output = audioCtx.createGain();
 
 }
 
-InstrumentConstructorTemplate.prototype = {
+Instrument.prototype = {
 
 	output: this.output,
 

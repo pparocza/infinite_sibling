@@ -5,7 +5,7 @@ import { IS_Oscillator } from "./nodes/IS_Oscillator.js";
 import { IS_BiquadFilterNode } from "./nodes/IS_BiquadFilterNode.js";
 
 // utilities
-import { mToF } from "/utilities/MidiToFrequency.js";
+import { mToF } from "./utilities/MidiToFrequency.js";
 
 export class InfiniteSibling
 {

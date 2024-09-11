@@ -1,4 +1,4 @@
-import { IS_Node } from "/IS_Node.js";
+import { IS_Node } from "./IS_Node.js";
 
 export class IS_BiquadFilterNode extends IS_Node
 {

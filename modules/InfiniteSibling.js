@@ -1,5 +1,5 @@
 const iSAudioContext = new AudioContext();
-import { IS_Oscillator } from "./nodes/IS_Oscillator.js";
+import { IS_Oscillator } from "/nodes/IS_Oscillator.js";
 
 export class InfiniteSibling
 {

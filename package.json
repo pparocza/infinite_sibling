@@ -1,6 +1,6 @@
 {
   "name": "infinitesibling",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "generative audio tools using the Web Audio API",
   "main": "index.js",
   "scripts": {

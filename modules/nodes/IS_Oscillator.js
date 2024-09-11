@@ -1,8 +1,8 @@
 export class IS_Oscillator
 {
-    constructor(type = "sine", frequency = 440)
+    constructor(audioContext, type = "sine", frequency = 440)
     {
-        this.oscillator = iSAudioContext.createOscillator();
+        this.oscillator = audioContext.createOscillator();
         this.oscillator.frequency.value = frequency;
         this.oscillator.type = type;
     }

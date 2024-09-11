@@ -11,7 +11,7 @@ export class InfiniteSibling
 
     osc(type = "sine", frequency = 440)
     {
-        return new IS_Oscillator(type, frequency);
+        return new IS_Oscillator(this.audioContext, type, frequency);
     }
 
     start()

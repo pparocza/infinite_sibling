@@ -1,14 +1,50 @@
+const iSAudioContext = new AudioContext();
+
 export class InfiniteSibling
 {
-    isWds(string)
+    constructor()
     {
-        const AudioContext = window.AudioContext || window.webkitAudioContext;
-        const audioContext = new AudioContext();
+        this.output = iSAudioContext.destination;
+        this.audioContext = iSAudioContext;
+    }
 
-        // test 1
-        console.log("Run Function!");
-        // var oscillator = audioContext.createOscillator();
-        console.log("Oscillator created!");
-        return string;
+    osc(type = "sine", frequency = 440)
+    {
+        return new IS_Oscillator(type, frequency);
+    }
+
+    start()
+    {
+        this.audioContext.resume();
+    }
+
+    stop()
+    {
+        this.audioContext.close();
+    }
+}
+
+export class IS_Oscillator
+{
+    constructor(type = "sine", frequency = 440)
+    {
+        this.oscillator = iSAudioContext.createOscillator();
+        this.oscillator.frequency.value = frequency;
+        this.oscillator.type = type;
+    }
+
+    start()
+    {
+        this.oscillator.start(iSAudioContext.currentTime);
+    }
+
+    stop()
+    {
+        this.oscillator.stop(iSAudioContext.currentTime);
+    }
+
+    connect(audioNode)
+    {
+        this.oscillator.connect(audioNode);
     }
 }

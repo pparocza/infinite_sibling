@@ -1,4 +1,5 @@
 const iSAudioContext = new AudioContext();
+import { IS_Oscillator } from "./nodes/IS_Oscillator.js";
 
 export class InfiniteSibling
 {
@@ -21,30 +22,5 @@ export class InfiniteSibling
     stop()
     {
         this.audioContext.close();
-    }
-}
-
-export class IS_Oscillator
-{
-    constructor(type = "sine", frequency = 440)
-    {
-        this.oscillator = iSAudioContext.createOscillator();
-        this.oscillator.frequency.value = frequency;
-        this.oscillator.type = type;
-    }
-
-    start()
-    {
-        this.oscillator.start(iSAudioContext.currentTime);
-    }
-
-    stop()
-    {
-        this.oscillator.stop(iSAudioContext.currentTime);
-    }
-
-    connect(audioNode)
-    {
-        this.oscillator.connect(audioNode);
     }
 }

@@ -1,6 +1,13 @@
+import {mToF} from "./utilities/MidiToFrequency";
+
 const iSAudioContext = new AudioContext();
+
+// audio nodes
 import { IS_Oscillator } from "./nodes/IS_Oscillator.js";
 import { IS_BiquadFilterNode } from "./nodes/IS_BiquadFilterNode.js";
+
+// utilities
+import { mToF } from "/utilities/MidiToFrequency.js";
 
 export class InfiniteSibling
 {
@@ -28,6 +35,11 @@ export class InfiniteSibling
     biquadFilter(type = "lowpass", frequency = 220, Q = 1, gain = 1, detune = 0)
     {
         return new IS_BiquadFilterNode(this.audioContext, type, frequency, Q, gain, detune);
+    }
+
+    mToF(midiNoteNumber)
+    {
+        return mToF(midiNoteNumber);
     }
 
 }

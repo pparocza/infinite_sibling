@@ -1,10 +1,12 @@
-export class IS_Oscillator
+import { IS_Node } from "./IS_Node.js";
+
+export class IS_Oscillator extends IS_Node
 {
     constructor(audioContext, type = "sine", frequency = 440)
     {
-        this.audioContext = audioContext;
+        super(audioContext);
 
-        this.oscillator = audioContext.createOscillator();
+        this.oscillator = this.audioContext.createOscillator();
         this.oscillator.frequency.value = frequency;
         this.oscillator.type = type;
     }

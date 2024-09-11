@@ -1,8 +1,10 @@
-export class IS_BiquadFilterNode
+import { IS_Node } from "/IS_Node.js";
+
+export class IS_BiquadFilterNode extends IS_Node
 {
     constructor(audioContext, type = "lowpass", frequency = 220, Q = 1, gain = 1, detune = 0)
     {
-        this.audioContext = audioContext;
+        super(audioContext);
 
         this.filter = this.audioContext.createBiquadFilter();
         this.filter.type = type;

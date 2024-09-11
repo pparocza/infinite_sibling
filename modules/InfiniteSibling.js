@@ -1,5 +1,3 @@
-import {mToF} from "./utilities/MidiToFrequency";
-
 const iSAudioContext = new AudioContext();
 
 // audio nodes

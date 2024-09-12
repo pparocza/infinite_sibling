@@ -1,6 +1,6 @@
 import { IS_StartableNode } from "./IS_StartableNode.js";
 
-const IS_OscFilterParamNames =
+const IS_OscillatorParamNames =
 {
     type: "type",
     frequency: "frequency",
@@ -15,7 +15,7 @@ export class IS_Oscillator extends IS_StartableNode
 
         this.node = this.siblingContext.audioContext.createOscillator();
 
-        this.paramNames = IS_OscFilterParamNames;
+        this.paramNames = IS_OscillatorParamNames;
 
         // TODO: eventually use setParamValue so values persist when node is destroyed in order to be re-started
         this.setParam(this.paramNames.type, type);

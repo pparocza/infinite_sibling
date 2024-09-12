@@ -32,6 +32,14 @@ export class IS_Scale extends IS_Array
         }
     }
 
+    printNotes()
+    {
+        for(let i = 0 ; i < this.value.length; i++)
+        {
+            console.log(this.tonics[this.value[i]]);
+        }
+    }
+
     transpose(tonic)
     {
         this.tonic = tonic;

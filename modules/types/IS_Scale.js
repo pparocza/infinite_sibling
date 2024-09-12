@@ -1,10 +1,10 @@
 import { IS_Array } from "./IS_Array.js";
-import { IS_KeyboardNotes } from "./IS_KeyboardNotes.js";
-import { IS_Modes } from "./IS_Modes.js";
+import { IS_KeyboardNote } from "./IS_KeyboardNote.js";
+import { IS_Mode } from "./IS_Mode.js";
 
 export class IS_Scale extends IS_Array
 {
-    constructor(tonic = IS_KeyboardNotes.C, mode = IS_Modes.major)
+    constructor(tonic = IS_KeyboardNote.C, mode = IS_Mode.major)
     {
         super();
         this.tonic = tonic;
@@ -15,12 +15,12 @@ export class IS_Scale extends IS_Array
 
     get tonicIndex()
     {
-        return IS_KeyboardNotes[this.tonic];
+        return IS_KeyboardNote[this.tonic];
     }
 
     get modeArray()
     {
-        return IS_Modes[this.mode];
+        return IS_Mode[this.mode];
     }
 
     generateScale()
@@ -36,7 +36,7 @@ export class IS_Scale extends IS_Array
 
     printNotes()
     {
-        let noteKeys = Object.keys(IS_KeyboardNotes);
+        let noteKeys = Object.keys(IS_KeyboardNote);
 
         for(let i = 0 ; i < this.value.length; i++)
         {

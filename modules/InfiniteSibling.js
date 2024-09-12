@@ -4,11 +4,13 @@ const iSAudioContext = new AudioContext();
 import { IS_Oscillator } from "./nodes/IS_Oscillator.js";
 import { IS_BiquadFilterNode } from "./nodes/IS_BiquadFilterNode.js";
 
+// enums
+import { IS_Interval } from "./types/IS_Interval.js";
+import { IS_KeyboardNote } from "./types/IS_KeyboardNote.js";
+import { IS_Mode } from "./types/IS_Mode.js";
+
 // types
 import { IS_Scale } from "./types/IS_Scale.js";
-import { IS_Interval } from "./types/IS_Interval.js";
-import { IS_KeyboardNotes } from "./types/IS_KeyboardNotes.js";
-import { IS_Modes } from "./types/IS_Modes.js";
 
 // utilities
 import { IS_Random } from "./utilities/IS_Random.js";
@@ -56,7 +58,7 @@ export class InfiniteSibling
         return IS_Random.randomFloat(min, max);
     }
 
-    scale(tonic = IS_KeyboardNotes.C, mode = IS_Modes.major)
+    scale(tonic = IS_KeyboardNote.C, mode = IS_Mode.major)
     {
         return new IS_Scale(tonic, mode);
     }

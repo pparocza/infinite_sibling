@@ -1,4 +1,4 @@
-export const IS_Interval =
+const IS_Interval =
 {
     m2: 25/24,
     M2: 9/8,

@@ -26,7 +26,7 @@ export class IS_Scale extends IS_Array
         let tonic = this.tonicIndex;
         let mode = this.modeArray;
 
-        for(let i = 0; i < mode; i++)
+        for(let i = 0; i < mode.length; i++)
         {
             this.value[i] = mode[i] + tonic;
         }

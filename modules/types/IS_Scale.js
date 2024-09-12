@@ -7,6 +7,8 @@ export class IS_Scale extends IS_Array
         super();
         this.tonic = tonic;
         this.mode = mode.toLowerCase();
+
+        this.generateScale(this.tonic, this.mode);
     }
 
     get tonicIndex()

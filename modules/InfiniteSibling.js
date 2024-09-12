@@ -1,10 +1,16 @@
+import {IS_IntervalRatio} from "./types/IS_IntervalRatio";
+
 const iSAudioContext = new AudioContext();
 
 // audio nodes
 import { IS_Oscillator } from "./nodes/IS_Oscillator.js";
 import { IS_BiquadFilterNode } from "./nodes/IS_BiquadFilterNode.js";
 
+// types
+import { IS_Scale } from "./types/IS_Scale.js";
+
 // utilities
+import { IS_Random } from "./utilities/IS_Random.js";
 import { mToF } from "./utilities/MidiToFrequency.js";
 
 export class InfiniteSibling
@@ -40,4 +46,22 @@ export class InfiniteSibling
         return mToF(midiNoteNumber);
     }
 
+    randomInt(min, max)
+    {
+        return IS_Random.randomInt(min, max);
+    }
+    randomFloat(min, max)
+    {
+        return IS_Random.randomFloat(min, max);
+    }
+
+    scale(tonic = "C", mode = "major")
+    {
+        return new IS_Scale(tonic, mode);
+    }
+
+    intervalRatio(intervalString)
+    {
+        return IS_IntervalRatio[intervalString];
+    }
 }

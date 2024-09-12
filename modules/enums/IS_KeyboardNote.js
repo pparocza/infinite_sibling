@@ -14,4 +14,4 @@ const IS_KeyboardNote =
     "B": 11
 }
 
-export default IS_KeyboardNote;
+export { IS_KeyboardNote };

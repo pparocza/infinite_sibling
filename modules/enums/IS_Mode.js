@@ -8,4 +8,4 @@ const IS_Mode =
     mixolydian: [0, 2, 4, 5, 7, 9, 10, 12]
 }
 
-export default IS_Mode;
+export { IS_Mode };

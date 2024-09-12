@@ -13,4 +13,4 @@ const IS_Interval =
     M7: 15/8
 }
 
-export default IS_Interval;
+export { IS_Interval };

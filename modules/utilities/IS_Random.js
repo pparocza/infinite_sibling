@@ -1,4 +1,4 @@
-export const IS_Random =
+const IS_Random =
 {
     /*
     return a random integer within the specified range
@@ -46,3 +46,5 @@ export const IS_Random =
         return envelopeArray;
     }
 }
+
+export { IS_Random };

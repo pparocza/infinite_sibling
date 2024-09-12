@@ -4,9 +4,9 @@ export { IS_Oscillator } from "/modules/nodes/IS_Oscillator.js";
 export { IS_BiquadFilterNode } from "/modules/nodes/IS_BiquadFilterNode.js";
 
 // enums
-export IS_Interval from "./modules/enums/IS_Interval.js";
-export IS_KeyboardNote from "./modules/enums/IS_KeyboardNote.js";
-export IS_Mode from "./modules/enums/IS_Mode.js";
+export { IS_Interval } from "./modules/enums/IS_Interval.js";
+export { IS_KeyboardNote } from "./modules/enums/IS_KeyboardNote.js";
+export { IS_Mode } from "./modules/enums/IS_Mode.js";
 
 // types
 export { IS_Array } from "/modules/types/IS_Array.js"

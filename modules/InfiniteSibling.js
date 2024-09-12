@@ -5,9 +5,9 @@ import { IS_Oscillator } from "./nodes/IS_Oscillator.js";
 import { IS_BiquadFilterNode } from "./nodes/IS_BiquadFilterNode.js";
 
 // enums
-import { IS_Interval } from "./types/IS_Interval.js";
-import { IS_KeyboardNote } from "./types/IS_KeyboardNote.js";
-import { IS_Mode } from "./types/IS_Mode.js";
+import "./enums/IS_Interval.js";
+import "./enums/IS_KeyboardNote.js";
+import "./enums/IS_Mode.js";
 
 // types
 import { IS_Scale } from "./types/IS_Scale.js";

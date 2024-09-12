@@ -10,7 +10,7 @@ export { IS_BiquadFilterNode } from "./modules/nodes/IS_BiquadFilterNode.js";
 export { IS_Gain } from "./modules/nodes/IS_Gain.js";
 export { IS_Node } from "./modules/nodes/IS_Node.js";
 export { IS_Oscillator } from "./modules/nodes/IS_Oscillator.js";
-export { IS_StartableNode } from "./modules/nodes/IS_StartableNode";
+export { IS_StartableNode } from "./modules/nodes/IS_StartableNode.js";
 
 // types
 export { IS_Array } from "./modules/types/IS_Array.js"

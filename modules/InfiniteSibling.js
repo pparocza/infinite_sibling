@@ -1,5 +1,3 @@
-import {IS_IntervalRatio} from "./types/IS_IntervalRatio";
-
 const iSAudioContext = new AudioContext();
 
 // audio nodes
@@ -8,6 +6,7 @@ import { IS_BiquadFilterNode } from "./nodes/IS_BiquadFilterNode.js";
 
 // types
 import { IS_Scale } from "./types/IS_Scale.js";
+import {IS_IntervalRatio} from "./types/IS_IntervalRatio.js";
 
 // utilities
 import { IS_Random } from "./utilities/IS_Random.js";

@@ -1,4 +1,4 @@
-import { IS_Array } from "./IS_Array";
+import { IS_Array } from "./IS_Array.js";
 
 export class IS_Scale extends IS_Array
 {

@@ -1,6 +1,7 @@
 const iSAudioContext = new AudioContext();
 
 // audio nodes
+import { IS_Gain } from "./nodes/IS_Gain.js";
 import { IS_Oscillator } from "./nodes/IS_Oscillator.js";
 import { IS_BiquadFilterNode } from "./nodes/IS_BiquadFilterNode.js";
 
@@ -20,10 +21,16 @@ export class InfiniteSibling
 {
     constructor()
     {
-        this.output = iSAudioContext.destination;
         this.audioContext = iSAudioContext;
+        this.destination = this.audioContext.destination;
+
+        this.output = this.createGain(1);
+        this.output.connect(this.destination);
     }
 
+    /*
+    Audio Status
+     */
     start()
     {
         this.audioContext.resume();
@@ -34,16 +41,35 @@ export class InfiniteSibling
         this.audioContext.close();
     }
 
-    osc(type = "sine", frequency = 440)
+    /*
+    Audio Settings
+     */
+    set outputGain(value)
     {
-        return new IS_Oscillator(this.audioContext, type, frequency);
+        this.output.setParam("gain", value);
     }
 
-    biquadFilter(type = "lowpass", frequency = 220, Q = 1, gain = 1, detune = 0)
+    /*
+    Node Creation
+     */
+    createOsc(type = "sine", frequency = 440, detune = 0)
     {
-        return new IS_BiquadFilterNode(this.audioContext, type, frequency, Q, gain, detune);
+        return new IS_Oscillator(this, type, frequency, detune);
     }
 
+    createFilter(type = "lowpass", frequency = 220, Q = 1, gain = 1, detune = 0)
+    {
+        return new IS_BiquadFilterNode(this, type, frequency, Q, gain, detune);
+    }
+
+    createGain(gainValue = 1)
+    {
+        return new IS_Gain(this, gainValue);
+    }
+
+    /*
+    Utilities
+     */
     mToF(midiNoteNumber)
     {
         return mToF(midiNoteNumber);

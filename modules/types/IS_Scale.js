@@ -1,6 +1,7 @@
 import { IS_Array } from "./IS_Array.js";
-import { IS_KeyboardNote } from "../enums/IS_KeyboardNote.js";
-import { IS_Mode } from "../enums/IS_Mode.js";
+import IS_KeyboardNote from "../enums/IS_KeyboardNote.js";
+import IS_Mode from "../enums/IS_Mode.js";
+
 
 export class IS_Scale extends IS_Array
 {

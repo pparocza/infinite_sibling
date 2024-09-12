@@ -1,4 +1,4 @@
-import { IS_Node } from "./IS_Node";
+import { IS_Node } from "./IS_Node.js";
 
 export class IS_StartableNode extends IS_Node
 {

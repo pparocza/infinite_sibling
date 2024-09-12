@@ -1,28 +1,57 @@
-import { IS_Node } from "./IS_Node.js";
+import { IS_StartableNode } from "./IS_StartableNode.js";
 
-export class IS_Oscillator extends IS_Node
+const IS_OscFilterParamNames =
 {
-    constructor(audioContext, type = "sine", frequency = 440)
-    {
-        super(audioContext);
+    type: "type",
+    frequency: "frequency",
+    detune: "detune"
+}
 
-        this.oscillator = this.audioContext.createOscillator();
-        this.oscillator.frequency.value = frequency;
-        this.oscillator.type = type;
+export class IS_Oscillator extends IS_StartableNode
+{
+    constructor(siblingContext, type = "sine", frequency = 440, detune = 0)
+    {
+        super(siblingContext);
+
+        this.node = this.siblingContext.audioContext.createOscillator();
+
+        this.paramNames = IS_OscFilterParamNames;
+
+        // TODO: eventually use setParamValue so values persist when node is destroyed in order to be re-started
+        this.setParam(this.paramNames.type, type);
+        this.setParam(this.paramNames.frequency, frequency);
+        this.setParam(this.paramNames.detune, detune);
     }
 
-    start()
+    set type(value)
     {
-        this.oscillator.start(this.audioContext.currentTime);
+        this.params.type = value;
+        this.node.type = this.params.type;
     }
 
-    stop()
+    get type()
     {
-        this.oscillator.stop(this.audioContext.currentTime);
+        return this.node.type;
+
     }
 
-    connect(audioNode)
+    set frequency(value)
     {
-        this.oscillator.connect(audioNode);
+        this.setParam(this.paramNames.frequency, value);
+    }
+
+    get frequency()
+    {
+        this.getParamValue(this.paramNames.frequency);
+    }
+
+    set detune(value)
+    {
+        this.setParam(this.paramNames.detune, value);
+    }
+
+    get detune()
+    {
+        this.getParamValue(this.paramNames.detune);
     }
 }

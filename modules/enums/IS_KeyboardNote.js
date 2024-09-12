@@ -1,4 +1,4 @@
-const IS_KeyboardNote =
+export const IS_KeyboardNote =
 {
     "C": 0,
     "C#": 1, "Db": 1,

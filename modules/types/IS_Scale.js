@@ -4,6 +4,7 @@ import { IS_Mode } from "../enums/IS_Mode.js";
 
 export class IS_Scale extends IS_Array
 {
+    // TODO: tonic and mode should be able to be strings OR "enums"
     constructor(tonic = IS_KeyboardNote.C, mode = IS_Mode.major)
     {
         super();

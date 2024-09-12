@@ -7,6 +7,14 @@ export class IS_Array
         this.value = [];
     }
 
+    print()
+    {
+        for(let i = 0; i < this.value.length; i++)
+        {
+            console.log(this.value[i]);
+        }
+    }
+
     get length()
     {
         return this.value.length;

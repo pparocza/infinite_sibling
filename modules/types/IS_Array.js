@@ -1,9 +1,13 @@
+import { IS_Object } from "./IS_Object.js";
+import { IS_Type } from "../enums/IS_Type.js";
 import { IS_Random } from "../utilities/IS_Random.js";
 
-export class IS_Array
+export class IS_Array extends IS_Object
 {
     constructor()
     {
+        super(IS_Type.IS_Array);
+
         this.value = [];
     }
 

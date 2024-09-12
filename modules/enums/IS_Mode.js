@@ -1,4 +1,4 @@
-const IS_Mode =
+export const IS_Mode =
 {
     major: [0, 2, 4, 5, 7, 9, 11, 12],
     minor: [0, 2, 3, 5, 7, 8, 10, 12],
@@ -7,5 +7,3 @@ const IS_Mode =
     lydian: [0, 2, 4, 6, 7, 9, 11, 12],
     mixolydian: [0, 2, 4, 5, 7, 9, 10, 12]
 }
-
-export { IS_Mode };

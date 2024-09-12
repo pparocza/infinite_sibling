@@ -1,4 +1,4 @@
-const IS_Interval =
+export const IS_Interval =
 {
     m2: 25/24,
     M2: 9/8,
@@ -12,5 +12,3 @@ const IS_Interval =
     m7: 9/5,
     M7: 15/8
 }
-
-export { IS_Interval };

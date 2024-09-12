@@ -5,7 +5,9 @@ export { IS_BiquadFilterNode } from "/modules/nodes/IS_BiquadFilterNode.js";
 
 // types
 export { IS_Array } from "/modules/types/IS_Array.js"
-export { IS_IntervalRatio } from "/modules/types/IS_IntervalRatio.js";
+export { IS_Interval } from "/modules/types/IS_Interval.js";
+export { IS_KeynoardNotes } from "./modules/types/IS_KeyboardNotes.js";
+export { IS_Modes } from "./modules/types/IS_Modes.js";
 export { IS_Scale } from "/modules/types/IS_Scale.js";
 export { IS_Sequence } from "/modules/types/IS_Sequence.js";
 

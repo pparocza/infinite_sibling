@@ -6,7 +6,9 @@ import { IS_BiquadFilterNode } from "./nodes/IS_BiquadFilterNode.js";
 
 // types
 import { IS_Scale } from "./types/IS_Scale.js";
-import {IS_IntervalRatio} from "./types/IS_IntervalRatio.js";
+import { IS_Interval } from "./types/IS_Interval.js";
+import { IS_KeyboardNotes } from "./types/IS_KeyboardNotes.js";
+import { IS_Modes } from "./types/IS_Modes.js";
 
 // utilities
 import { IS_Random } from "./utilities/IS_Random.js";
@@ -54,13 +56,13 @@ export class InfiniteSibling
         return IS_Random.randomFloat(min, max);
     }
 
-    scale(tonic = "C", mode = "major")
+    scale(tonic = IS_KeyboardNotes.C, mode = IS_Modes.major)
     {
         return new IS_Scale(tonic, mode);
     }
 
     intervalRatio(intervalString)
     {
-        return IS_IntervalRatio[intervalString];
+        return IS_Interval[intervalString];
     }
 }

@@ -1,8 +1,10 @@
 import { IS_Array } from "./IS_Array.js";
+import { IS_KeyboardNotes } from "./IS_KeyboardNotes.js";
+import { IS_Modes } from "./IS_Modes.js";
 
 export class IS_Scale extends IS_Array
 {
-    constructor(tonic = "C", mode = "major")
+    constructor(tonic = IS_KeyboardNotes.C, mode = IS_Modes.major)
     {
         super();
         this.tonic = tonic;
@@ -13,12 +15,12 @@ export class IS_Scale extends IS_Array
 
     get tonicIndex()
     {
-        return this.tonics[this.tonic];
+        return IS_KeyboardNotes[this.tonic];
     }
 
     get modeArray()
     {
-        return this.modes[this.mode];
+        return IS_Modes[this.mode];
     }
 
     generateScale()
@@ -34,9 +36,11 @@ export class IS_Scale extends IS_Array
 
     printNotes()
     {
+        let noteKeys = Object.keys(IS_KeyboardNotes);
+
         for(let i = 0 ; i < this.value.length; i++)
         {
-            console.log(this.tonics[this.value[i]]);
+            console.log(noteKeys[this.value[i]]);
         }
     }
 
@@ -50,31 +54,5 @@ export class IS_Scale extends IS_Array
     {
         this.mode = mode.toLowerCase();
         this.generateScale(this.tonic, this.mode);
-    }
-
-    tonics =
-    {
-        "C": 0,
-        "C#": 1, "Db": 1,
-        "D": 2,
-        "D#": 3, "Eb": 3,
-        "E": 4,
-        "F": 5,
-        "F#": 6, "Gb": 6,
-        "G": 7,
-        "G#": 8, "Ab": 8,
-        "A": 9,
-        "A#": 10, "Bb": 10,
-        "B": 11
-    }
-
-    modes =
-    {
-        major: [0, 2, 4, 5, 7, 9, 11, 12],
-        minor: [0, 2, 3, 5, 7, 8, 10, 12],
-        dorian: [0, 2, 3, 5, 7, 9, 10, 12],
-        phrygian: [0, 1, 3, 5, 7, 8, 10, 12],
-        lydian: [0, 2, 4, 6, 7, 9, 11, 12],
-        mixolydian: [0, 2, 4, 5, 7, 9, 10, 12]
     }
 }

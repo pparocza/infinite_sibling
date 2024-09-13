@@ -28,13 +28,12 @@ export class IS_BiquadFilterNode extends IS_Node
 
     set type(value)
     {
-        this.params.type = value;
-        this.node.type = this.params.type;
+        this.setParam(this.paramNames.type, value)
     }
 
     get type()
     {
-        return this.node.type;
+        return this.getParamValue(this.paramNames.type);
 
     }
 

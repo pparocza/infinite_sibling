@@ -16,7 +16,7 @@ export class IS_Node extends IS_Object
 
     connect(audioNode)
     {
-        if(Object.hasOwn(audioNode, "type") && audioNode.type === IS_Type.IS_Node)
+        if(audioNode.iSType !== undefined && audioNode.iSType === IS_Type.IS_Node)
         {
             this.node.connect(audioNode.node);
         }

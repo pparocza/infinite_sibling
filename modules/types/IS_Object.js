@@ -1,8 +1,8 @@
 export class IS_Object
 {
     // TODO: type hierarchy
-    constructor(IS_type)
+    constructor(iSType)
     {
-        this.type = IS_type;
+        this.iSType = iSType;
     }
 }

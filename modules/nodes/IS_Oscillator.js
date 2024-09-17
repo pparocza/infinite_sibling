@@ -27,6 +27,8 @@ export class IS_Oscillator extends IS_StartableNode
         this.setParam(this.paramNames.type, this.params[this.paramNames.type]);
         this.setParam(this.paramNames.frequency, this.params[this.paramNames.frequency]);
         this.setParam(this.paramNames.detune, this.params[this.paramNames.detune]);
+
+        this.node.connect(this.output);
     }
 
     start()

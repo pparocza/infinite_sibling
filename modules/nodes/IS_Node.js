@@ -12,28 +12,35 @@ export class IS_Node extends IS_Object
 
         this.node = null;
         this.params = {};
+
+        this.output = siblingContext.createGain();
     }
 
     connect(audioNode)
     {
         if(audioNode.iSType !== undefined && audioNode.iSType === IS_Type.IS_Node)
         {
-            this.node.connect(audioNode.node);
+            this.output.connect(audioNode.node);
         }
         else
         {
-            this.node.connect(audioNode);
+            this.output.connect(audioNode);
         }
     }
 
     connectToMainOutput()
     {
-        this.node.connect(this.siblingContext.output);
+        this.output.connect(this.siblingContext.output);
     }
 
     connectToAudioDestination()
     {
-        this.node.connect(this.siblingContext.destination);
+        this.output.connect(this.siblingContext.destination);
+    }
+
+    set gain(value)
+    {
+        this.output.gain.value = value;
     }
 
     setParamValue(key, value)

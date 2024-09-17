@@ -13,14 +13,31 @@ export class IS_Oscillator extends IS_StartableNode
     {
         super(siblingContext);
 
-        this.node = this.siblingContext.audioContext.createOscillator();
-
         this.paramNames = IS_OscillatorParamNames;
 
-        // TODO: eventually use setParamValue so values persist when node is destroyed in order to be re-started
-        this.setParam(this.paramNames.type, type);
-        this.setParam(this.paramNames.frequency, frequency);
-        this.setParam(this.paramNames.detune, detune);
+        this.setParamValue(this.paramNames.type, type);
+        this.setParamValue(this.paramNames.frequency, frequency);
+        this.setParamValue(this.paramNames.detune, detune);
+    }
+
+    init()
+    {
+        this.node = this.siblingContext.audioContext.createOscillator();
+
+        this.setParam(this.paramNames.type, this.params[this.paramNames.type]);
+        this.setParam(this.paramNames.frequency, this.params[this.paramNames.frequency]);
+        this.setParam(this.paramNames.detune, this.params[this.paramNames.detune]);
+    }
+
+    start()
+    {
+        this.init();
+        this.node.start();
+    }
+
+    stop()
+    {
+        this.node.stop();
     }
 
     set type(value)

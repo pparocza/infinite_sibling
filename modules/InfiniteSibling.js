@@ -24,7 +24,7 @@ export class InfiniteSibling
         this.audioContext = iSAudioContext;
         this.destination = this.audioContext.destination;
 
-        this.output = this.createGain(1);
+        this.output = this.audioContext.createGain();
         this.output.connect(this.destination);
     }
 

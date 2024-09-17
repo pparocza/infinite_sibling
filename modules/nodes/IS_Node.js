@@ -38,7 +38,7 @@ export class IS_Node extends IS_Object
         this.output.connect(this.siblingContext.destination);
     }
 
-    set gain(value)
+    gain(value)
     {
         this.output.gain.value = value;
     }

@@ -13,7 +13,7 @@ export class IS_Node extends IS_Object
         this.node = null;
         this.params = {};
 
-        this.output = siblingContext.createGain();
+        this.output = siblingContext.audioContext.createGain();
     }
 
     connect(audioNode)
@@ -38,7 +38,7 @@ export class IS_Node extends IS_Object
         this.output.connect(this.siblingContext.destination);
     }
 
-    setGain(value)
+    set gain(value)
     {
         this.output.gain.value = value;
     }

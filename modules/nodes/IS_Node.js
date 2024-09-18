@@ -1,5 +1,6 @@
 import { IS_Object } from "../types/IS_Object.js";
 import { IS_Type } from "../enums/IS_Type.js";
+import { IS_Parameter } from "../types/IS_Parameter.js";
 
 export class IS_Node extends IS_Object
 {
@@ -12,6 +13,7 @@ export class IS_Node extends IS_Object
 
         this.node = null;
         this.params = {};
+        this.inlet = {};
 
         this.output = siblingContext.audioContext.createGain();
     }
@@ -26,6 +28,11 @@ export class IS_Node extends IS_Object
         {
             this.output.connect(audioNode);
         }
+    }
+
+    disconnect()
+    {
+        // TODO: IS_Connectable class?
     }
 
     connectToMainOutput()
@@ -53,10 +60,21 @@ export class IS_Node extends IS_Object
         return this.params[key];
     }
 
+    /**
+     * Sets value of an audio parameter
+     * @param key - key used to index parameter value
+     * @param value - parameter value
+     */
     setParam(key, value)
     {
         this.params[key] = value;
-        if(this.node[key].value !== undefined)
+
+        // TODO: resolve this with node inlets
+        if(value.iSType && value.iSType === IS_Type.IS_Parameter)
+        {
+            this.params[key].connect(this.node[key]);
+        }
+        else if(this.node[key].value !== undefined)
         {
             this.node[key].value = this.params[key];
         }
@@ -64,5 +82,10 @@ export class IS_Node extends IS_Object
         {
             this.node[key] = this.params[key];
         }
+    }
+
+    getInlet(key)
+    {
+        return this.inlets[key];
     }
 }

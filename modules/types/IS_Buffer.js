@@ -1062,8 +1062,7 @@ export class IS_Buffer extends IS_Object
             console.log(tag)
         }
 
-        let printArray = new Float32Array(this.buffer.length);
-        this.buffer.copyFromChannel(printArray, channel, 0);
+        let printArray = this.buffer.getChannelData(channel);
 
         for(let i= 0; i < printArray.length; i++)
         {

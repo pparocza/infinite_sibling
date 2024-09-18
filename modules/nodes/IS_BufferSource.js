@@ -22,15 +22,6 @@ export class IS_BufferSource extends IS_StartableNode
     {
         super(siblingContext);
 
-        if(buffer.iSType !== null && buffer.iSType === IS_Type.IS_Buffer)
-        {
-            this.buffer = buffer.buffer;
-        }
-        else
-        {
-            this.buffer = buffer;
-        }
-
         this.paramNames = IS_BufferSourceParamNames;
 
         this.setParamValue(this.paramNames.buffer, buffer);
@@ -39,6 +30,20 @@ export class IS_BufferSource extends IS_StartableNode
         this.setParamValue(this.paramNames.loopStart, loopStart);
         this.setParamValue(this.paramNames.loopEnd, loopEnd);
         this.setParamValue(this.paramNames.playbackRate, playbackRate);
+
+        if(!buffer)
+        {
+            return;
+        }
+
+        if(buffer.iSType !== undefined && buffer.iSType === IS_Type.IS_Buffer)
+        {
+            this.buffer = buffer.buffer;
+        }
+        else
+        {
+            this.buffer = buffer;
+        }
     }
 
     initialize()
@@ -70,7 +75,7 @@ export class IS_BufferSource extends IS_StartableNode
 
     set buffer(buffer)
     {
-        if(buffer.iSType !== null && buffer.iSType === IS_Type.IS_Buffer)
+        if(buffer.iSType !== undefined && buffer.iSType === IS_Type.IS_Buffer)
         {
             this.setParam(this.paramNames.buffer, buffer.buffer);
         }

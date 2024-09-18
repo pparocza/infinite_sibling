@@ -74,7 +74,7 @@ export class IS_Buffer extends IS_Object
 
     set buffer(buffer)
     {
-        if(buffer.iSType !== null && buffer.iSType === IS_Type.IS_Buffer)
+        if(buffer.iSType !== undefined && buffer.iSType === IS_Type.IS_Buffer)
         {
             this.setParam(this.paramNames.buffer, buffer.buffer);
         }
@@ -761,7 +761,7 @@ export class IS_Buffer extends IS_Object
         let nowBuffering = null;
         let otherNowBuffering = null;
 
-        if (buffer.iSType !== null && buffer.iSType === IS_Type.IS_Buffer)
+        if (buffer.iSType !== undefined && buffer.iSType === IS_Type.IS_Buffer)
         {
             otherBuffer = buffer.buffer;
         }
@@ -792,7 +792,7 @@ export class IS_Buffer extends IS_Object
         let nowBuffering = null;
         let otherNowBuffering = null;
 
-        if(buffer.iSType !== null && buffer.iSType === IS_Type.IS_Buffer)
+        if(buffer.iSType !== undefined && buffer.iSType === IS_Type.IS_Buffer)
         {
             otherBuffer = buffer.buffer;
         }
@@ -823,7 +823,7 @@ export class IS_Buffer extends IS_Object
         let nowBuffering = null;
         let otherNowBuffering = null;
 
-        if (buffer.iSType !== null && buffer.iSType === IS_Type.IS_Buffer)
+        if (buffer.iSType !== undefined && buffer.iSType === IS_Type.IS_Buffer)
         {
             otherBuffer = buffer.buffer;
         }
@@ -854,7 +854,7 @@ export class IS_Buffer extends IS_Object
         let nowBuffering = null;
         let otherNowBuffering = null;
 
-        if(buffer.iSType !== null && buffer.iSType === IS_Type.IS_Buffer)
+        if(buffer.iSType !== undefined && buffer.iSType === IS_Type.IS_Buffer)
         {
             otherBuffer = buffer.buffer;
         }
@@ -888,7 +888,7 @@ export class IS_Buffer extends IS_Object
         let nowBuffering = null;
         let otherNowBuffering = null;
 
-        if(buffer.iSType !== null && buffer.iSType === IS_Type.IS_Buffer)
+        if(buffer.iSType !== undefined && buffer.iSType === IS_Type.IS_Buffer)
         {
             otherBuffer = buffer.buffer;
         }

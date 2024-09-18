@@ -20,7 +20,8 @@ export class IS_Node extends IS_Object
 
     connect(audioNode)
     {
-        if(audioNode.iSType !== null && audioNode.iSType === IS_Type.IS_Node)
+        // TODO: resolve this with node inlets
+        if(audioNode.iSType !== undefined && audioNode.iSType === IS_Type.IS_Node)
         {
             this.output.connect(audioNode.node);
         }
@@ -69,8 +70,7 @@ export class IS_Node extends IS_Object
     {
         this.params[key] = value;
 
-        // TODO: resolve this with node inlets
-        if(value.iSType && value.iSType === IS_Type.IS_Parameter)
+        if(value.iSType !== undefined && value.iSType === IS_Type.IS_Parameter)
         {
             this.params[key].connect(this.node[key]);
         }

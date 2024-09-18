@@ -125,11 +125,16 @@ export class IS_Node extends IS_Object
     {
         this.params[key] = value;
 
+        if(value === null)
+        {
+            return;
+        }
+
         if(value.iSType !== undefined && value.iSType === IS_Type.IS_Parameter)
         {
             this.params[key].connect(this.node[key]);
         }
-        else if(this.node[key].value !== undefined)
+        else if(this.node[key] !== null && this.node[key].value !== undefined)
         {
             this.node[key].value = this.params[key];
         }
@@ -140,7 +145,7 @@ export class IS_Node extends IS_Object
     }
 
     /**
-     * 
+     *
      * @param key
      * @returns {*}
      */

@@ -66,20 +66,6 @@ export class IS_BufferSource extends IS_StartableNode
         this.isInitialized = true;
     }
 
-    // output buffer contents at specified time (in seconds)
-    start(time)
-    {
-        this.time = time;
-
-        this.node = this.siblingContext.audioContext.createBufferSource();
-
-        this.node.loop = this.loop;
-        this.node.playbackRate.value = this.playbackRate;
-        this.node.buffer = this.buffer;
-        this.node.connect(this.output);
-        this.node.start(this.time);
-    }
-
     get buffer()
     {
         return this.getParamValue(this.paramNames.buffer);

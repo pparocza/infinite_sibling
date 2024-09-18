@@ -20,7 +20,7 @@ export class IS_Node extends IS_Object
 
     connect(audioNode)
     {
-        if(audioNode.iSType !== undefined && audioNode.iSType === IS_Type.IS_Node)
+        if(audioNode.iSType !== null && audioNode.iSType === IS_Type.IS_Node)
         {
             this.output.connect(audioNode.node);
         }

@@ -22,7 +22,7 @@ export class IS_BufferSource extends IS_StartableNode
     {
         super(siblingContext);
 
-        if(buffer.iSType && buffer.iSType === IS_Type.IS_Buffer)
+        if(buffer.iSType !== null && buffer.iSType === IS_Type.IS_Buffer)
         {
             this.buffer = buffer.buffer;
         }
@@ -70,7 +70,7 @@ export class IS_BufferSource extends IS_StartableNode
 
     set buffer(buffer)
     {
-        if(buffer.iSType && buffer.iSType === IS_Type.IS_Buffer)
+        if(buffer.iSType !== null && buffer.iSType === IS_Type.IS_Buffer)
         {
             this.setParam(this.paramNames.buffer, buffer.buffer);
         }

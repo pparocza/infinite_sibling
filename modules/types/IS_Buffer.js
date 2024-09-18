@@ -72,9 +72,16 @@ export class IS_Buffer extends IS_Object
         return this.getParam(this.paramNames.buffer);
     }
 
-    set buffer(value)
+    set buffer(buffer)
     {
-        this.setParam(this.paramNames.buffer, value);
+        if(buffer.iSType !== null && buffer.iSType === IS_Type.IS_Buffer)
+        {
+            this.setParam(this.paramNames.buffer, buffer.buffer);
+        }
+        else
+        {
+            this.setParam(this.paramNames.buffer, buffer);
+        }
     }
 
     /**
@@ -754,7 +761,7 @@ export class IS_Buffer extends IS_Object
         let nowBuffering = null;
         let otherNowBuffering = null;
 
-        if (buffer.iSType && buffer.iSType === IS_Type.IS_Buffer)
+        if (buffer.iSType !== null && buffer.iSType === IS_Type.IS_Buffer)
         {
             otherBuffer = buffer.buffer;
         }
@@ -785,7 +792,7 @@ export class IS_Buffer extends IS_Object
         let nowBuffering = null;
         let otherNowBuffering = null;
 
-        if(buffer.iSType && buffer.iSType === IS_Type.IS_Buffer)
+        if(buffer.iSType !== null && buffer.iSType === IS_Type.IS_Buffer)
         {
             otherBuffer = buffer.buffer;
         }
@@ -816,7 +823,7 @@ export class IS_Buffer extends IS_Object
         let nowBuffering = null;
         let otherNowBuffering = null;
 
-        if (buffer.iSType && buffer.iSType === IS_Type.IS_Buffer)
+        if (buffer.iSType !== null && buffer.iSType === IS_Type.IS_Buffer)
         {
             otherBuffer = buffer.buffer;
         }
@@ -847,7 +854,7 @@ export class IS_Buffer extends IS_Object
         let nowBuffering = null;
         let otherNowBuffering = null;
 
-        if(buffer.iSType && buffer.iSType === IS_Type.IS_Buffer)
+        if(buffer.iSType !== null && buffer.iSType === IS_Type.IS_Buffer)
         {
             otherBuffer = buffer.buffer;
         }
@@ -881,7 +888,7 @@ export class IS_Buffer extends IS_Object
         let nowBuffering = null;
         let otherNowBuffering = null;
 
-        if(buffer.iSType && buffer.iSType === IS_Type.IS_Buffer)
+        if(buffer.iSType !== null && buffer.iSType === IS_Type.IS_Buffer)
         {
             otherBuffer = buffer.buffer;
         }

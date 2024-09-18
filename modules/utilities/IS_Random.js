@@ -1,7 +1,14 @@
+/**
+ * Random Number generation
+ * @type {{randomInt: (function(*, *): *), randomFloat: (function(*, *): *), randomEnvelope: (function(number=, number[]=, number[]=, number[]=): *[])}}
+ */
 export const IS_Random =
 {
-    /*
-    return a random integer within the specified range
+    /**
+     * return a random integer within the specified range
+     * @param min
+     * @param max
+     * @returns {number}
      */
     randomInt: function(min, max)
     {
@@ -10,8 +17,11 @@ export const IS_Random =
         return Math.floor(Math.random() * (roundedMax - roundedMin)) + roundedMin;
     },
 
-    /*
-    return a random floating point number within the specified range
+    /**
+     * return a random floating point number within the specified range
+     * @param min
+     * @param max
+     * @returns {*}
      */
     randomFloat: function(min, max)
     {
@@ -22,7 +32,16 @@ export const IS_Random =
     create a breakpoint function with a specified number of points
     based on the arguments provided
      */
-    randomEnvelope: function(nPoints = 3, gainRange = [0, 1], durationRange = [1, 1], divRange = [0.25, 0.25])
+    /**
+     * create a breakpoint function with a specified number of points based on the arguments provided
+     * @param nPoints
+     * @param gainRange
+     * @param durationRange
+     * @param divRange
+     * @returns {*[]}
+     */
+    randomEnvelope: function(nPoints = 3, gainRange = [0, 1],
+                             durationRange = [1, 1], divRange = [0.25, 0.25])
     {
         let envelopeArray = [];
 

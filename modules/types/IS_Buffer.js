@@ -36,7 +36,6 @@ export class IS_Buffer extends IS_Object
         this.sampleRate = sampleRate;
 
         this.bufferOperationsArray = new Float32Array(this.length);
-        this.nowBuffering = null;
         this.buffer = siblingContext.audioContext.createBuffer(numberOfChannels, lengthSamples, this.sampleRate);
     }
 
@@ -159,11 +158,11 @@ export class IS_Buffer extends IS_Object
      */
     fill(channel = 0)
     {
-        this.nowBuffering = this.buffer.getChannelData(channel);
+        let nowBuffering = this.buffer.getChannelData(channel);
 
         for (let i= 0; i < this.buffer.length; i++)
         {
-            this.nowBuffering[i] = this.bufferOperationsArray[i];
+            nowBuffering[i] = this.bufferOperationsArray[i];
         }
     }
 
@@ -173,11 +172,11 @@ export class IS_Buffer extends IS_Object
      */
     add(channel = 0)
     {
-        this.nowBuffering = this.buffer.getChannelData(channel);
+        let nowBuffering = this.buffer.getChannelData(channel);
 
         for (let i = 0; i < this.buffer.length; i++)
         {
-            this.nowBuffering[i] += this.bufferOperationsArray[i];
+            nowBuffering[i] += this.bufferOperationsArray[i];
         }
     }
 
@@ -187,11 +186,11 @@ export class IS_Buffer extends IS_Object
      */
     multiply(channel = 0)
     {
-        this.nowBuffering = this.buffer.getChannelData(channel);
+        let nowBuffering = this.buffer.getChannelData(channel);
 
         for (let i = 0; i < this.buffer.length; i++)
         {
-            this.nowBuffering[i] *= this.bufferOperationsArray[i];
+            nowBuffering[i] *= this.bufferOperationsArray[i];
         }
     }
 
@@ -201,11 +200,11 @@ export class IS_Buffer extends IS_Object
      */
     divide(channel = 0)
     {
-        this.nowBuffering = this.buffer.getChannelData(channel);
+        let nowBuffering = this.buffer.getChannelData(channel);
 
         for (let i = 0; i < this.buffer.length; i++)
         {
-            this.nowBuffering[i] /= this.bufferOperationsArray[i];
+            nowBuffering[i] /= this.bufferOperationsArray[i];
         }
     }
 
@@ -215,11 +214,11 @@ export class IS_Buffer extends IS_Object
      */
     subtract(channel = 0)
     {
-        this.nowBuffering = this.buffer.getChannelData(channel);
+        let nowBuffering = this.buffer.getChannelData(channel);
 
         for (let i= 0; i < this.buffer.length; i++)
         {
-            this.nowBuffering[i] -= this.bufferOperationsArray[i];
+            nowBuffering[i] -= this.bufferOperationsArray[i];
         }
     }
 
@@ -236,17 +235,17 @@ export class IS_Buffer extends IS_Object
         let startSample = Math.round(this.length * startPercent);
         let endSample = Math.round(this.length * endPercent);
 
-        this.nowBuffering = this.buffer.getChannelData(channel);
+        let nowBuffering = this.buffer.getChannelData(channel);
 
         switch(style)
         {
             case "add":
             case 0:
-                this.insertAdd(startSample, endSample);
+                this.insertAdd(nowBuffering, startSample, endSample);
                 break;
             case "replace":
             case 1:
-                this.insertReplace(startSample, endSample);
+                this.insertReplace(nowBuffering, startSample, endSample);
                 break;
             default:
                 break;
@@ -255,32 +254,34 @@ export class IS_Buffer extends IS_Object
 
     /**
      *
+     * @param buffer
      * @param startSample
      * @param endSample
      */
-    insertAdd(startSample, endSample)
+    insertAdd(buffer, startSample, endSample)
     {
         for (let i = 0; i < this.buffer.length; i++)
         {
             if(i > startSample && i < endSample)
             {
-                this.nowBuffering[i] += this.bufferOperationsArray[i];
+                buffer[i] += this.bufferOperationsArray[i];
             }
         }
     }
 
     /**
      *
+     * @param buffer
      * @param startSample
      * @param endSample
      */
-    insertReplace(startSample, endSample)
+    insertReplace(buffer, startSample, endSample)
     {
         for (let i = 0; i < this.buffer.length; i++)
         {
             if(i > startSample && i < endSample)
             {
-                this.nowBuffering[i] = this.bufferOperationsArray[i - startSample];
+                buffer[i] = this.bufferOperationsArray[i - startSample];
             }
         }
     }
@@ -710,19 +711,22 @@ export class IS_Buffer extends IS_Object
                     randomValue = IS_Random.randomFloat(upRange[0], upRange[1]);
                     rampValue = Math.pow(i / upLength , upExponent);
                     amplitude = rampValue * randomValue;
-                    noiseFrequency = frequencyIncrement * upHarmonics.random() * IS_Random.randomFloat(upTuningRange[0], upTuningRange[1]);
+                    noiseFrequency = frequencyIncrement * upHarmonicsArray.random() *
+                        IS_Random.randomFloat(upTuningRange[0], upTuningRange[1]);
                     bandBuffer.sine(noiseFrequency, amplitude).add();
                     break;
                 case (i > upPoint && i < downPoint):
                     amplitude = IS_Random.randomFloat(midRange[0], midRange[1]);
-                    noiseFrequency = frequencyIncrement * midHarmonics.random() * IS_Random.randomFloat(midTuningRange[0], midTuningRange[1]);
+                    noiseFrequency = frequencyIncrement * midHarmonicsArray.random() *
+                        IS_Random.randomFloat(midTuningRange[0], midTuningRange[1]);
                     bandBuffer.sine( noiseFrequency, amplitude).add();
                     break;
                 case (i >= downPoint):
                     randomValue = IS_Random.randomFloat(downRange[0], downRange[1]);
                     rampValue = Math.pow(1 - ((i - downPoint) / downLength), downExponent);
                     amplitude = rampValue * randomValue;
-                    noiseFrequency = frequencyIncrement * downHarmonics.random() * IS_Random.randomFloat(downTuningRange[0], downTuningRange[1]);
+                    noiseFrequency = frequencyIncrement * downHarmonicsArray.random() *
+                        IS_Random.randomFloat(downTuningRange[0], downTuningRange[1]);
                     bandBuffer.sine(noiseFrequency, amplitude).add();
                     break;
                 default:
@@ -730,11 +734,11 @@ export class IS_Buffer extends IS_Object
             }
         }
 
-        this.nowBuffering = bandBuffer.buffer.getChannelData(0);
+        let nowBuffering = bandBuffer.buffer.getChannelData(0);
 
         for (let i= 0; i < this.bufferOperationsArray.length; i++)
         {
-            this.bufferOperationsArray[i] = this.nowBuffering[i];
+            this.bufferOperationsArray[i] = nowBuffering[i];
         }
         
         return this;
@@ -911,7 +915,7 @@ export class IS_Buffer extends IS_Object
             {
                 if (h + insertSample <= nowBuffering.length)
                 {
-                    this.bufferArray[h + insertSample] += cropArray[h];
+                    nowBuffering[h + insertSample] += cropArray[h];
                 }
             }
         }
@@ -958,7 +962,7 @@ export class IS_Buffer extends IS_Object
 
         for (let i= 0; i < this.buffer.numberOfChannels; i++)
         {
-            let bufferArray = this.buffer.getChannelData(i);
+            let nowBuffering = this.buffer.getChannelData(i);
             newBuffers[i] = new Float32Array(this.buffer.length);
 
             for (let j= 0; j < this.buffer.length; j++)
@@ -968,11 +972,11 @@ export class IS_Buffer extends IS_Object
                     let index = (j + k) - hanningWindow;
                     if (index > 0)
                     {
-                        accumulator += this.bufferArray[index % this.buffer.length];
+                        accumulator += nowBuffering[index % this.buffer.length];
                     }
                     else if (index < 0)
                     {
-                        accumulator += this.bufferArray[this.buffer.length + index];
+                        accumulator += nowBuffering[this.buffer.length + index];
                     }
                 }
                 newBuffers[i][j] = accumulator / windowSize;
@@ -990,8 +994,8 @@ export class IS_Buffer extends IS_Object
     {
         for(let i= 0; i < this.buffer.numberOfChannels; i++)
         {
-            this.bufferArray = this.buffer.getChannelData(i);
-            this.bufferArray.reverse();
+            let nowBuffering = this.buffer.getChannelData(i);
+            nowBuffering.reverse();
         }
     }
 
@@ -1001,8 +1005,8 @@ export class IS_Buffer extends IS_Object
      */
     reverseChannel(channel)
     {
-        this.bufferArray = this.buffer.getChannelData(channel);
-        this.bufferArray.reverse();
+        let nowBuffering = this.buffer.getChannelData(channel);
+        nowBuffering.reverse();
     }
 
     /**
@@ -1024,20 +1028,20 @@ export class IS_Buffer extends IS_Object
 
         for (let i= 0; i < this.buffer.numberOfChannels; i++)
         {
-            this.bufferArray = this.buffer.getChannelData(i);
+            let nowBuffering = this.buffer.getChannelData(i);
 
             // crop the buffer values
             for (let j= 0; j < cropLength; j++)
             {
-                cropArray[j] = this.bufferArray[j + cropStartSample];
+                cropArray[j] = nowBuffering[j + cropStartSample];
             }
 
             // reinsert the cropped values at the new position
             for (let h= 0; h < cropLength; h++)
             {
-                if (h + this.nSP <= this.bufferArray.length)
+                if (h + this.nSP <= nowBuffering.length)
                 {
-                    this.bufferArray[h + newStartSample] = cropArray[h];
+                    nowBuffering[h + newStartSample] = cropArray[h];
                 }
             }
         }

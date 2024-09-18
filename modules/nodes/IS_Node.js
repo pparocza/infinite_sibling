@@ -4,7 +4,6 @@ import { IS_Parameter } from "../types/IS_Parameter.js";
 
 export class IS_Node extends IS_Object
 {
-    // TODO: all nodes have an output gain
     constructor(siblingContext)
     {
         super(IS_Type.IS_Node);
@@ -18,6 +17,9 @@ export class IS_Node extends IS_Object
         this.output = siblingContext.audioContext.createGain();
     }
 
+    /**
+     *
+     */
     connectInlets()
     {
         /*
@@ -28,6 +30,9 @@ export class IS_Node extends IS_Object
          */
     }
 
+    /**
+     *
+     */
     createInlet()
     {
         /*
@@ -35,8 +40,18 @@ export class IS_Node extends IS_Object
          */
     }
 
+    /**
+     *
+     * @param audioNode
+     */
     connect(audioNode)
     {
+        /*
+        if(audioNode == parameter)
+        {
+            connect to parameter inlet
+        }
+         */
         // TODO: resolve this with node inlets
         if(audioNode.iSType !== undefined && audioNode.iSType === IS_Type.IS_Node)
         {
@@ -48,31 +63,54 @@ export class IS_Node extends IS_Object
         }
     }
 
+    /**
+     *
+     */
     disconnect()
     {
         // TODO: IS_Connectable class?
     }
 
+    /**
+     *
+     */
     connectToMainOutput()
     {
         this.output.connect(this.siblingContext.output);
     }
 
+    /**
+     *
+     */
     connectToAudioDestination()
     {
         this.output.connect(this.siblingContext.destination);
     }
 
+    /**
+     *
+     * @param value
+     */
     set gain(value)
     {
         this.output.gain.value = value;
     }
 
+    /**
+     *
+     * @param key
+     * @param value
+     */
     setParamValue(key, value)
     {
         this.params[key] = value;
     }
 
+    /**
+     *
+     * @param key
+     * @returns {*}
+     */
     getParamValue(key)
     {
         return this.params[key];
@@ -101,6 +139,11 @@ export class IS_Node extends IS_Object
         }
     }
 
+    /**
+     * 
+     * @param key
+     * @returns {*}
+     */
     getInlet(key)
     {
         return this.inlets[key];

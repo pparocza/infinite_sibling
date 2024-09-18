@@ -34,7 +34,7 @@ export class IS_Buffer extends IS_Object
         this.length = lengthSamples;
         this.sampleRate = sampleRate;
 
-        this.bufferOperationsArray = new Float32Array[lengthSamples];
+        this.bufferOperationsArray = new Float32Array(this.length);
         this.nowBuffering = null;
         this.buffer = siblingContext.audioContext.createBuffer(numberOfChannels, lengthSamples, this.sampleRate);
     }
@@ -135,7 +135,7 @@ export class IS_Buffer extends IS_Object
     }
 
     /**
-     * 
+     *
      * @param value
      */
     set sampleRate(value)

@@ -15,7 +15,7 @@ const IS_BufferParamNames =
 
 export class IS_Buffer extends IS_Object
 {
-    constructor(siblingContext, numberOfChannels, duration, sampleRate = null)
+    constructor(siblingContext, numberOfChannels = 1, duration = 1, sampleRate = null)
     {
         super(IS_Type.IS_Buffer);
 
@@ -36,7 +36,7 @@ export class IS_Buffer extends IS_Object
 
         this.bufferOperationsArray = new Float32Array[lengthSamples];
         this.nowBuffering = null;
-        this.buffer = siblingContext.audioContext.createBuffer(this.numberOfChannels, this.length, this.sampleRate);
+        this.buffer = siblingContext.audioContext.createBuffer(numberOfChannels, lengthSamples, this.sampleRate);
     }
 
     /*
@@ -108,9 +108,39 @@ export class IS_Buffer extends IS_Object
         this.setParam(this.paramNames.length, value);
     }
 
+    /**
+     *
+     */
     get numberOfChannels()
     {
         this.getParam(this.paramNames.numberOfChannels);
+    }
+
+    /**
+     *
+     * @param value
+     */
+    set numberOfChannels(value)
+    {
+        this.setParam(this.paramNames.numberOfChannels, value);
+    }
+
+    /**
+     *
+     * @returns {*}
+     */
+    get sampleRate()
+    {
+        return this.getParam(this.paramNames.sampleRate);
+    }
+
+    /**
+     * 
+     * @param value
+     */
+    set sampleRate(value)
+    {
+        this.setParam(this.paramNames.sampleRate, value);
     }
 
     /*

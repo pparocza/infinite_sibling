@@ -18,6 +18,23 @@ export class IS_Node extends IS_Object
         this.output = siblingContext.audioContext.createGain();
     }
 
+    connectInlets()
+    {
+        /*
+        foreach(inlet in inlets)
+        {
+            connect(inlet to corresponding paramName);
+        }
+         */
+    }
+
+    createInlet()
+    {
+        /*
+        new IS_Inlet(paramName);
+         */
+    }
+
     connect(audioNode)
     {
         // TODO: resolve this with node inlets

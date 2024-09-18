@@ -1,4 +1,5 @@
 import { IS_StartableNode } from "./IS_StartableNode.js";
+import { IS_Parameter } from "../types/IS_Parameter.js";
 
 const IS_OscillatorParamNames =
 {
@@ -18,9 +19,13 @@ export class IS_Oscillator extends IS_StartableNode
         this.setParamValue(this.paramNames.type, type);
         this.setParamValue(this.paramNames.frequency, frequency);
         this.setParamValue(this.paramNames.detune, detune);
+
+        // TODO: Parameter abstraction and initialization method
+        this.inlet[this.paramNames.frequency] = new IS_Parameter(siblingContext, frequency);
+        this.inlet[this.paramNames.detune] = new IS_Parameter(siblingContext, detune);
     }
 
-    init()
+    initialize()
     {
         this.node = this.siblingContext.audioContext.createOscillator();
 
@@ -33,7 +38,8 @@ export class IS_Oscillator extends IS_StartableNode
 
     start()
     {
-        this.init();
+        this.initialize();
+
         this.node.start();
     }
 
@@ -50,7 +56,6 @@ export class IS_Oscillator extends IS_StartableNode
     get type()
     {
         return this.getParamValue(this.paramNames.type);
-
     }
 
     set frequency(value)

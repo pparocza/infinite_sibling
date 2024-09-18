@@ -24,7 +24,6 @@ export class IS_BufferSource extends IS_StartableNode
 
         this.paramNames = IS_BufferSourceParamNames;
 
-        this.setParamValue(this.paramNames.buffer, buffer);
         this.setParamValue(this.paramNames.detune , detune);
         this.setParamValue(this.paramNames.loop, loop);
         this.setParamValue(this.paramNames.loopStart, loopStart);
@@ -33,16 +32,17 @@ export class IS_BufferSource extends IS_StartableNode
 
         if(!buffer)
         {
+            this.setParamValue(this.paramNames.buffer, null);
             return;
         }
 
         if(buffer.iSType !== undefined && buffer.iSType === IS_Type.IS_Buffer)
         {
-            this.buffer = buffer.buffer;
+            this.setParamValue(this.paramNames.buffer, buffer.buffer);
         }
         else
         {
-            this.buffer = buffer;
+            this.setParamValue(this.paramNames.buffer, buffer)
         }
     }
 

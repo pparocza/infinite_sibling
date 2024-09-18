@@ -119,7 +119,7 @@ export class IS_Buffer extends IS_Object
      */
     get numberOfChannels()
     {
-        this.getParam(this.paramNames.numberOfChannels);
+        return this.getParam(this.paramNames.numberOfChannels);
     }
 
     /**

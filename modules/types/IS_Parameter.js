@@ -8,7 +8,7 @@ export class IS_Parameter extends IS_Object
         super(IS_Type.IS_Parameter);
 
         this.constant = siblingContext.audioContext.createConstantSource();
-        this.constant.offset = value;
+        this.constant.offset.value = value;
     }
 
     start()

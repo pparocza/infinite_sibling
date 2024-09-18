@@ -132,4 +132,12 @@ export class IS_BufferSource extends IS_StartableNode
     {
         return this.params[this.paramNames.playbackRate];
     }
+
+    createBuffer(numberOfChannels = 1, duration = 1)
+    {
+        let buffer = this.siblingContext.createBuffer(this.siblingContext, numberOfChannels, duration);
+        this.setParam(this.paramNames.buffer, buffer);
+
+        return buffer;
+    }
 }

@@ -6,26 +6,27 @@ export class IS_StartableNode extends IS_Node
     {
         super(siblingContext);
 
-        this.startables = {};
-    }
-
-    initialize()
-    {
-        /*
-        foreach(startable in startables)
-        {
-            startable.create();
-        }
-         */
+        this.isInitialized = false;
+        this.initializeCallback = null;
     }
 
     start(time = this.siblingContext.now)
     {
+        if(!this.isInitialized)
+        {
+            if(this.initializeCallback === null)
+            {
+                throw new Error("IS_StartableNode initializeCallback has not been defined. Please define in extending class");
+            }
+            this.initializeCallback();
+        }
+
         this.node.start(time);
     }
 
     stop(time = this.siblingContext.now)
     {
         this.node.stop(time);
+        this.isInitialized = false;
     }
 }

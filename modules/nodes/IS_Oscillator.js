@@ -14,15 +14,8 @@ export class IS_Oscillator extends IS_StartableNode
     {
         super(siblingContext);
 
-        this.paramNames = IS_OscillatorParamNames;
-
-        this.setParamValue(this.paramNames.type, type);
-        this.setParamValue(this.paramNames.frequency, frequency);
-        this.setParamValue(this.paramNames.detune, detune);
-
-        // TODO: Parameter abstraction and initialization method
-        this.inlet[this.paramNames.frequency] = new IS_Parameter(siblingContext, frequency);
-        this.inlet[this.paramNames.detune] = new IS_Parameter(siblingContext, detune);
+        this.initializeCallback = this.initialize;
+        this.initialize();
     }
 
     initialize()
@@ -33,19 +26,13 @@ export class IS_Oscillator extends IS_StartableNode
         this.setParam(this.paramNames.frequency, this.params[this.paramNames.frequency]);
         this.setParam(this.paramNames.detune, this.params[this.paramNames.detune]);
 
+        // TODO: Parameter abstraction and initialization method
+        this.inlet[this.paramNames.frequency] = new IS_Parameter(this.siblingContext, this.frequency);
+        this.inlet[this.paramNames.detune] = new IS_Parameter(this.siblingContext, this.detune);
+
         this.node.connect(this.output);
-    }
 
-    start()
-    {
-        this.initialize();
-
-        this.node.start();
-    }
-
-    stop()
-    {
-        this.node.stop();
+        this.isInitialized = true;
     }
 
     set type(value)

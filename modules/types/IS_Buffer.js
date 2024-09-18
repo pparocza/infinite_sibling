@@ -933,7 +933,7 @@ export class IS_Buffer extends IS_Object
      * @param min
      * @param max
      */
-    normalize(min, max)
+    normalize(min = 0, max = 1)
     {
         let range = min - max;
         let offset = min;

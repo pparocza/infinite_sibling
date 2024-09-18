@@ -15,7 +15,7 @@ import { IS_Scale } from "./types/IS_Scale.js";
 
 // utilities
 import { IS_Random } from "./utilities/IS_Random.js";
-import { mToF } from "./utilities/MidiToFrequency.js";
+import { Utilities } from "./utilities/Utilities.js";
 
 export class InfiniteSibling
 {
@@ -50,6 +50,19 @@ export class InfiniteSibling
     }
 
     /*
+    Global Values
+     */
+    get now()
+    {
+        return this.audioContext.currentTime;
+    }
+
+    get sampleRate()
+    {
+        return this.audioContext.sampleRate;
+    }
+
+    /*
     Node Creation
      */
     createOsc(type = "sine", frequency = 440, detune = 0)
@@ -70,9 +83,14 @@ export class InfiniteSibling
     /*
     Utilities
      */
-    mToF(midiNoteNumber)
+    MidiToFrequency(midiNoteNumber)
     {
-        return mToF(midiNoteNumber);
+        return Utilities.MidiToFrequency(midiNoteNumber);
+    }
+
+    SecondsToSamples(nSeconds)
+    {
+        return Utilities.SecondsToSamples(nSeconds, this.audioContext.sampleRate);
     }
 
     randomInt(min, max)

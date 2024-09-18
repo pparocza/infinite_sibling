@@ -54,6 +54,7 @@ export class IS_BufferSource extends IS_StartableNode
     {
         this.node = this.siblingContext.audioContext.createBufferSource();
 
+        this.setParam(this.paramNames.buffer, this.buffer);
         this.setParam(this.paramNames.detune , this.detune);
         this.setParam(this.paramNames.loop, this.loop);
         this.setParam(this.paramNames.loopStart, this.loopStart);

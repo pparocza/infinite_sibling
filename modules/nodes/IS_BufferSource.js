@@ -135,7 +135,7 @@ export class IS_BufferSource extends IS_StartableNode
 
     createBuffer(numberOfChannels = 1, duration = 1)
     {
-        let buffer = this.siblingContext.createBuffer(this.siblingContext, numberOfChannels, duration);
+        let buffer = this.siblingContext.createBuffer(numberOfChannels, duration);
         this.setParam(this.paramNames.buffer, buffer);
 
         return buffer;

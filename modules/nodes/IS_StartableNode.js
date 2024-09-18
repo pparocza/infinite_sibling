@@ -5,16 +5,27 @@ export class IS_StartableNode extends IS_Node
     constructor(siblingContext)
     {
         super(siblingContext);
+
+        this.startables = {};
     }
 
-    start()
+    initialize()
     {
-        // TODO: remember that some nodes can't be re-started after stopping, and need to be created
-        this.node.start(this.siblingContext.audioContext.currentTime);
+        /*
+        foreach(startable in startables)
+        {
+            startable.create();
+        }
+         */
     }
 
-    stop()
+    start(time = this.siblingContext.now)
     {
-        this.node.stop(this.siblingContext.audioContext.currentTime);
+        this.node.start(time);
+    }
+
+    stop(time = this.siblingContext.now)
+    {
+        this.node.stop(time);
     }
 }

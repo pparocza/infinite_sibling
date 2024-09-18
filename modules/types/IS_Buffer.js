@@ -7,6 +7,7 @@ import { IS_Array } from "./IS_Array.js";
 
 const IS_BufferParamNames =
 {
+    buffer: "buffer",
     numberOfChannels: "numberOfChannels",
     duration: "duration",
     length: "length",
@@ -70,6 +71,11 @@ export class IS_Buffer extends IS_Object
     get buffer()
     {
         return this.getParam(this.paramNames.buffer);
+    }
+
+    set buffer(value)
+    {
+        this.setParam(this.paramNames.buffer)
     }
 
     /**
@@ -151,7 +157,7 @@ export class IS_Buffer extends IS_Object
      *
      * @param channel
      */
-    fill(channel)
+    fill(channel = 0)
     {
         this.nowBuffering = this.buffer.getChannelData(channel);
 
@@ -165,7 +171,7 @@ export class IS_Buffer extends IS_Object
      *
      * @param channel
      */
-    add(channel)
+    add(channel = 0)
     {
         this.nowBuffering = this.buffer.getChannelData(channel);
 
@@ -179,7 +185,7 @@ export class IS_Buffer extends IS_Object
      *
      * @param channel
      */
-    multiply(channel)
+    multiply(channel = 0)
     {
         this.nowBuffering = this.buffer.getChannelData(channel);
 
@@ -193,7 +199,7 @@ export class IS_Buffer extends IS_Object
      *
      * @param channel
      */
-    divide(channel)
+    divide(channel = 0)
     {
         this.nowBuffering = this.buffer.getChannelData(channel);
 
@@ -207,7 +213,7 @@ export class IS_Buffer extends IS_Object
      *
      * @param channel
      */
-    subtract(channel)
+    subtract(channel = 0)
     {
         this.nowBuffering = this.buffer.getChannelData(channel);
 
@@ -220,15 +226,15 @@ export class IS_Buffer extends IS_Object
     /**
      *
      * @param channel
-     * @param start
-     * @param end
+     * @param startPercent
+     * @param endPercent
      * @param style
      */
-    insert(channel, start, end, style = "add")
+    insert(channel = 0, startPercent = 0, endPercent = 1, style = "add")
     {
         // TODO: all methods have default range arguments?
-        let startSample = Math.round(this.length * start);
-        let endSample = Math.round(this.length * end);
+        let startSample = Math.round(this.length * startPercent);
+        let endSample = Math.round(this.length * endPercent);
 
         this.nowBuffering = this.buffer.getChannelData(channel);
 
@@ -249,14 +255,14 @@ export class IS_Buffer extends IS_Object
 
     /**
      *
-     * @param start
-     * @param end
+     * @param startSample
+     * @param endSample
      */
-    insertAdd(start, end)
+    insertAdd(startSample, endSample)
     {
         for (let i = 0; i < this.buffer.length; i++)
         {
-            if(i > start && i < end)
+            if(i > startSample && i < endSample)
             {
                 this.nowBuffering[i] += this.bufferOperationsArray[i];
             }
@@ -265,16 +271,16 @@ export class IS_Buffer extends IS_Object
 
     /**
      *
-     * @param start
-     * @param end
+     * @param startSample
+     * @param endSample
      */
-    insertReplace(start, end)
+    insertReplace(startSample, endSample)
     {
         for (let i = 0; i < this.buffer.length; i++)
         {
-            if(i > start && i < end)
+            if(i > startSample && i < endSample)
             {
-                this.nowBuffering[i] = this.bufferOperationsArray[i - start];
+                this.nowBuffering[i] = this.bufferOperationsArray[i - startSample];
             }
         }
     }

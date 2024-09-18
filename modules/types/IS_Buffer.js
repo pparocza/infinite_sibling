@@ -75,7 +75,7 @@ export class IS_Buffer extends IS_Object
 
     set buffer(value)
     {
-        this.setParam(this.paramNames.buffer)
+        this.setParam(this.paramNames.buffer, value);
     }
 
     /**

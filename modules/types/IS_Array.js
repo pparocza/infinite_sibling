@@ -4,11 +4,11 @@ import { IS_Random } from "../utilities/IS_Random.js";
 
 export class IS_Array extends IS_Object
 {
-    constructor()
+    constructor(array = null)
     {
         super(IS_Type.IS_Array);
 
-        this.value = [];
+        this.value = array !== null ? array : [];
     }
 
     print()

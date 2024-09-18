@@ -1,5 +1,5 @@
 import { IS_StartableNode } from "./IS_StartableNode.js";
-import {IS_Type} from "../enums/IS_Type";
+import { IS_Type } from "../enums/IS_Type.js";
 
 const IS_BufferSourceParamNames =
 {
@@ -14,7 +14,7 @@ const IS_BufferSourceParamNames =
 /**
  * Play IS_Buffers
  */
-class IS_BufferSource extends IS_StartableNode
+export class IS_BufferSource extends IS_StartableNode
 {
     constructor(siblingContext, buffer = null, detune = 0,
                 loop = false, loopStart = 0, loopEnd = 1,

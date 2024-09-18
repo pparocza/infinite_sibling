@@ -44,14 +44,24 @@ export class IS_BufferSource extends IS_StartableNode
         {
             this.setParamValue(this.paramNames.buffer, buffer)
         }
+
+        this.initializeCallback = this.initialize;
+        this.initialize();
     }
 
     initialize()
     {
         this.node = this.siblingContext.audioContext.createBufferSource();
-        this.node.buffer = this.buffer;
+
+        this.setParam(this.paramNames.detune , this.detune);
+        this.setParam(this.paramNames.loop, this.loop);
+        this.setParam(this.paramNames.loopStart, this.loopStart);
+        this.setParam(this.paramNames.loopEnd, this.loopEnd);
+        this.setParam(this.paramNames.playbackRate, this.playbackRate);
 
         this.node.connect(this.output);
+
+        this.isInitialized = true;
     }
 
     // output buffer contents at specified time (in seconds)

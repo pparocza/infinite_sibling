@@ -30,19 +30,20 @@ export class IS_BufferSource extends IS_StartableNode
         this.setParamValue(this.paramNames.loopEnd, loopEnd);
         this.setParamValue(this.paramNames.playbackRate, playbackRate);
 
-        if(!buffer)
+        if(buffer !== null)
         {
-            this.setParamValue(this.paramNames.buffer, null);
-            return;
-        }
-
-        if(buffer.iSType !== undefined && buffer.iSType === IS_Type.IS_Buffer)
-        {
-            this.setParamValue(this.paramNames.buffer, buffer.buffer);
+            if(buffer.iSType !== undefined && buffer.iSType === IS_Type.IS_Buffer)
+            {
+                this.setParamValue(this.paramNames.buffer, buffer.buffer);
+            }
+            else
+            {
+                this.setParamValue(this.paramNames.buffer, buffer)
+            }
         }
         else
         {
-            this.setParamValue(this.paramNames.buffer, buffer)
+            this.setParamValue(this.paramNames.buffer, null);
         }
 
         this.initializeCallback = this.initialize;

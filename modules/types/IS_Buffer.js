@@ -1053,4 +1053,81 @@ export class IS_Buffer extends IS_Object
             }
         }
     }
+
+    // print the contents of a buffer as a graph in the browser console
+    print(channel = 0, tag)
+    {
+        if (tag)
+        {
+            console.log(tag)
+        }
+
+        let printArray = new Float32Array(this.buffer.length);
+        this.buffer.copyFromChannel(printArray, channel, 0);
+
+        for(let i= 0; i < printArray.length; i++)
+        {
+            printArray[i] = (0.5 * (100 + (Math.floor(printArray[i] * 100))));
+        }
+
+        console.graph(printArray);
+    }
 }
+
+/*
+TODO: CLEAN THIS UP
+ */
+
+(function(){
+    if (!window.console || !window.console.log) {
+        return;
+    }
+
+    // context.fillStyle = '#fff';
+
+    var _graph = function(imageURL) {
+        console.log('%c ', '' +
+            'font-size: 0;' +
+            'padding-left: ' + 299 + 'px;' +
+            'padding-bottom: ' + 100 + 'px;' +
+            'background: url("' + imageURL + '"),' +
+            '-webkit-linear-gradient(#fff, #fff);' +
+            '');
+    };
+
+    window.console.graph = function (data) {
+
+        var canvas;
+        var	context;
+
+        canvas = document.createElement('canvas');
+        context = canvas.getContext('2d');
+        context.lineWidth = 1;
+        context.strokeStyle = "rgb(0, 0, 0)";
+
+        context.beginPath();
+
+        var sliceWidth = canvas.width * 1.0 / data.length;
+        var x = 0;
+
+        for (var i = 0; i < data.length; i++) {
+
+            var v = data[i] / 128.0;
+            var y = v * canvas.height / 2;
+
+            if (i === 0) {
+                context.moveTo(x, y);
+            } else {
+                context.lineTo(x, y);
+            }
+
+            x += sliceWidth;
+        }
+
+        context.lineTo(canvas.width, canvas.height / 2);
+        context.stroke();
+
+        _graph(canvas.toDataURL());
+    };
+
+})();

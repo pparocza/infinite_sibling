@@ -5,8 +5,7 @@ export { IS_Mode } from "./modules/enums/IS_Mode.js";
 export { IS_Type } from "./modules/enums/IS_Type.js";
 
 // nodes
-// TODO: either give everything a "Node" suffix or remove this one
-export { IS_BiquadFilterNode } from "./modules/nodes/IS_BiquadFilterNode.js";
+export { IS_BiquadFilter } from "./modules/nodes/IS_BiquadFilter.js";
 export { IS_BufferSource } from "./modules/nodes/IS_BufferSource.js";
 export { IS_Gain } from "./modules/nodes/IS_Gain.js";
 export { IS_Node } from "./modules/nodes/IS_Node.js";

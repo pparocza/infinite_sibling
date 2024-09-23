@@ -9,7 +9,7 @@ const IS_BiquadFilterParamNames =
     detune: "detune"
 }
 
-export class IS_BiquadFilterNode extends IS_Node
+export class IS_BiquadFilter extends IS_Node
 {
     constructor(siblingContext, type = "lowpass", frequency = 220, Q = 1, gain = 1, detune = 0)
     {

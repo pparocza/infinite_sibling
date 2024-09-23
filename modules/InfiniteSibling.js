@@ -18,6 +18,7 @@ import { IS_Scale } from "./types/IS_Scale.js";
 // utilities
 import { IS_Random } from "./utilities/IS_Random.js";
 import { Utilities } from "./utilities/Utilities.js";
+import { BufferPrint } from "./utilities/BufferPrint.js";
 
 export class InfiniteSibling
 {
@@ -28,6 +29,8 @@ export class InfiniteSibling
 
         this.output = this.audioContext.createGain();
         this.output.connect(this.destination);
+
+        BufferPrint.configure();
     }
 
     /*

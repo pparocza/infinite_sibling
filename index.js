@@ -24,6 +24,7 @@ export { IS_Sequence } from "./modules/types/IS_Sequence.js";
 export * from "./modules/utilities/Constants.js";
 export { IS_Random } from "./modules/utilities/IS_Random.js";
 export { Utilities } from "./modules/utilities/Utilities.js"
+export { BufferPrint } from "./modules/utilities/BufferPrint.js";
 
 // Infinite Sibling
 export { InfiniteSibling } from "./modules/InfiniteSibling.js";

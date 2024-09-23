@@ -4,6 +4,7 @@ import { IS_TWO_PI } from "../utilities/Constants.js";
 import { IS_SAMPLE_MIN_VALUE } from "../utilities/Constants.js";
 import { IS_Random } from "../utilities/IS_Random.js";
 import { IS_Array } from "./IS_Array.js";
+import { BufferPrint } from "../utilities/BufferPrint.js";
 
 const IS_BufferParamNames =
 {
@@ -1062,71 +1063,13 @@ export class IS_Buffer extends IS_Object
             console.log(tag)
         }
 
-        let printArray = this.buffer.getChannelData(channel);
+        let bufferData = this.buffer.getChannelData(channel);
 
-        for(let i= 0; i < printArray.length; i++)
+        for(let i= 0; i < bufferData.length; i++)
         {
-            printArray[i] = (0.5 * (100 + (Math.floor(printArray[i] * 100))));
+            bufferData[i] = (0.5 * (100 + (Math.floor(bufferData[i] * 100))));
         }
 
-        console.graph(printArray);
+        BufferPrint.print(bufferData);
     }
 }
-
-/*
-TODO: CLEAN THIS UP
- */
-
-(function(){
-    if (!window.console || !window.console.log) {
-        return;
-    }
-
-    // context.fillStyle = '#fff';
-
-    var _graph = function(imageURL) {
-        console.log('%c ', '' +
-            'font-size: 0;' +
-            'padding-left: ' + 299 + 'px;' +
-            'padding-bottom: ' + 100 + 'px;' +
-            'background: url("' + imageURL + '"),' +
-            '-webkit-linear-gradient(#fff, #fff);' +
-            '');
-    };
-
-    window.console.graph = function (data) {
-
-        var canvas;
-        var	context;
-
-        canvas = document.createElement('canvas');
-        context = canvas.getContext('2d');
-        context.lineWidth = 1;
-        context.strokeStyle = "rgb(0, 0, 0)";
-
-        context.beginPath();
-
-        var sliceWidth = canvas.width * 1.0 / data.length;
-        var x = 0;
-
-        for (var i = 0; i < data.length; i++) {
-
-            var v = data[i] / 128.0;
-            var y = v * canvas.height / 2;
-
-            if (i === 0) {
-                context.moveTo(x, y);
-            } else {
-                context.lineTo(x, y);
-            }
-
-            x += sliceWidth;
-        }
-
-        context.lineTo(canvas.width, canvas.height / 2);
-        context.stroke();
-
-        _graph(canvas.toDataURL());
-    };
-
-})();

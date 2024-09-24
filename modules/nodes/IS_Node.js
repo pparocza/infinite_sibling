@@ -130,11 +130,11 @@ export class IS_Node extends IS_Object
 
         if(this.node[key] !== null && this.node[key].value !== undefined)
         {
-            this.node[key].value = this.params[key];
+            this.node[key].value = value;
         }
         else
         {
-            this.node[key] = this.params[key];
+            this.node[key] = value;
         }
 
         this.setParamValue(key, value);

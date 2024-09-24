@@ -12,7 +12,7 @@
             export { IS_BiquadFilter } from "./modules/nodes/core/effect/IS_BiquadFilter.js";
             export { IS_Delay } from "./modules/nodes/core/effect/IS_Delay.js";
             export { IS_Gain } from "./modules/nodes/core/effect/IS_Gain.js";
-            export { IS_StereoPanner } from "./modules/nodes/core//effect/IS_StereoPanner.js";
+            export { IS_StereoPanner } from "./modules/nodes/core/effect/IS_StereoPanner.js";
         // source
             export { IS_BufferSource } from "./modules/nodes/core/source/IS_BufferSource.js";
             export { IS_Oscillator } from "./modules/nodes/core/source/IS_Oscillator.js";

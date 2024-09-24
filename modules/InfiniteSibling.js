@@ -77,7 +77,7 @@ export class InfiniteSibling
 
     createFilter(type = "lowpass", frequency = 220, Q = 1, gain = 1, detune = 0)
     {
-        return new IS_BiquadFilterNode(this, type, frequency, Q, gain, detune);
+        return new IS_BiquadFilter(this, type, frequency, Q, gain, detune);
     }
 
     createGain(gainValue = 1)

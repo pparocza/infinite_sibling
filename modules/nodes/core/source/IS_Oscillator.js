@@ -26,7 +26,7 @@ export class IS_Oscillator extends IS_StartableNode
 
     initialize()
     {
-        this.node = this.siblingContext.audioContext.createOscillator();
+        this.node = new OscillatorNode(this.siblingContext.audioContext);
 
         this.setParam(this.paramNames.type, this.type);
         this.setParam(this.paramNames.frequency, this.frequency);

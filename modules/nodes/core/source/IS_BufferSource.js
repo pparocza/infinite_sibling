@@ -52,7 +52,7 @@ export class IS_BufferSource extends IS_StartableNode
 
     initialize()
     {
-        this.node = this.siblingContext.audioContext.createBufferSource();
+        this.node = new AudioBufferSourceNode(this.siblingContext.audioContext);
 
         this.setParam(this.paramNames.buffer, this.buffer);
         this.setParam(this.paramNames.detune , this.detune);

@@ -11,7 +11,7 @@ export class IS_Gain extends IS_Node
     {
         super(siblingContext);
 
-        this.node = siblingContext.audioContext.createGain();
+        this.node = new GainNode(this.siblingContext.audioContext);
         this.paramNames = IS_GainParamNames;
     }
 

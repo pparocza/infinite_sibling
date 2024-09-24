@@ -1,4 +1,4 @@
-import {IS_Node} from "../IS_Node.js";
+import { IS_Node } from "../IS_Node.js";
 
 const IS_DelayParamNames =
 {
@@ -14,7 +14,7 @@ export class IS_Delay extends IS_Node
 
         this.paramNames = IS_DelayParamNames;
 
-        this.node = this.siblingContext.audioContext.createDelay(maxDelayTime);
+        this.node = new DelayNode(this.siblingContext.audioContext);
 
         this.setParam(this.paramNames.maxDelayTime, maxDelayTime);
         this.setParam(this.paramNames.delayTime, delayTime);

@@ -99,6 +99,16 @@ export class InfiniteSibling
         return new IS_BufferSource(this, buffer, detune, loop, loopStart, loopEnd, playbackRate)
     }
 
+    createDelay(delayTime = 1)
+    {
+        return new IS_Delay(this, delayTime, delayTime);
+    }
+
+    createStereoPanner(pan = 0)
+    {
+        return new IS_StereoPanner(this, pan);
+    }
+
     /*
     Utilities
      */

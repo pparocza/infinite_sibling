@@ -1055,7 +1055,11 @@ export class IS_Buffer extends IS_Object
         }
     }
 
-    // print the contents of a buffer as a graph in the browser console
+    /**
+     * print the contents of a buffer as a graph in the browser console
+     * @param channel
+     * @param tag
+     */
     print(channel = 0, tag)
     {
         if (tag)
@@ -1063,7 +1067,8 @@ export class IS_Buffer extends IS_Object
             console.log(tag)
         }
 
-        let bufferData = this.buffer.getChannelData(channel);
+        let bufferData = new Float32Array(this.length);
+        this.buffer.copyFromChannel(bufferData, channel, 0);
 
         for(let i= 0; i < bufferData.length; i++)
         {

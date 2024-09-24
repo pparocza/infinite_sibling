@@ -117,7 +117,7 @@ export class IS_Node extends IS_Object
     }
 
     /**
-     * Sets value of an audio parameter
+     * Sets value of an audio parameter // TODO: SET AT TIME
      * @param key - key used to index parameter value
      * @param value - parameter value
      */

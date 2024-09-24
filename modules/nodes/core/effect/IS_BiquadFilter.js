@@ -26,20 +26,15 @@ export class IS_BiquadFilter extends IS_Node
         this.setParam(this.paramNames.detune, detune);
     }
 
-    set type(value)
-    {
-        this.setParam(this.paramNames.type, value)
-    }
-
     get type()
     {
         return this.getParamValue(this.paramNames.type);
 
     }
 
-    set frequency(value)
+    set type(value)
     {
-        this.setParam(this.paramNames.frequency, value);
+        this.setParam(this.paramNames.type, value)
     }
 
     get frequency()
@@ -47,9 +42,9 @@ export class IS_BiquadFilter extends IS_Node
         return this.getParamValue(this.paramNames.frequency);
     }
 
-    set Q(value)
+    set frequency(value)
     {
-        this.setParam(this.paramNames.Q, value);
+        this.setParam(this.paramNames.frequency, value);
     }
 
     get Q()
@@ -57,9 +52,9 @@ export class IS_BiquadFilter extends IS_Node
         return this.getParamValue(this.paramNames.Q);
     }
 
-    set gain(value)
+    set Q(value)
     {
-        this.setParam(this.paramNames.gain, value);
+        this.setParam(this.paramNames.Q, value);
     }
 
     get gain()
@@ -67,13 +62,18 @@ export class IS_BiquadFilter extends IS_Node
         return this.getParamValue(this.paramNames.gain);
     }
 
-    set detune(value)
+    set gain(value)
     {
-        this.setParam(this.paramNames.detune, value);
+        this.setParam(this.paramNames.gain, value);
     }
 
     get detune()
     {
         return this.getParamValue(this.paramNames.detune);
+    }
+
+    set detune(value)
+    {
+        this.setParam(this.paramNames.detune, value);
     }
 }

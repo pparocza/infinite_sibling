@@ -70,7 +70,7 @@ export class InfiniteSibling
     /*
     Node Creation
      */
-    createOsc(type = "sine", frequency = 440, detune = 0)
+    createOscillator(type = "sine", frequency = 440, detune = 0)
     {
         return new IS_Oscillator(this, type, frequency, detune);
     }

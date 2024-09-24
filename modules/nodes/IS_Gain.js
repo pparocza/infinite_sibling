@@ -15,13 +15,13 @@ export class IS_Gain extends IS_Node
         this.paramNames = IS_GainParamNames;
     }
 
+    get gain()
+    {
+        return this.getParamValue(this.paramNames.gain);
+    }
+
     set gain(value)
     {
         this.setParam(this.paramNames.gain, value);
-    }
-
-    get gain()
-    {
-        this.getParamValue(this.paramNames.gain);
     }
 }

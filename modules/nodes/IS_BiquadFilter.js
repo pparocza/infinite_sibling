@@ -44,7 +44,7 @@ export class IS_BiquadFilter extends IS_Node
 
     get frequency()
     {
-        this.getParamValue(this.paramNames.frequency);
+        return this.getParamValue(this.paramNames.frequency);
     }
 
     set Q(value)
@@ -54,7 +54,7 @@ export class IS_BiquadFilter extends IS_Node
 
     get Q()
     {
-        this.getParamValue(this.paramNames.Q);
+        return this.getParamValue(this.paramNames.Q);
     }
 
     set gain(value)
@@ -64,7 +64,7 @@ export class IS_BiquadFilter extends IS_Node
 
     get gain()
     {
-        this.getParamValue(this.paramNames.gain);
+        return this.getParamValue(this.paramNames.gain);
     }
 
     set detune(value)
@@ -74,6 +74,6 @@ export class IS_BiquadFilter extends IS_Node
 
     get detune()
     {
-        this.getParamValue(this.paramNames.detune);
+        return this.getParamValue(this.paramNames.detune);
     }
 }

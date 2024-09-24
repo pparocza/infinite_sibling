@@ -55,7 +55,7 @@ export class IS_Oscillator extends IS_StartableNode
 
     get frequency()
     {
-        this.getParamValue(this.paramNames.frequency);
+        return this.getParamValue(this.paramNames.frequency);
     }
 
     set frequency(value)
@@ -65,7 +65,7 @@ export class IS_Oscillator extends IS_StartableNode
 
     get detune()
     {
-        this.getParamValue(this.paramNames.detune);
+        return this.getParamValue(this.paramNames.detune);
     }
 
     set detune(value)

@@ -123,21 +123,13 @@ export class IS_BufferSource extends IS_StartableNode
         this.setParam(this.paramNames.loopEnd, value);
     }
 
+    get playbackRate()
+    {
+        return this.getParamValue(this.paramNames.playbackRate);
+    }
+
     set playbackRate(value)
     {
         this.setParam(this.paramNames.playbackRate, value);
-    }
-
-    get playbackRate()
-    {
-        return this.params[this.paramNames.playbackRate];
-    }
-
-    createBuffer(numberOfChannels = 1, duration = 1)
-    {
-        let buffer = this.siblingContext.createBuffer(numberOfChannels, duration);
-        this.setParam(this.paramNames.buffer, buffer);
-
-        return buffer;
     }
 }

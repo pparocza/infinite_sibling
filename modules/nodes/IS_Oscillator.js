@@ -43,19 +43,14 @@ export class IS_Oscillator extends IS_StartableNode
         this.isInitialized = true;
     }
 
-    set type(value)
-    {
-        this.setParam(this.paramNames.type, value);
-    }
-
     get type()
     {
         return this.getParamValue(this.paramNames.type);
     }
 
-    set frequency(value)
+    set type(value)
     {
-        this.setParam(this.paramNames.frequency, value);
+        this.setParam(this.paramNames.type, value);
     }
 
     get frequency()
@@ -63,13 +58,18 @@ export class IS_Oscillator extends IS_StartableNode
         this.getParamValue(this.paramNames.frequency);
     }
 
-    set detune(value)
+    set frequency(value)
     {
-        this.setParam(this.paramNames.detune, value);
+        this.setParam(this.paramNames.frequency, value);
     }
 
     get detune()
     {
         this.getParamValue(this.paramNames.detune);
+    }
+
+    set detune(value)
+    {
+        this.setParam(this.paramNames.detune, value);
     }
 }

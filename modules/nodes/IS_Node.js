@@ -147,6 +147,6 @@ export class IS_Node extends IS_Object
      */
     getInlet(key)
     {
-        return this.inlets[key];
+        // return this.inlets[key];
     }
 }

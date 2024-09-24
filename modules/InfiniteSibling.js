@@ -6,6 +6,8 @@ import { IS_Oscillator } from "./nodes/core/source/IS_Oscillator.js";
 import { IS_BiquadFilter } from "./nodes/core/effect/IS_BiquadFilter.js";
 import { IS_Buffer } from "./types/IS_Buffer.js";
 import { IS_BufferSource } from "./nodes/core/source/IS_BufferSource.js";
+import { IS_Delay } from "./nodes/core/effect/IS_Delay.js";
+import { IS_StereoPanner } from "./nodes/core/effect/IS_StereoPanner.js";
 
 // enums
 import { IS_Interval } from "./enums/IS_Interval.js";

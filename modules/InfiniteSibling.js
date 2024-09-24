@@ -1,11 +1,11 @@
 const iSAudioContext = new AudioContext();
 
 // audio nodes
-import { IS_Gain } from "./nodes/IS_Gain.js";
-import { IS_Oscillator } from "./nodes/IS_Oscillator.js";
-import { IS_BiquadFilter } from "./nodes/IS_BiquadFilter.js";
+import { IS_Gain } from "./nodes/core/effect/IS_Gain.js";
+import { IS_Oscillator } from "./nodes/core/source/IS_Oscillator.js";
+import { IS_BiquadFilter } from "./nodes/core/effect/IS_BiquadFilter.js";
 import { IS_Buffer } from "./types/IS_Buffer.js";
-import { IS_BufferSource } from "./nodes/IS_BufferSource.js";
+import { IS_BufferSource } from "./nodes/core/source/IS_BufferSource.js";
 
 // enums
 import { IS_Interval } from "./enums/IS_Interval.js";

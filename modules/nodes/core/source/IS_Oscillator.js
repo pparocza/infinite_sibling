@@ -1,5 +1,5 @@
-import { IS_StartableNode } from "./IS_StartableNode.js";
-import { IS_Parameter } from "../types/IS_Parameter.js";
+import { IS_StartableNode } from "../IS_StartableNode.js";
+import { IS_Parameter } from "../../../types/IS_Parameter.js";
 
 const IS_OscillatorParamNames =
 {

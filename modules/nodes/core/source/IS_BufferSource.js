@@ -1,5 +1,5 @@
-import { IS_StartableNode } from "./IS_StartableNode.js";
-import { IS_Type } from "../enums/IS_Type.js";
+import { IS_StartableNode } from "../IS_StartableNode.js";
+import { IS_Type } from "../../../enums/IS_Type.js";
 
 const IS_BufferSourceParamNames =
 {

@@ -1,4 +1,4 @@
-import { IS_Node } from "./IS_Node.js";
+import { IS_Node } from "../IS_Node.js";
 
 const IS_GainParamNames =
 {

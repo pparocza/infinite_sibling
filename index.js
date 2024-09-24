@@ -5,12 +5,12 @@ export { IS_Mode } from "./modules/enums/IS_Mode.js";
 export { IS_Type } from "./modules/enums/IS_Type.js";
 
 // nodes
-export { IS_BiquadFilter } from "./modules/nodes/IS_BiquadFilter.js";
-export { IS_BufferSource } from "./modules/nodes/IS_BufferSource.js";
-export { IS_Gain } from "./modules/nodes/IS_Gain.js";
-export { IS_Node } from "./modules/nodes/IS_Node.js";
-export { IS_Oscillator } from "./modules/nodes/IS_Oscillator.js";
-export { IS_StartableNode } from "./modules/nodes/IS_StartableNode.js";
+export { IS_BiquadFilter } from "./modules/nodes/core/effect/IS_BiquadFilter.js";
+export { IS_BufferSource } from "./modules/nodes/core/source/IS_BufferSource.js";
+export { IS_Gain } from "./modules/nodes/core/effect/IS_Gain.js";
+export { IS_Node } from "./modules/nodes/core/IS_Node.js";
+export { IS_Oscillator } from "./modules/nodes/core/source/IS_Oscillator.js";
+export { IS_StartableNode } from "./modules/nodes/core/IS_StartableNode.js";
 
 // types
 export { IS_Array } from "./modules/types/IS_Array.js"

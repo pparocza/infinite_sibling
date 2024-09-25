@@ -53,11 +53,11 @@ export class IS_Convolver extends IS_Node
     noiseReverb(length = 1, numberOfChannels = 2)
     {
         let buffer = this.siblingContext.createBuffer(numberOfChannels, length, this.siblingContext.sampleRate);
+
         buffer.noise().fill(0);
         buffer.noise().fill(1);
-        buffer.inverseSawtooth(2 ).multiply();
-        buffer.inverseSawtooth(2 ).multiply(0);
-        buffer.inverseSawtooth(2 ).multiply(1);
+        buffer.inverseSawtooth(2).multiply(0);
+        buffer.inverseSawtooth(2).multiply(1);
 
         this.setParam(this.paramNames.buffer, buffer);
     }

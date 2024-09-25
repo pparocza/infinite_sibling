@@ -13,6 +13,7 @@
             export { IS_Convolver } from "./modules/nodes/core/effect/IS_Convolver.js";
             export { IS_Delay } from "./modules/nodes/core/effect/IS_Delay.js";
             export { IS_Gain } from "./modules/nodes/core/effect/IS_Gain.js";
+            export { IS_MixEffect } from "./modules/nodes/core/effect/IS_MixEffect.js";
             export { IS_StereoPanner } from "./modules/nodes/core/effect/IS_StereoPanner.js";
         // source
             export { IS_BufferSource } from "./modules/nodes/core/source/IS_BufferSource.js";

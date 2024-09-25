@@ -3,12 +3,12 @@ import { IS_Delay } from "../core/effect/IS_Delay.js";
 import { IS_StereoPanner } from "../core/effect/IS_StereoPanner.js";
 
 const IS_StereoDelayParamNames =
-{
-    delayTimeLeft: "delayTimeLeft",
-    delayTimeRight: "delayTimeRight",
-    feedbackPercent: "feedbackPercent",
-    wetMix: "wetMix",
-}
+    {
+        delayTimeLeft: "delayTimeLeft",
+        delayTimeRight: "delayTimeRight",
+        feedbackPercent: "feedbackPercent",
+        wetMix: "wetMix",
+    }
 
 export class IS_StereoDelay extends IS_Node
 {
@@ -24,22 +24,22 @@ export class IS_StereoDelay extends IS_Node
         this.setParamValue(this.paramNames.feedbackPercent, feedbackPercent);
         this.setParamValue(this.paramNames.wetMix, wetMix);
 
-        this.node = new GainNode(this.siblingContext.audioContext);
+        this.node = this.siblingContext.audioContext.createGain();
         this.delayLeft = this.siblingContext.createDelay(this.delayTimeLeft, this.feedbackPercent, 1, maxDelayTime);
         this.delayRight = this.siblingContext.createDelay(this.delayTimeRight, this.feedbackPercent, 1, maxDelayTime);
         this.panLeft = this.siblingContext.createStereoPanner(-1);
         this.panRight = this.siblingContext.createStereoPanner(1);
-        this.dryGain = new GainNode(this.siblingContext.audioContext);
-        this.wetGain = new GainNode(this.siblingContext.audioContext);
+        this.dryGain = this.siblingContext.createGain();
+        this.wetGain = this.siblingContext.createGain();
 
-        this.dryGain.gain.value = 1 - this.wetMix;
-        this.wetGain.gain.value = this.wetMix;
+        this.dryGain.gain = 1 - this.wetMix;
+        this.wetGain.gain = this.wetMix;
 
-        this.node.connect(this.dryGain);
+        this.node.connect(this.dryGain.node);
         this.dryGain.connect(this.output);
 
-        this.node.connect(this.delayLeft);
-        this.node.connect(this.delayRight);
+        this.node.connect(this.delayLeft.node);
+        this.node.connect(this.delayRight.node);
         this.delayLeft.connect(this.panLeft);
         this.delayRight.connect(this.panRight);
         this.panLeft.connect(this.wetGain);
@@ -89,7 +89,7 @@ export class IS_StereoDelay extends IS_Node
     set wetMix(value)
     {
         this.setParamValue(this.paramNames.wetMix, value);
-        this.dryGain.gain.value = 1 - this.wetMix;
-        this.wetGain.gain.value = this.wetMix;
+        this.dryGain.gain = 1 - this.wetMix;
+        this.wetGain.gain = this.wetMix;
     }
 }

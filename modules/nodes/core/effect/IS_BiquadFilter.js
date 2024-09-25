@@ -16,6 +16,7 @@ export class IS_BiquadFilter extends IS_Node
         super(siblingContext);
 
         this.node = new BiquadFilterNode(this.siblingContext.audioContext);
+        this.node.connect(this.output);
 
         this.paramNames = IS_BiquadFilterParamNames;
 

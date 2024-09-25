@@ -12,7 +12,11 @@ export class IS_Gain extends IS_Node
         super(siblingContext);
 
         this.node = new GainNode(this.siblingContext.audioContext);
+        this.node.connect(this.output);
+
         this.paramNames = IS_GainParamNames;
+
+        this.setParam(this.paramNames.gain, gainValue);
     }
 
     get gain()

@@ -12,6 +12,7 @@ export class IS_StereoPanner extends IS_Node
         super(siblingContext);
 
         this.node = this.siblingContext.audioContext.createStereoPanner();
+        this.node.connect(this.output);
 
         this.paramNames = IS_StereoPannerParamNames;
 

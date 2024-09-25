@@ -10,6 +10,7 @@
         export { IS_StartableNode } from "./modules/nodes/core/IS_StartableNode.js";
         // effect
             export { IS_BiquadFilter } from "./modules/nodes/core/effect/IS_BiquadFilter.js";
+            export { IS_Convolver } from "./modules/nodes/core/effect/IS_Convolver.js";
             export { IS_Delay } from "./modules/nodes/core/effect/IS_Delay.js";
             export { IS_Gain } from "./modules/nodes/core/effect/IS_Gain.js";
             export { IS_StereoPanner } from "./modules/nodes/core/effect/IS_StereoPanner.js";

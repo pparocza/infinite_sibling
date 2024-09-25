@@ -9,6 +9,8 @@ import { IS_BufferSource } from "./nodes/core/source/IS_BufferSource.js";
 import { IS_Delay } from "./nodes/core/effect/IS_Delay.js";
 import { IS_StereoPanner } from "./nodes/core/effect/IS_StereoPanner.js";
 import { IS_StereoDelay } from "./nodes/custom/IS_StereoDelay.js";
+import { IS_Convolver } from "./nodes/core/effect/IS_Convolver.js";
+
 
 // enums
 import { IS_Interval } from "./enums/IS_Interval.js";
@@ -115,6 +117,11 @@ export class InfiniteSibling
                       wetMix = 0.5, maxDelayTime = 1)
     {
         return new IS_StereoDelay(this, delayTimeLeft, delayTimeRight, feedbackPercent, wetMix, maxDelayTime);
+    }
+
+    createConvolver(buffer = null, normalize = 0)
+    {
+        return new IS_Convolver(this, buffer, normalize);
     }
 
     /*

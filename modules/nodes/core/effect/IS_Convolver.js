@@ -19,8 +19,16 @@ export class IS_Convolver extends IS_Node
 
         this.node = new ConvolverNode(this.siblingContext.audioContext);
 
-        this.setParam(this.paramNames.buffer, buffer);
         this.setParam(this.paramNames.normalize, normalize);
+
+        if(buffer !== null)
+        {
+            this.setParam(this.paramNames.buffer, buffer);
+        }
+        else
+        {
+            this.noiseReverb();
+        }
 
         this.node.connect(this.output);
     }

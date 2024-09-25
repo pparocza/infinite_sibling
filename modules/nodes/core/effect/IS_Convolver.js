@@ -4,7 +4,9 @@ import { IS_Type } from "../../../enums/IS_Type.js";
 const IS_ConvolverParamNames =
 {
     buffer: "buffer",
-    normalize: "normalize"
+    normalize: "normalize",
+    // TODO: Implement wetMix (IS_MixEffect superclass?)
+    wetMix: "wetMix"
 }
 
 export class IS_Convolver extends IS_Node

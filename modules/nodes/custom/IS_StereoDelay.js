@@ -1,14 +1,12 @@
 import { IS_Node } from "../core/IS_Node.js";
-import { IS_Delay } from "../core/effect/IS_Delay.js";
-import { IS_StereoPanner } from "../core/effect/IS_StereoPanner.js";
 
 const IS_StereoDelayParamNames =
-    {
-        delayTimeLeft: "delayTimeLeft",
-        delayTimeRight: "delayTimeRight",
-        feedbackPercent: "feedbackPercent",
-        wetMix: "wetMix",
-    }
+{
+    delayTimeLeft: "delayTimeLeft",
+    delayTimeRight: "delayTimeRight",
+    feedbackPercent: "feedbackPercent",
+    wetMix: "wetMix",
+}
 
 export class IS_StereoDelay extends IS_Node
 {

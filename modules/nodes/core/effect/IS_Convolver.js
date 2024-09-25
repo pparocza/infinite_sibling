@@ -69,6 +69,6 @@ export class IS_Convolver extends IS_Node
         buffer.inverseSawtooth(2).multiply(0);
         buffer.inverseSawtooth(2).multiply(1);
 
-        this.setParam(this.paramNames.buffer, buffer);
+        this.buffer = buffer;
     }
 }

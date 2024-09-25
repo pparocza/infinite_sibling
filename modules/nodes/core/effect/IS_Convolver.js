@@ -9,7 +9,7 @@ const IS_ConvolverParamNames =
 
 export class IS_Convolver extends IS_Node
 {
-    constructor(siblingContext, buffer = null, normalize = 0)
+    constructor(siblingContext, buffer = null, normalize = true)
     {
         super(siblingContext);
 

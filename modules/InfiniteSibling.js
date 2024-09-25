@@ -119,7 +119,7 @@ export class InfiniteSibling
         return new IS_StereoDelay(this, delayTimeLeft, delayTimeRight, feedbackPercent, wetMix, maxDelayTime);
     }
 
-    createConvolver(buffer = null, normalize = 0)
+    createConvolver(buffer = null, normalize = true)
     {
         return new IS_Convolver(this, buffer, normalize);
     }

@@ -164,6 +164,7 @@ export class IS_Buffer extends IS_Object
      *
      * @param channel
      */
+    // TODO: -1 = apply to all channels, and is default?
     fill(channel = 0)
     {
         let nowBuffering = this.buffer.getChannelData(channel);

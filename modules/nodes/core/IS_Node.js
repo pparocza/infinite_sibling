@@ -14,7 +14,7 @@ export class IS_Node extends IS_Object
         this.params = {};
         this.inlet = {};
 
-        this.output = siblingContext.audioContext.createGain();
+        this.output = this.siblingContext.createGain();
     }
 
     /**

@@ -11,7 +11,7 @@ export class IS_MixEffect extends IS_Node
     {
         super(siblingContext);
 
-        this.node = new GainNode(this.siblingContext.audioContext);
+        this.node = this.siblingContext.createGain();
 
         this.dryGain = this.siblingContext.createGain();
         this.wetGain = this.siblingContext.createGain();

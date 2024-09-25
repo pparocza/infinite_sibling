@@ -22,7 +22,7 @@ export class IS_StereoDelay extends IS_Node
         this.setParamValue(this.paramNames.feedbackPercent, feedbackPercent);
         this.setParamValue(this.paramNames.wetMix, wetMix);
 
-        this.node = this.siblingContext.audioContext.createGain();
+        this.node = this.siblingContext.createGain();
         this.delayLeft = this.siblingContext.createDelay(this.delayTimeLeft, this.feedbackPercent, 1, maxDelayTime);
         this.delayRight = this.siblingContext.createDelay(this.delayTimeRight, this.feedbackPercent, 1, maxDelayTime);
         this.panLeft = this.siblingContext.createStereoPanner(-1);
@@ -36,8 +36,9 @@ export class IS_StereoDelay extends IS_Node
         this.node.connect(this.dryGain.node);
         this.dryGain.connect(this.output);
 
-        this.node.connect(this.delayLeft.node);
-        this.node.connect(this.delayRight.node);
+        this.node.connect(this.delayLeft);
+        this.node.connect(this.delayRight);
+
         this.delayLeft.connect(this.panLeft);
         this.delayRight.connect(this.panRight);
         this.panLeft.connect(this.wetGain);

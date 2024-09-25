@@ -1,5 +1,3 @@
-import {IS_StereoDelay} from "./nodes/custom/IS_StereoDelay";
-
 const iSAudioContext = new AudioContext();
 
 // audio nodes

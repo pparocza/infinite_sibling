@@ -1,3 +1,5 @@
+import {IS_StereoDelay} from "./nodes/custom/IS_StereoDelay";
+
 const iSAudioContext = new AudioContext();
 
 // audio nodes
@@ -99,14 +101,21 @@ export class InfiniteSibling
         return new IS_BufferSource(this, buffer, detune, loop, loopStart, loopEnd, playbackRate)
     }
 
-    createDelay(delayTime = 1)
+    createDelay(delayTime = 1, feedbackPercent = 0.25, wetMix = 0.5,
+                maxDelayTime = 1)
     {
-        return new IS_Delay(this, delayTime, delayTime);
+        return new IS_Delay(this, delayTime, feedbackPercent, wetMix, maxDelayTime);
     }
 
     createStereoPanner(pan = 0)
     {
         return new IS_StereoPanner(this, pan);
+    }
+
+    createStereoDelay(delayTimeLeft = 0.5, delayTimeRight = 0.25, feedbackPercent = 0.5,
+                      wetMix = 0.5, maxDelayTime = 1)
+    {
+        return new IS_StereoDelay(this, delayTimeLeft, delayTimeRight, feedbackPercent, wetMix, maxDelayTime);
     }
 
     /*

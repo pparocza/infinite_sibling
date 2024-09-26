@@ -1,5 +1,8 @@
 export const IS_Type =
 {
+    IS_Thru: "IS_Thru",
+    IS_Effect: "IS_Effect",
+
     IS_Node: "IS_Node",
     IS_Array: "IS_Array",
     IS_Parameter: "IS_Parameter",

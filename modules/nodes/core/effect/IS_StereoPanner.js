@@ -11,12 +11,14 @@ export class IS_StereoPanner extends IS_Node
     {
         super(siblingContext);
 
-        this.node = this.siblingContext.audioContext.createStereoPanner();
-        this.node.connect(this.output);
+        this.node = new StereoPannerNode(this.siblingContext.audioContext);
 
         this.paramNames = IS_StereoPannerParamNames;
 
         this.setParam(this.paramNames.pan, pan);
+
+        this.input.connect(this.node);
+        this.node.connect(this.output);
     }
 
     get pan()

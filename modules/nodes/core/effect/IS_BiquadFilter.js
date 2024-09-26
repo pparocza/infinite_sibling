@@ -1,4 +1,4 @@
-import { IS_Node } from "../IS_Node.js";
+import { IS_Effect } from "./IS_Effect.js";
 
 const IS_BiquadFilterParamNames =
 {
@@ -9,14 +9,13 @@ const IS_BiquadFilterParamNames =
     detune: "detune"
 }
 
-export class IS_BiquadFilter extends IS_Node
+export class IS_BiquadFilter extends IS_Effect
 {
     constructor(siblingContext, type = "lowpass", frequency = 220, Q = 1, gain = 1, detune = 0)
     {
         super(siblingContext);
 
         this.node = new BiquadFilterNode(this.siblingContext.audioContext);
-        this.node.connect(this.output);
 
         this.paramNames = IS_BiquadFilterParamNames;
 
@@ -25,6 +24,9 @@ export class IS_BiquadFilter extends IS_Node
         this.setParam(this.paramNames.Q, Q);
         this.setParam(this.paramNames.gain, gain);
         this.setParam(this.paramNames.detune, detune);
+
+        this.input.connect(this.node);
+        this.node.connect(this.output);
     }
 
     get type()

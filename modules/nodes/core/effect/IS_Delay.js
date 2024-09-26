@@ -13,22 +13,23 @@ export class IS_Delay extends IS_MixEffect
     {
         super(siblingContext, wetMix);
 
+        this.node = this.siblingContext.audioContext.createDelay(maxDelayTime);
+
         this.paramNames = IS_DelayParamNames;
 
-        this.setParamValue(this.paramNames.delayTime, delayTime);
+        this.setParam(this.paramNames.delayTime, delayTime);
         this.setParamValue(this.paramNames.feedbackPercent, feedbackPercent);
 
-        this.delayNode = this.siblingContext.audioContext.createDelay(maxDelayTime);
-        this.feedbackGain = new GainNode(this.siblingContext.audioContext);
+        this.feedbackGain = this.siblingContext.createGain();
 
-        this.delayNode.delayTime.value = this.delayTime;
+        this.node.delayTime.value = this.delayTime;
         this.feedbackGain.gain.value = this.feedbackPercent;
 
-        this.node.connect(this.delayNode);
-        this.delayNode.connect(this.feedbackGain);
-        this.feedbackGain.connect(this.delayNode);
+        this.input.connect(this.node);
+        this.node.connect(this.feedbackGain);
+        this.feedbackGain.connect(this.node);
 
-        this.delayNode.connect(this.wetGain);
+        this.node.connect(this.wetGain);
     }
 
     get delayTime()
@@ -39,7 +40,6 @@ export class IS_Delay extends IS_MixEffect
     set delayTime(value)
     {
         this.setParamValue(this.paramNames.delayTime, value);
-        this.delayNode.delayTime.value = this.delayTime;
     }
 
     get feedbackPercent()
@@ -50,6 +50,6 @@ export class IS_Delay extends IS_MixEffect
     set feedbackPercent(value)
     {
         this.setParamValue(this.paramNames.feedbackPercent, value);
-        this.feedbackGain.gain.value = this.feedbackPercent;
+        this.feedbackGain.gain = this.feedbackPercent;
     }
 }

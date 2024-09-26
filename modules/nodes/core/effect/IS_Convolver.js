@@ -1,4 +1,4 @@
-import { IS_Node } from "../IS_Node.js";
+import { IS_Effect } from "./IS_Effect.js";
 import { IS_Type } from "../../../enums/IS_Type.js";
 
 const IS_ConvolverParamNames =
@@ -9,15 +9,15 @@ const IS_ConvolverParamNames =
     wetMix: "wetMix"
 }
 
-export class IS_Convolver extends IS_Node
+export class IS_Convolver extends IS_Effect
 {
     constructor(siblingContext, buffer = null, normalize = true)
     {
         super(siblingContext);
 
-        this.paramNames = IS_ConvolverParamNames;
-
         this.node = new ConvolverNode(this.siblingContext.audioContext);
+
+        this.paramNames = IS_ConvolverParamNames;
 
         this.setParam(this.paramNames.normalize, normalize);
 
@@ -30,6 +30,7 @@ export class IS_Convolver extends IS_Node
             this.noiseReverb();
         }
 
+        this.input.connect(this.node);
         this.node.connect(this.output);
     }
 

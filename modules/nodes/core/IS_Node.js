@@ -1,6 +1,7 @@
 import { IS_Object } from "../../types/IS_Object.js";
 import { IS_Type } from "../../enums/IS_Type.js";
 import { IS_Parameter } from "../../types/IS_Parameter.js";
+import { IS_Thru } from "./IS_Thru";
 
 export class IS_Node extends IS_Object
 {
@@ -12,32 +13,10 @@ export class IS_Node extends IS_Object
 
         this.node = null;
         this.params = {};
+        // TODO: inlets and parameter connections
         this.inlet = {};
 
-        this.output = this.siblingContext.createGain();
-    }
-
-    /**
-     *
-     */
-    connectInlets()
-    {
-        /*
-        foreach(inlet in inlets)
-        {
-            connect(inlet to corresponding paramName);
-        }
-         */
-    }
-
-    /**
-     *
-     */
-    createInlet()
-    {
-        /*
-        new IS_Inlet(paramName);
-         */
+        this.output = new IS_Thru(this.siblingContext);
     }
 
     /**
@@ -53,9 +32,9 @@ export class IS_Node extends IS_Object
         }
          */
         // TODO: resolve this with node inlets
-        if(audioNode.iSType !== undefined && audioNode.iSType === IS_Type.IS_Node)
+        if(audioNode.iSType !== undefined && audioNode.iSType === IS_Type.IS_Effect)
         {
-            this.output.connect(audioNode.node);
+            this.output.connect(audioNode.input);
         }
         else
         {
@@ -87,13 +66,23 @@ export class IS_Node extends IS_Object
         this.output.connect(this.siblingContext.destination);
     }
 
+    get output()
+    {
+        return this.output.gain;
+    }
+
+    get gain()
+    {
+        return this.output.gain;
+    }
+
     /**
      *
      * @param value
      */
     set gain(value)
     {
-        this.output.gain.value = value;
+        this.output.gain = value;
     }
 
     /**
@@ -138,15 +127,5 @@ export class IS_Node extends IS_Object
         {
             this.node[key] = this.params[key];
         }
-    }
-
-    /**
-     *
-     * @param key
-     * @returns {*}
-     */
-    getInlet(key)
-    {
-        // return this.inlets[key];
     }
 }

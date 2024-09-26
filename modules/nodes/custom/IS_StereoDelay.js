@@ -1,4 +1,4 @@
-import { IS_Node } from "../core/IS_Node.js";
+import { IS_MixEffect } from "../core/effect/IS_MixEffect";
 
 const IS_StereoDelayParamNames =
 {
@@ -8,7 +8,7 @@ const IS_StereoDelayParamNames =
     wetMix: "wetMix",
 }
 
-export class IS_StereoDelay extends IS_Node
+export class IS_StereoDelay extends IS_MixEffect
 {
     constructor(siblingContext, delayTimeLeft = 0.5, delayTimeRight = 0.25,
                 feedbackPercent = 0.5, wetMix = 0.5, maxDelayTime = 1)
@@ -22,28 +22,18 @@ export class IS_StereoDelay extends IS_Node
         this.setParamValue(this.paramNames.feedbackPercent, feedbackPercent);
         this.setParamValue(this.paramNames.wetMix, wetMix);
 
-        this.node = this.siblingContext.createGain();
         this.delayLeft = this.siblingContext.createDelay(this.delayTimeLeft, this.feedbackPercent, 1, maxDelayTime);
         this.delayRight = this.siblingContext.createDelay(this.delayTimeRight, this.feedbackPercent, 1, maxDelayTime);
         this.panLeft = this.siblingContext.createStereoPanner(-1);
         this.panRight = this.siblingContext.createStereoPanner(1);
-        this.dryGain = this.siblingContext.createGain();
-        this.wetGain = this.siblingContext.createGain();
 
-        this.dryGain.gain = 1 - this.wetMix;
-        this.wetGain.gain = this.wetMix;
-
-        this.node.connect(this.dryGain.node);
-        this.dryGain.connect(this.output);
-
-        this.node.connect(this.delayLeft);
-        this.node.connect(this.delayRight);
+        this.input.connect(this.delayLeft);
+        this.input.connect(this.delayRight);
 
         this.delayLeft.connect(this.panLeft);
         this.delayRight.connect(this.panRight);
         this.panLeft.connect(this.wetGain);
         this.panRight.connect(this.wetGain);
-        this.wetGain.connect(this.output);
     }
 
     get delayTimeLeft()

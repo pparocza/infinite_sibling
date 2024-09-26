@@ -1,7 +1,6 @@
 import { IS_Object } from "../../types/IS_Object.js";
 import { IS_Type } from "../../enums/IS_Type.js";
 import { IS_Parameter } from "../../types/IS_Parameter.js";
-import { IS_Thru } from "./IS_Thru.js";
 
 export class IS_Node extends IS_Object
 {
@@ -16,7 +15,7 @@ export class IS_Node extends IS_Object
         // TODO: inlets and parameter connections
         this.inlet = {};
 
-        this.output = new IS_Thru(this.siblingContext);
+        this.output = new GainNode(this.siblingContext.audioContext);
     }
 
     /**

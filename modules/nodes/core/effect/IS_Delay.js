@@ -23,13 +23,14 @@ export class IS_Delay extends IS_MixEffect
         this.feedbackGain = this.siblingContext.createGain();
 
         this.node.delayTime.value = this.delayTime;
-        this.feedbackGain.gain.value = this.feedbackPercent;
+        this.feedbackGain.gain = this.feedbackPercent;
 
         this.input.connect(this.node);
-        this.node.connect(this.feedbackGain);
+        this.node.connect(this.feedbackGain.input);
         this.feedbackGain.connect(this.node);
 
-        this.node.connect(this.wetGain);
+        // TODO: WAAPI Node Wrapper so that you never have to do this
+        this.node.connect(this.wetGain.input);
     }
 
     get delayTime()

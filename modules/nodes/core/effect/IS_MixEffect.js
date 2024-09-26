@@ -17,7 +17,7 @@ export class IS_MixEffect extends IS_Effect
 
         this.setParamValue(IS_MixEffectParamNames.wetMix, wetMix);
 
-        this.input.connect(this.dryGain);
+        this.input.connect(this.dryGain.input);
         this.dryGain.connect(this.output);
 
         this.wetGain.connect(this.output);

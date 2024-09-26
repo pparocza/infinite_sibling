@@ -27,8 +27,8 @@ export class IS_StereoDelay extends IS_MixEffect
         this.panLeft = this.siblingContext.createStereoPanner(-1);
         this.panRight = this.siblingContext.createStereoPanner(1);
 
-        this.input.connect(this.delayLeft);
-        this.input.connect(this.delayRight);
+        this.input.connect(this.delayLeft.input);
+        this.input.connect(this.delayRight.input);
 
         this.delayLeft.connect(this.panLeft);
         this.delayRight.connect(this.panRight);

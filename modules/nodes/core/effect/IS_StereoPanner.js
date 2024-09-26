@@ -1,4 +1,4 @@
-import { IS_Effect } from "../IS_Effect.js";
+import { IS_Effect } from "./IS_Effect.js";
 
 const IS_StereoPannerParamNames =
 {

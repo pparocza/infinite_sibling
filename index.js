@@ -8,7 +8,6 @@
     // core
         export { IS_Node } from "./modules/nodes/core/IS_Node.js";
         export { IS_StartableNode } from "./modules/nodes/core/IS_StartableNode.js";
-        export { IS_Thru } from "./modules/nodes/core/IS_Thru.js";
         // effect
             export { IS_BiquadFilter } from "./modules/nodes/core/effect/IS_BiquadFilter.js";
             export { IS_Convolver } from "./modules/nodes/core/effect/IS_Convolver.js";

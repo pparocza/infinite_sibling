@@ -65,11 +65,6 @@ export class IS_Node extends IS_Object
         this.output.connect(this.siblingContext.destination);
     }
 
-    get output()
-    {
-        return this.output.gain;
-    }
-
     get gain()
     {
         return this.output.gain;

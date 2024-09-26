@@ -1,4 +1,4 @@
-import { IS_Effect } from "./IS_Effect";
+import { IS_Effect } from "./IS_Effect.js";
 
 const IS_GainParamNames =
 {

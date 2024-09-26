@@ -1,11 +1,11 @@
-import { IS_Node } from "../IS_Node.js";
+import { IS_Effect } from "../IS_Effect.js";
 
 const IS_StereoPannerParamNames =
 {
     pan: "pan"
 }
 
-export class IS_StereoPanner extends IS_Node
+export class IS_StereoPanner extends IS_Effect
 {
     constructor(siblingContext, pan = 0)
     {

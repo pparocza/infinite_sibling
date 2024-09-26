@@ -1,4 +1,4 @@
-import { IS_MixEffect } from "../core/effect/IS_MixEffect";
+import { IS_MixEffect } from "../core/effect/IS_MixEffect.js";
 
 const IS_StereoDelayParamNames =
 {

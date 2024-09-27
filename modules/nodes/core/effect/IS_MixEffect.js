@@ -37,9 +37,9 @@ export class IS_MixEffect extends IS_Effect
 
     set wetMix(value)
     {
+        this.setParamValue(IS_MixEffectParamNames.wetMix, value);
+
         this.dryGain.gain = 1 - this.wetMix;
         this.wetGain.gain = this.wetMix;
-
-        this.setParamValue(IS_MixEffectParamNames.wetMix, value);
     }
 }

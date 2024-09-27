@@ -779,7 +779,7 @@ export class IS_Buffer extends IS_Object
 
             for (let j= 0; j < this.buffer.length; j++)
             {
-                nowBuffering[j] += otherBuffer[j];
+                nowBuffering[j] += otherNowBuffering[j];
             }
         }
     }
@@ -810,7 +810,7 @@ export class IS_Buffer extends IS_Object
 
             for (let j= 0; j < this.buffer.length; j++)
             {
-                nowBuffering[j] *= otherBuffer[j];
+                nowBuffering[j] *= otherNowBuffering[j];
             }
         }
     }
@@ -841,7 +841,7 @@ export class IS_Buffer extends IS_Object
 
             for (let j= 0; j < this.buffer.length; j++)
             {
-                nowBuffering[j] /= otherBuffer[j];
+                nowBuffering[j] /= otherNowBuffering[j];
             }
         }
     }
@@ -872,7 +872,7 @@ export class IS_Buffer extends IS_Object
 
             for (let j= 0; j < this.buffer.length; j++)
             {
-                nowBuffering[j] -= otherBuffer[j];
+                nowBuffering[j] -= otherNowBuffering[j];
             }
         }
     }

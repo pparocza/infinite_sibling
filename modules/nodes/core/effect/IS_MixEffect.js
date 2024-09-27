@@ -1,4 +1,3 @@
-import { IS_Node } from "../IS_Node.js";
 import { IS_Effect } from "./IS_Effect.js";
 
 const IS_MixEffectParamNames =
@@ -23,6 +22,12 @@ export class IS_MixEffect extends IS_Effect
         this.wetGain.connect(this.output);
     }
 
+    connectToWetGain(audioNode)
+    {
+        // TODO: WAAPI Node Wrapper so that you never have to specify "input"
+        audioNode.connect(this.wetGain.input);
+    }
+
     get wetMix()
     {
         return this.getParamValue(IS_MixEffectParamNames.wetMix);
@@ -35,5 +40,4 @@ export class IS_MixEffect extends IS_Effect
 
         this.setParamValue(IS_MixEffectParamNames.wetMix, value);
     }
-
 }

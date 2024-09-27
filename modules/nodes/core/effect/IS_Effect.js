@@ -11,4 +11,9 @@ export class IS_Effect extends IS_Node
 
         this.input = new GainNode(this.siblingContext.audioContext);
     }
+
+    connectInputTo(audioNode)
+    {
+        this.input.connect(audioNode);
+    }
 }

@@ -27,13 +27,14 @@ export class IS_StereoDelay extends IS_MixEffect
         this.panLeft = this.siblingContext.createStereoPanner(-1);
         this.panRight = this.siblingContext.createStereoPanner(1);
 
-        this.input.connect(this.delayLeft.input);
-        this.input.connect(this.delayRight.input);
+        this.connectInputTo(this.delayLeft.input);
+        this.connectInputTo(this.delayRight.input);
 
         this.delayLeft.connect(this.panLeft);
         this.delayRight.connect(this.panRight);
-        this.panLeft.connect(this.wetGain);
-        this.panRight.connect(this.wetGain);
+
+        this.connectToWetGain(this.panLeft);
+        this.connectToWetGain(this.panRight);
     }
 
     get delayTimeLeft()
@@ -68,17 +69,5 @@ export class IS_StereoDelay extends IS_MixEffect
         this.setParamValue(this.paramNames.feedbackPercent, value)
         this.delayRight.feedbackPercent = this.feedbackPercent;
         this.delayLeft.feedbackPercent = this.feedbackPercent;
-    }
-
-    get wetMix()
-    {
-        return this.getParamValue(this.paramNames.wetMix);
-    }
-
-    set wetMix(value)
-    {
-        this.setParamValue(this.paramNames.wetMix, value);
-        this.dryGain.gain = 1 - this.wetMix;
-        this.wetGain.gain = this.wetMix;
     }
 }

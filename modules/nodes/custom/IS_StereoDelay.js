@@ -5,7 +5,6 @@ const IS_StereoDelayParamNames =
     delayTimeLeft: "delayTimeLeft",
     delayTimeRight: "delayTimeRight",
     feedbackPercent: "feedbackPercent",
-    wetMix: "wetMix",
 }
 
 export class IS_StereoDelay extends IS_MixEffect
@@ -13,14 +12,13 @@ export class IS_StereoDelay extends IS_MixEffect
     constructor(siblingContext, delayTimeLeft = 0.5, delayTimeRight = 0.25,
                 feedbackPercent = 0.5, wetMix = 0.5, maxDelayTime = 1)
     {
-        super(siblingContext);
+        super(siblingContext, wetMix);
 
         this.paramNames = IS_StereoDelayParamNames;
 
         this.setParamValue(this.paramNames.delayTimeLeft, delayTimeLeft);
         this.setParamValue(this.paramNames.delayTimeRight, delayTimeRight);
         this.setParamValue(this.paramNames.feedbackPercent, feedbackPercent);
-        this.setParamValue(this.paramNames.wetMix, wetMix);
 
         this.delayLeft = this.siblingContext.createDelay(this.delayTimeLeft, this.feedbackPercent, 1, maxDelayTime);
         this.delayRight = this.siblingContext.createDelay(this.delayTimeRight, this.feedbackPercent, 1, maxDelayTime);

@@ -931,6 +931,21 @@ export class IS_Buffer extends IS_Object
         }
     }
 
+    attenuate(decibelValue = 0)
+    {
+        let amplitude = Utilities.DecibelsToAmplitude(decibelValue);
+
+        for(let channel = 0; channel < this.numberOfChannels; channel++)
+        {
+            let nowBuffering = this.buffer.getChannelData(channel);
+
+            for (let sample = 0; sample < this.buffer.length; sample++)
+            {
+                nowBuffering[sample] *= amplitude;
+            }
+        }
+    }
+
     /**
      * Normalize buffer contents to specified range
      * @param min

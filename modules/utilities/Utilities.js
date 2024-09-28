@@ -38,7 +38,7 @@ export const Utilities =
      */
     DecibelsToAmplitude(decibelValue)
     {
-        // TODO: implement
+        return Math.pow(10.0, decibelValue / 20.0)
     }
 }
 

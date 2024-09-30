@@ -1,6 +1,6 @@
 import { IS_Object } from "../../types/IS_Object.js";
 import { IS_Type } from "../../enums/IS_Type.js";
-import { IS_Parameter } from "../../types/IS_Parameter.js";
+import { Utilities } from "../../utilities/Utilities.js";
 
 export class IS_Node extends IS_Object
 {

@@ -17,8 +17,8 @@ export class IS_StereoPanner extends IS_Effect
 
         this.setParam(this.paramNames.pan, pan);
 
-        this.input.connect(this.node);
-        this.node.connect(this.output);
+        this.connectInputTo(this.node);
+        this.connectToOutput(this.node);
     }
 
     get pan()

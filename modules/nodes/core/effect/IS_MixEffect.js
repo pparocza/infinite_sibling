@@ -18,10 +18,10 @@ export class IS_MixEffect extends IS_Effect
 
         this.wetMix = wetMix;
 
-        this.input.connect(this.dryGain.input);
-        this.dryGain.connect(this.output);
+        this.connectInputTo(this.dryGain.input);
+        this.connectToOutput(this.dryGain);
 
-        this.wetGain.connect(this.output);
+        this.connectToOutput(this.wetGain);
     }
 
     connectToWetGain(audioNode)

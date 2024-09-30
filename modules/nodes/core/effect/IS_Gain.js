@@ -17,8 +17,8 @@ export class IS_Gain extends IS_Effect
 
         this.setParam(this.paramNames.gain, gainValue);
 
-        this.input.connect(this.node);
-        this.node.connect(this.output);
+        this.connectInputTo(this.node);
+        this.connectToOutput(this.node);
     }
 
     get gain()

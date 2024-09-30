@@ -25,8 +25,8 @@ export class IS_BiquadFilter extends IS_Effect
         this.setParam(this.paramNames.gain, gain);
         this.setParam(this.paramNames.detune, detune);
 
-        this.input.connect(this.node);
-        this.node.connect(this.output);
+        this.connectInputTo(this.node);
+        this.connectToOutput(this.node);
     }
 
     get type()

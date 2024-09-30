@@ -21,6 +21,12 @@ export class IS_Gain extends IS_Effect
         this.connectToOutput(this.node);
     }
 
+    get gainInput()
+    {
+        // TODO: input/parameter management - Inlet class?
+        return this.node.gain;
+    }
+
     get gain()
     {
         return this.getParamValue(this.paramNames.gain);

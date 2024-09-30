@@ -20,6 +20,7 @@
             export { IS_BufferSource } from "./modules/nodes/core/source/IS_BufferSource.js";
             export { IS_Oscillator } from "./modules/nodes/core/source/IS_Oscillator.js";
     // custom
+        export { IS_AmplitudeModulator } from "./modules/nodes/custom/IS_AmplitudeModulator.js";
         export { IS_StereoDelay } from "./modules/nodes/custom/IS_StereoDelay.js";
 
 // types

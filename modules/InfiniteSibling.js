@@ -1,3 +1,5 @@
+import {IS_AmplitudeModulator} from "./nodes/custom/IS_AmplitudeModulator";
+
 const iSAudioContext = new AudioContext();
 
 // audio nodes
@@ -122,6 +124,11 @@ export class InfiniteSibling
     createConvolver(buffer = null, normalize = true)
     {
         return new IS_Convolver(this, buffer, normalize);
+    }
+
+    createAmplitudeModulator(buffer = null, modulatorPlaybackRate = 1, loop = true)
+    {
+        return new IS_AmplitudeModulator(this, buffer, modulatorPlaybackRate, loop);
     }
 
     /*

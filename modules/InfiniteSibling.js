@@ -10,7 +10,7 @@ import { IS_Delay } from "./nodes/core/effect/IS_Delay.js";
 import { IS_StereoPanner } from "./nodes/core/effect/IS_StereoPanner.js";
 import { IS_StereoDelay } from "./nodes/custom/IS_StereoDelay.js";
 import { IS_Convolver } from "./nodes/core/effect/IS_Convolver.js";
-import {IS_AmplitudeModulator} from "./nodes/custom/IS_AmplitudeModulator.js";
+import { IS_AmplitudeModulator } from "./nodes/custom/IS_AmplitudeModulator.js";
 
 
 // enums

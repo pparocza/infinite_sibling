@@ -1,4 +1,4 @@
-import {IS_Effect} from "../core/effect/IS_Effect";
+import {IS_Effect} from "../core/effect/IS_Effect.js";
 
 const IS_AmplitudeModulatorParamNames =
 {

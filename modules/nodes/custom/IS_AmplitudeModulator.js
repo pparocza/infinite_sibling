@@ -74,12 +74,12 @@ export class IS_AmplitudeModulator extends IS_Effect
         this.amplitudeModulatorBufferSource.playbackRate = value;
     }
 
-    start(time)
+    start(time = this.siblingContext.now)
     {
         this.amplitudeModulatorBufferSource.start(time);
     }
 
-    stop(time)
+    stop(time = this.siblingContext.now)
     {
         this.amplitudeModulatorBufferSource.stop(time);
     }

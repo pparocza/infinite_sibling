@@ -22,17 +22,17 @@ export const Utilities =
     },
 
     /**
-     * convert an amplitude value to a dB value
+     * Convert an amplitude value to a dB value
      * @param amplitudeValue
      * @constructor
      */
     AmplitudeToDecibels(amplitudeValue)
     {
-        // TODO: implement
+        return 20.0 * Math.log10(amplitudeValue);
     },
 
     /**
-     * convert a dB value to an amplitude value
+     * Convert a dB value to an amplitude value
      * @param decibelValue
      * @constructor
      */

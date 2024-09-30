@@ -18,7 +18,7 @@ export class IS_AmplitudeModulator extends IS_Effect
 
         this.paramNames = IS_AmplitudeModulatorParamNames;
 
-        if(buffer === null)
+        if(buffer !== null)
         {
             this.setParamValue(this.paramNames.buffer, buffer);
         }

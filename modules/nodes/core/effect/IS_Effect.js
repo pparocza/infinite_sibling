@@ -14,6 +14,13 @@ export class IS_Effect extends IS_Node
 
     connectInputTo(audioNode)
     {
-        this.input.connect(audioNode);
+        if(audioNode.iSType !== undefined && audioNode.iSType === IS_Type.IS_Effect)
+        {
+            this.input.connect(audioNode.input);
+        }
+        else
+        {
+            this.input.connect(audioNode);
+        }
     }
 }

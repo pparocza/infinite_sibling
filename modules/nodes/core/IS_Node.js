@@ -49,6 +49,11 @@ export class IS_Node extends IS_Object
         // TODO: IS_Connectable class?
     }
 
+    connectToOutput(audioNode)
+    {
+        audioNode.connect(this.output);
+    }
+
     /**
      *
      */

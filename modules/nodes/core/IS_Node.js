@@ -70,9 +70,13 @@ export class IS_Node extends IS_Object
         this.output.connect(this.siblingContext.destination);
     }
 
+    /**
+     *
+     * @returns
+     */
     get gain()
     {
-        return this.output.gain;
+        return this.output.gain.value;
     }
 
     /**
@@ -81,7 +85,25 @@ export class IS_Node extends IS_Object
      */
     set gain(value)
     {
-        this.output.gain = value;
+        this.output.gain.value = value;
+    }
+
+    /**
+     * Set the volume of a node in Decibels
+     * @param value = decibel value
+     */
+    set volume(value)
+    {
+        this.output.gain.value = Utilities.DecibelsToAmplitude(value);
+    }
+
+    /**
+     * Return the current gain level in Decibels
+     * @returns {*}
+     */
+    get volume()
+    {
+        return Utilities.AmplitudeToDecibels(this.output.gain.value);
     }
 
     /**

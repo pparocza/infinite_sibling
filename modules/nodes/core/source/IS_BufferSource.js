@@ -132,4 +132,9 @@ export class IS_BufferSource extends IS_StartableNode
     {
         this.setParam(this.paramNames.playbackRate, value);
     }
+
+    printBuffer()
+    {
+        this.buffer.print();
+    }
 }

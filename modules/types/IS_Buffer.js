@@ -300,6 +300,26 @@ export class IS_Buffer extends IS_Object
     Buffer "values"
      */
 
+    amplitude(value)
+    {
+        for(let sample= 0; sample < this.bufferOperationsArray.length; sample++)
+        {
+            this.bufferOperationsArray[sample] *= value;
+        }
+        return this;
+    }
+
+    volume(value)
+    {
+        let amplitude = Utilities.DecibelsToAmplitude(value);
+
+        for(let sample= 0; sample < this.bufferOperationsArray.length; sample++)
+        {
+            this.bufferOperationsArray[sample] *= amplitude;
+        }
+        return this;
+    }
+
     /**
      *
      * @param value
@@ -333,7 +353,7 @@ export class IS_Buffer extends IS_Object
      * @param amplitude
      * @returns {IS_Buffer}
      */
-    sine(frequency , amplitude)
+    sine(frequency = 1)
     {
         let time = 0;
         let value = 0;
@@ -341,7 +361,7 @@ export class IS_Buffer extends IS_Object
         for(let sample= 0; sample < this.bufferOperationsArray.length; sample++)
         {
             time = sample / this.bufferOperationsArray.length;
-            value = amplitude * Math.sin(frequency * IS_TWO_PI * time);
+            value = Math.sin(frequency * IS_TWO_PI * time);
 
             this.bufferOperationsArray[sample] = Math.abs(value) <= IS_SAMPLE_MIN_VALUE ? 0 : value;
         }
@@ -354,7 +374,7 @@ export class IS_Buffer extends IS_Object
      * @param amplitude
      * @returns {IS_Buffer}
      */
-    unipolarSine(frequency , amplitude)
+    unipolarSine(frequency = 1)
     {
         let time = 0;
         let value = 0;
@@ -362,7 +382,7 @@ export class IS_Buffer extends IS_Object
         for (let sample= 0; sample < this.bufferOperationsArray.length; sample++)
         {
             time = sample / this.bufferOperationsArray.length;
-            value = amplitude * (( 0.5 * (Math.sin(frequency * IS_TWO_PI * time))) + 0.5);
+            value = (( 0.5 * (Math.sin(frequency * IS_TWO_PI * time))) + 0.5);
 
             this.bufferOperationsArray[sample] = Math.abs(value) <= IS_SAMPLE_MIN_VALUE ? 0 : value;
         }
@@ -750,7 +770,7 @@ export class IS_Buffer extends IS_Object
         {
             this.bufferOperationsArray[sample] = nowBuffering[sample];
         }
-        
+
         return this;
     }
 

@@ -1,3 +1,8 @@
+/**
+ * Root indices of keyboard pitches
+ * @type {{"C#": number, Bb: number, Ab: number, A: number, "A#": number, B: number, C: number, D: number,
+ * E: number, F: number, G: number, Gb: number, "G#": number, Eb: number, "F#": number, Db: number, "D#": number}}
+ */
 export const IS_KeyboardNote =
 {
     "C": 0,

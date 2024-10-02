@@ -1,3 +1,8 @@
+/**
+ * Arrays of keyboard node root indices of tuning modes
+ * @type {{phrygian: number[], major: number[], minor: number[], mixolydian: number[], dorian: number[],
+ * lydian: number[]}}
+ */
 export const IS_Mode =
 {
     major: [0, 2, 4, 5, 7, 9, 11, 12],

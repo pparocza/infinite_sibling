@@ -1,3 +1,8 @@
+/**
+ * Ratios corresponding to equal temperament intervals
+ * @type {{d5: number, P4: number, m2: number, M2: number, P5: number, m3: number, M3: number, m6: number,
+ * M6: number, m7: number, M7: number}}
+ */
 export const IS_Interval =
 {
     m2: 25/24,

@@ -8,7 +8,7 @@ export class IS_Schedule
         this.schedule = [];
     }
 
-    scheduleStart(startableNode, time, duration = -1)
+    scheduleStart(startableNode, time = 0, duration = -1)
     {
         let scheduleItem = new IS_ScheduleItem(startableNode, IS_ScheduleAction.Start, time, duration);
         this.schedule.push(scheduleItem);

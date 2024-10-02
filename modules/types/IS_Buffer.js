@@ -166,7 +166,22 @@ export class IS_Buffer extends IS_Object
      * @param channel
      */
     // TODO: -1 = apply to all channels, and is default?
-    fill(channel = 0)
+    fill(channel = -1)
+    {
+        if(channel !== -1)
+        {
+            this.fillChannel(channel);
+        }
+        else
+        {
+            for(let channel = 0; channel < this.numberOfChannels; channel++)
+            {
+                this.fillChannel(channel);
+            }
+        }
+    }
+
+    fillChannel(channel)
     {
         let nowBuffering = this.buffer.getChannelData(channel);
 
@@ -180,7 +195,22 @@ export class IS_Buffer extends IS_Object
      *
      * @param channel
      */
-    add(channel = 0)
+    add(channel = -1)
+    {
+        if(channel !== -1)
+        {
+            this.addChannel(channel);
+        }
+        else
+        {
+            for(let channel = 0; channel < this.numberOfChannels; channel++)
+            {
+                this.addChannel(channel);
+            }
+        }
+    }
+
+    addChannel(channel)
     {
         let nowBuffering = this.buffer.getChannelData(channel);
 
@@ -194,7 +224,22 @@ export class IS_Buffer extends IS_Object
      *
      * @param channel
      */
-    multiply(channel = 0)
+    multiply(channel = -1)
+    {
+        if(channel !== -1)
+        {
+            this.multiplyChannel(channel);
+        }
+        else
+        {
+            for(let channel = 0; channel < this.numberOfChannels; channel++)
+            {
+                this.multiplyChannel(channel);
+            }
+        }
+    }
+
+    multiplyChannel(channel)
     {
         let nowBuffering = this.buffer.getChannelData(channel);
 
@@ -208,7 +253,22 @@ export class IS_Buffer extends IS_Object
      *
      * @param channel
      */
-    divide(channel = 0)
+    divide(channel = -1)
+    {
+        if(channel !== -1)
+        {
+            this.divideChannel(channel);
+        }
+        else
+        {
+            for(let channel = 0; channel < this.numberOfChannels; channel++)
+            {
+                this.divideChannel(channel);
+            }
+        }
+    }
+
+    divideChannel(channel)
     {
         let nowBuffering = this.buffer.getChannelData(channel);
 
@@ -222,7 +282,22 @@ export class IS_Buffer extends IS_Object
      *
      * @param channel
      */
-    subtract(channel = 0)
+    subtract(channel = -1)
+    {
+        if(channel !== -1)
+        {
+            this.subtractChannel(channel);
+        }
+        else
+        {
+            for(let channel = 0; channel < this.numberOfChannels; channel++)
+            {
+                this.subtractChannel(channel);
+            }
+        }
+    }
+
+    subtractChannel(channel)
     {
         let nowBuffering = this.buffer.getChannelData(channel);
 

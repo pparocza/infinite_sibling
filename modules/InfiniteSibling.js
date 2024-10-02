@@ -142,7 +142,7 @@ export class InfiniteSibling
         return new IS_Schedule();
     }
 
-    scheduleStart(startableNode, time, duration = -1)
+    scheduleStart(startableNode, time = 0, duration = -1)
     {
         this.schedule.scheduleStart(startableNode, time, duration);
     }

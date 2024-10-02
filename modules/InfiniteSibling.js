@@ -40,6 +40,7 @@ export class InfiniteSibling
         BufferPrint.configure();
 
         this.schedule = new IS_Schedule();
+        this.addedSchedules = [];
     }
 
     /*
@@ -155,6 +156,26 @@ export class InfiniteSibling
     startSchedule()
     {
         this.schedule.start();
+
+        for(let addedScheduleIndex = 0; addedScheduleIndex < this.addedSchedules.length; addedScheduleIndex++)
+        {
+            this.addedSchedules[addedScheduleIndex].stop();
+        }
+    }
+
+    stopSchedule()
+    {
+        this.schedule.stop();
+
+        for(let addedScheduleIndex = 0; addedScheduleIndex < this.addedSchedules.length; addedScheduleIndex++)
+        {
+            this.addedSchedules[addedScheduleIndex].stop();
+        }
+    }
+
+    addSchedule(schedule)
+    {
+        this.addedSchedules.push(schedule);
     }
 
     /*

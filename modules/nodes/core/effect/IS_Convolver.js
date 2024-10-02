@@ -27,7 +27,7 @@ export class IS_Convolver extends IS_MixEffect
         }
         else
         {
-            this.noiseReverb();
+            this.stereoNoiseReverb();
         }
 
         this.connectInputTo(this.node);

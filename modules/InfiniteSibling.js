@@ -46,11 +46,6 @@ export class InfiniteSibling
     /*
     Audio Status
      */
-    load()
-    {
-
-    }
-
     start()
     {
         this.audioContext.resume();

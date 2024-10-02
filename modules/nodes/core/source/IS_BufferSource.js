@@ -1,5 +1,6 @@
 import { IS_StartableNode } from "../IS_StartableNode.js";
 import { IS_Type } from "../../../enums/IS_Type.js";
+import { BufferPrint } from "../../../utilities/BufferPrint.js";
 
 const IS_BufferSourceParamNames =
 {
@@ -135,6 +136,6 @@ export class IS_BufferSource extends IS_StartableNode
 
     printBuffer()
     {
-        this.buffer.print();
+        BufferPrint.print(this.buffer);
     }
 }

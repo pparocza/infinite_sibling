@@ -61,9 +61,9 @@ export class IS_Convolver extends IS_MixEffect
         this.setParam(this.paramNames.normalize, value);
     }
 
-    noiseReverb(length = 1, numberOfChannels = 2)
+    stereoNoiseReverb(length = 3)
     {
-        let buffer = this.siblingContext.createBuffer(numberOfChannels, length, this.siblingContext.sampleRate);
+        let buffer = this.siblingContext.createBuffer(2, length, this.siblingContext.sampleRate);
 
         buffer.noise().fill(0);
         buffer.noise().fill(1);

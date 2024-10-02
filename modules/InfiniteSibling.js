@@ -46,13 +46,20 @@ export class InfiniteSibling
     /*
     Audio Status
      */
+    load()
+    {
+
+    }
+
     start()
     {
         this.audioContext.resume();
+        this.startSchedule();
     }
 
     stop()
     {
+        this.stopSchedule();
         this.audioContext.close();
     }
 
@@ -159,7 +166,7 @@ export class InfiniteSibling
 
         for(let addedScheduleIndex = 0; addedScheduleIndex < this.addedSchedules.length; addedScheduleIndex++)
         {
-            this.addedSchedules[addedScheduleIndex].stop();
+            this.addedSchedules[addedScheduleIndex].start();
         }
     }
 

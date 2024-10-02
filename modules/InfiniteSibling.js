@@ -20,6 +20,7 @@ import { IS_Mode } from "./enums/IS_Mode.js";
 
 // types
 import { IS_Scale } from "./types/IS_Scale.js";
+import { IS_Schedule } from "./types/Schedule/IS_Schedule.js";
 
 // utilities
 import { IS_Random } from "./utilities/IS_Random.js";
@@ -37,6 +38,8 @@ export class InfiniteSibling
         this.output.connect(this.destination);
 
         BufferPrint.configure();
+
+        this.schedule = new IS_Schedule();
     }
 
     /*
@@ -128,6 +131,30 @@ export class InfiniteSibling
     createAmplitudeModulator(buffer = null, modulatorPlaybackRate = 1, loop = true)
     {
         return new IS_AmplitudeModulator(this, buffer, modulatorPlaybackRate, loop);
+    }
+
+    /*
+    Schedule
+     */
+
+    createSchedule()
+    {
+        return new IS_Schedule();
+    }
+
+    scheduleStart(startableNode, time, duration = -1)
+    {
+        this.schedule.scheduleStart(startableNode, time, duration);
+    }
+
+    scheduleStop(startableNode, time)
+    {
+        this.schedule.scheduleStop();
+    }
+
+    startSchedule()
+    {
+        this.schedule.start();
     }
 
     /*

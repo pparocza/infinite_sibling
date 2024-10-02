@@ -1,4 +1,4 @@
-import {IS_ScheduleAction} from "../../enums/IS_ScheduleAction";
+import { IS_ScheduleAction } from "../../enums/IS_ScheduleAction.js";
 
 export class IS_ScheduleItem
 {

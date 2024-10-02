@@ -35,9 +35,17 @@ export class IS_Schedule
 
     start()
     {
-        for(let scheduleIndex = 0; scheduleIndex < this.schedule.length; scheduleIndex++)
+        for (let scheduleIndex = 0; scheduleIndex < this.schedule.length; scheduleIndex++)
         {
             this.schedule[scheduleIndex].schedule();
+        }
+    }
+
+    stop()
+    {
+        for (let scheduleIndex = 0; scheduleIndex < this.schedule.length; scheduleIndex++)
+        {
+            this.schedule[scheduleIndex].stop();
         }
     }
 }

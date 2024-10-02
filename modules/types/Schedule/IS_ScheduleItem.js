@@ -15,28 +15,38 @@ export class IS_ScheduleItem
         switch (this.scheduleAction)
         {
             case (IS_ScheduleAction.Start):
-                this.start();
+                this.scheduleStart();
                 break;
             case (IS_ScheduleAction.Stop):
-                this.stop();
+                this.scheduleStop();
                 break;
             default:
                 break;
         }
     }
 
-    start()
+    scheduleStart()
     {
         this.startableNode.start(this.time);
 
-        if(this.duration >= 0)
+        if (this.duration >= 0)
         {
             this.startableNode.stop(this.time + this.duration);
         }
     }
 
-    stop()
+    scheduleStop()
     {
         this.startableNode.stop(this.time);
+    }
+
+    start()
+    {
+        this.startableNode.start();
+    }
+
+    stop()
+    {
+        this.startableNode.stop();
     }
 }

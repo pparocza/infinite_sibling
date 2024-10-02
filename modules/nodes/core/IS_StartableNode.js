@@ -22,6 +22,8 @@ export class IS_StartableNode extends IS_Node
         }
 
         this.node.start(time);
+
+        this.isInitialized = false;
     }
 
     stop(time = this.siblingContext.now)

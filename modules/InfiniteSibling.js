@@ -65,7 +65,12 @@ export class InfiniteSibling
      */
     set outputGain(value)
     {
-        this.output.setParam("gain", value);
+        this.output.gain.value = value;
+    }
+
+    set outputVolume(value)
+    {
+        this.output.gain.value = this.decibelsToAmplitude(value);
     }
 
     /*

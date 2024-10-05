@@ -19,8 +19,10 @@ import { IS_KeyboardNote } from "./enums/IS_KeyboardNote.js";
 import { IS_Mode } from "./enums/IS_Mode.js";
 
 // types
+import { IS_Array } from "./types/IS_Array.js";
 import { IS_Scale } from "./types/IS_Scale.js";
 import { IS_Schedule } from "./types/Schedule/IS_Schedule.js";
+import { IS_Sequence } from "./types/Sequence/IS_Sequence.js";
 
 // utilities
 import { IS_Random } from "./utilities/IS_Random.js";

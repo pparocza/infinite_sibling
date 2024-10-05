@@ -42,7 +42,7 @@ export class InfiniteSibling
         BufferPrint.configure();
 
         this.schedule = new IS_Schedule();
-        this.addedSchedules = [];
+        this.scheduleRegistry = [this.schedule];
     }
 
     /*
@@ -147,9 +147,15 @@ export class InfiniteSibling
     Schedule
      */
 
+    /**
+     * Create an IS_Schedule and add it to the Schedule Registry
+     * @returns {IS_Schedule}
+     */
     createSchedule()
     {
-        return new IS_Schedule();
+        let schedule = new IS_Schedule();
+        this.scheduleRegistry.push(schedule);
+        return schedule;
     }
 
     scheduleStart(startableNode, time = 0, duration = -1)
@@ -162,23 +168,21 @@ export class InfiniteSibling
         this.schedule.scheduleStop();
     }
 
-    startSchedule()
+    startSchedules()
     {
-        this.schedule.start();
-
-        for(let addedScheduleIndex = 0; addedScheduleIndex < this.addedSchedules.length; addedScheduleIndex++)
+        for(let addedScheduleIndex = 0; addedScheduleIndex < this.scheduleRegistry.length; addedScheduleIndex++)
         {
-            this.addedSchedules[addedScheduleIndex].start();
+            this.scheduleRegistry[addedScheduleIndex].schedule();
         }
     }
 
-    stopSchedule()
+    stopSchedules()
     {
         this.schedule.stop();
 
-        for(let addedScheduleIndex = 0; addedScheduleIndex < this.addedSchedules.length; addedScheduleIndex++)
+        for(let addedScheduleIndex = 0; addedScheduleIndex < this.scheduleRegistry.length; addedScheduleIndex++)
         {
-            this.addedSchedules[addedScheduleIndex].stop();
+            this.scheduleRegistry[addedScheduleIndex].stop();
         }
     }
 

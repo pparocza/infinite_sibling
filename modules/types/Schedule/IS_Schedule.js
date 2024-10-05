@@ -1,6 +1,9 @@
 import { IS_ScheduleAction } from "../../enums/IS_ScheduleAction.js";
 import { IS_ScheduleItem } from "./IS_ScheduleItem.js";
 
+/**
+ * Schedule starts and stops of Startable Nodes
+ */
 export class IS_Schedule
 {
     constructor()

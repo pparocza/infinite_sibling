@@ -188,7 +188,16 @@ export class InfiniteSibling
 
     addSchedule(schedule)
     {
-        this.addedSchedules.push(schedule);
+        this.scheduleRegistry.push(schedule);
+    }
+
+    /*
+    Sequence
+     */
+
+    createSequence()
+    {
+        return new IS_Sequence();
     }
 
     /*

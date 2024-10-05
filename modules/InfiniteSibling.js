@@ -203,6 +203,11 @@ export class InfiniteSibling
     /*
     Utilities
      */
+    array(array = [])
+    {
+        return new IS_Array(array);
+    }
+
     MidiToFrequency(midiNoteNumber)
     {
         return Utilities.MidiToFrequency(midiNoteNumber);

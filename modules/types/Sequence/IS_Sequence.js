@@ -40,7 +40,7 @@ export class IS_Sequence
                 {
                     let nextStart = nextSequenceItem.startTime;
                     let nextOverlap = nextSequenceItem.overlap;
-                    
+
                     sequenceItemSchedule.duration = nextStart + nextOverlap;
                 }
             }

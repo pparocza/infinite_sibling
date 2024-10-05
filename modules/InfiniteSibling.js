@@ -232,6 +232,20 @@ export class InfiniteSibling
         return new IS_Scale(tonic, mode);
     }
 
+    ratioScale(tonic = IS_KeyboardNote.C, mode = IS_Mode.major)
+    {
+        let scaleArray = [];
+        let midiScale = this.scale(tonic, mode).value;
+
+        for (let i = 0; i < midiScale.length; i++)
+        {
+            let midiNote = midiScale[i];
+            scaleArray[i] = this.MidiToFrequency(midiNote);
+        }
+
+        return new IS_Array(scaleArray);
+    }
+
     intervalRatio(intervalString)
     {
         return IS_Interval[intervalString];

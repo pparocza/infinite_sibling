@@ -250,4 +250,24 @@ export class InfiniteSibling
     {
         return IS_Interval[intervalString];
     }
+
+    /**
+     * Convert an amplitude value to a dB value
+     * @param amplitudeValue
+     * @constructor
+     */
+    amplitudeToDecibels(amplitudeValue)
+    {
+        return Utilities.AmplitudeToDecibels(amplitudeValue);
+    }
+
+    /**
+     * Convert a dB value to an amplitude value
+     * @param decibelValue
+     * @constructor
+     */
+    decibelsToAmplitude(decibelValue)
+    {
+        return Utilities.DecibelsToAmplitude(decibelValue);
+    }
 }

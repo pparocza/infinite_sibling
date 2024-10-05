@@ -7,12 +7,17 @@ export class IS_Schedule
     {
         this.schedule = [];
         this.offset = 0;
+        this.duration = 0;
     }
 
-    scheduleStart(startableNode, time = 0, duration = -1)
+    /**
+     * Create an IS_ScheduleItem to schedule the playback of an IS_StartableNode
+     * @param startableNode
+     * @param startTime
+     * @param duration
+     */
+    scheduleStart(startableNode, startTime = 0, duration = -1)
     {
-        let startTime = time + this.offset;
-
         let scheduleItem = new IS_ScheduleItem
         (
             startableNode, IS_ScheduleAction.Start, startTime, duration
@@ -21,10 +26,8 @@ export class IS_Schedule
         this.schedule.push(scheduleItem);
     }
 
-    scheduleStop(startableNode, time)
+    scheduleStop(startableNode, stopTime)
     {
-        let stopTime = time + this.offset;
-
         let scheduleItem = new IS_ScheduleItem
         (
             startableNode, IS_ScheduleAction.Stop, stopTime
@@ -33,11 +36,11 @@ export class IS_Schedule
         this.schedule.push(scheduleItem);
     }
 
-    start()
+    schedule()
     {
         for (let scheduleIndex = 0; scheduleIndex < this.schedule.length; scheduleIndex++)
         {
-            this.schedule[scheduleIndex].schedule();
+            this.schedule[scheduleIndex].schedule(this.offset, this.duration);
         }
     }
 

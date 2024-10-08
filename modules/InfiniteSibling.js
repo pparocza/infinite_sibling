@@ -42,7 +42,8 @@ export class InfiniteSibling
         BufferPrint.configure();
 
         this.schedule = new IS_Schedule();
-        this.scheduleRegistry = [this.schedule];
+        this.schedules = [];
+        this.sequences = [];
     }
 
     /*
@@ -51,12 +52,13 @@ export class InfiniteSibling
     start()
     {
         this.audioContext.resume();
-        this.startSchedule();
+        this.scheduleSequences();
+        this.startSchedules();
     }
 
     stop()
     {
-        this.stopSchedule();
+        this.stopSchedules();
         this.audioContext.close();
     }
 
@@ -153,9 +155,7 @@ export class InfiniteSibling
      */
     createSchedule()
     {
-        let schedule = new IS_Schedule();
-        this.scheduleRegistry.push(schedule);
-        return schedule;
+        return new IS_Schedule();
     }
 
     scheduleStart(startableNode, time = 0, duration = -1)
@@ -170,25 +170,17 @@ export class InfiniteSibling
 
     startSchedules()
     {
-        for(let addedScheduleIndex = 0; addedScheduleIndex < this.scheduleRegistry.length; addedScheduleIndex++)
-        {
-            this.scheduleRegistry[addedScheduleIndex].schedule();
-        }
+        this.schedule.schedule();
     }
 
     stopSchedules()
     {
         this.schedule.stop();
-
-        for(let addedScheduleIndex = 0; addedScheduleIndex < this.scheduleRegistry.length; addedScheduleIndex++)
-        {
-            this.scheduleRegistry[addedScheduleIndex].stop();
-        }
     }
 
-    addSchedule(schedule)
+    schedule(schedule)
     {
-        this.scheduleRegistry.push(schedule);
+        this.schedules.push(schedule);
     }
 
     /*
@@ -198,6 +190,19 @@ export class InfiniteSibling
     createSequence()
     {
         return new IS_Sequence();
+    }
+
+    sequence(sequence)
+    {
+        this.sequences.push(sequence);
+    }
+
+    scheduleSequences()
+    {
+        for(let sequenceIndex = 0; sequenceIndex < this.sequences.length; sequenceIndex++)
+        {
+            this.sequences[sequenceIndex].schedule();
+        }
     }
 
     /*

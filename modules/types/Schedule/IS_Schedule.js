@@ -8,9 +8,14 @@ export class IS_Schedule
 {
     constructor()
     {
-        this.schedule = [];
+        this.scheduleItems = [];
         this.offset = 0;
-        this.duration = 0;
+        this.duration = -1;
+    }
+
+    generateSchedule()
+    {
+        // TODO: procedural parameters for schedule generation
     }
 
     /**
@@ -26,7 +31,7 @@ export class IS_Schedule
             startableNode, IS_ScheduleAction.Start, startTime, duration
         );
 
-        this.schedule.push(scheduleItem);
+        this.scheduleItems.push(scheduleItem);
     }
 
     scheduleStop(startableNode, stopTime)
@@ -36,22 +41,31 @@ export class IS_Schedule
             startableNode, IS_ScheduleAction.Stop, stopTime
         );
 
-        this.schedule.push(scheduleItem);
+        this.scheduleItems.push(scheduleItem);
     }
 
     schedule()
     {
-        for (let scheduleIndex = 0; scheduleIndex < this.schedule.length; scheduleIndex++)
+        for (let scheduleItemIndex = 0; scheduleItemIndex < this.scheduleItems.length; scheduleItemIndex++)
         {
-            this.schedule[scheduleIndex].schedule(this.offset, this.duration);
+            let scheduleItem = this.scheduleItems[scheduleItemIndex];
+
+            if (this.duration >= 0)
+            {
+                scheduleItem.duration = Math.max(this.duration - scheduleItem.startTime, 0);
+            }
+
+            scheduleItem.startTime = this.offset + scheduleItem.startTime;
+
+            this.scheduleItems[scheduleItemIndex].schedule(this.offset, this.duration);
         }
     }
 
     stop()
     {
-        for (let scheduleIndex = 0; scheduleIndex < this.schedule.length; scheduleIndex++)
+        for (let scheduleItemIndex = 0; scheduleItemIndex < this.scheduleItems.length; scheduleItemIndex++)
         {
-            this.schedule[scheduleIndex].stop();
+            this.scheduleItems[scheduleItemIndex].stop();
         }
     }
 }

@@ -1,4 +1,4 @@
-import {IS_SequenceItem} from "./IS_SequenceItem.js";
+import { IS_SequenceItem } from "./IS_SequenceItem.js";
 
 /**
  * Arrange IS_Schedules in time
@@ -8,6 +8,7 @@ export class IS_Sequence
     constructor(sequence = [])
     {
         this.sequence = [];
+        this.stopTime = -1;
     }
 
     addSchedule(schedule, startTime, shouldCancel = true, overlap = 0)
@@ -44,6 +45,12 @@ export class IS_Sequence
                     sequenceItemSchedule.duration = nextStart + nextOverlap;
                 }
             }
+            else if (this.stopTime > 0)
+            {
+                sequenceItemSchedule.duration = this.stopTime - sequenceItem.startTime;
+            }
+
+            sequenceItemSchedule.schedule();
         }
     }
 }

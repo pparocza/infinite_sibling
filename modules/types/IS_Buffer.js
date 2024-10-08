@@ -873,7 +873,9 @@ export class IS_Buffer extends IS_Object
             nowBuffering = this.buffer.getChannelData(channel);
             otherNowBuffering = otherBuffer.getChannelData(channel);
 
-            for (let sample= 0; sample < this.buffer.length; sample++)
+            let shorterBufferLength = nowBuffering < otherNowBuffering ? nowBuffering : otherNowBuffering;
+
+            for (let sample= 0; sample < shorterBufferLength; sample++)
             {
                 nowBuffering[sample] += otherNowBuffering[sample];
             }
@@ -904,7 +906,9 @@ export class IS_Buffer extends IS_Object
             nowBuffering = this.buffer.getChannelData(channel);
             otherNowBuffering = otherBuffer.getChannelData(channel);
 
-            for (let sample= 0; sample < this.buffer.length; sample++)
+            let shorterBufferLength = nowBuffering < otherNowBuffering ? nowBuffering : otherNowBuffering;
+
+            for (let sample= 0; sample < shorterBufferLength; sample++)
             {
                 nowBuffering[sample] *= otherNowBuffering[sample];
             }
@@ -935,7 +939,9 @@ export class IS_Buffer extends IS_Object
             nowBuffering = this.buffer.getChannelData(channel);
             otherNowBuffering = otherBuffer.getChannelData(channel);
 
-            for (let sample= 0; sample < this.buffer.length; sample++)
+            let shorterBufferLength = nowBuffering < otherNowBuffering ? nowBuffering : otherNowBuffering;
+
+            for (let sample= 0; sample < shorterBufferLength; sample++)
             {
                 nowBuffering[sample] /= otherNowBuffering[sample];
             }
@@ -966,7 +972,9 @@ export class IS_Buffer extends IS_Object
             nowBuffering = this.buffer.getChannelData(channel);
             otherNowBuffering = otherBuffer.getChannelData(channel);
 
-            for (let sample= 0; sample < this.buffer.length; sample++)
+            let shorterBufferLength = nowBuffering < otherNowBuffering ? nowBuffering : otherNowBuffering;
+
+            for (let sample= 0; sample < shorterBufferLength; sample++)
             {
                 nowBuffering[sample] -= otherNowBuffering[sample];
             }
@@ -999,8 +1007,6 @@ export class IS_Buffer extends IS_Object
         let cropEndSample = Math.round(otherBuffer.length * cropEndPercent);
 
         let cropLength = cropEndSample - cropStartSample;
-
-        let insertSample = Math.round(this.length * insertPercent);
 
         let cropArray = [];
 

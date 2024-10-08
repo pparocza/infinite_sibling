@@ -12,7 +12,6 @@ import { IS_StereoDelay } from "./nodes/custom/IS_StereoDelay.js";
 import { IS_Convolver } from "./nodes/core/effect/IS_Convolver.js";
 import { IS_AmplitudeModulator } from "./nodes/custom/IS_AmplitudeModulator.js";
 
-
 // enums
 import { IS_Interval } from "./enums/IS_Interval.js";
 import { IS_KeyboardNote } from "./enums/IS_KeyboardNote.js";

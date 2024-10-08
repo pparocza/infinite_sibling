@@ -1026,6 +1026,35 @@ export class IS_Buffer extends IS_Object
         }
     }
 
+    insertBuffer(buffer, insertPercent)
+    {
+        let otherBuffer = null;
+        let nowBuffering = null;
+        let otherNowBuffering = null;
+
+        if(buffer.iSType !== undefined && buffer.iSType === IS_Type.IS_Buffer)
+        {
+            otherBuffer = buffer.buffer;
+        }
+        else
+        {
+            otherBuffer = buffer;
+        }
+
+        let insertSample = Math.round(this.length * insertPercent);
+
+        for (let channel = 0; channel < this.numberOfChannels; channel++)
+        {
+            nowBuffering = this.buffer.getChannelData(channel);
+            otherNowBuffering = otherBuffer.getChannelData(channel);
+
+            for (let sample = 0; sample < otherNowBuffering.length; sample++)
+            {
+                nowBuffering[sample + insertSample] = otherNowBuffering[sample];
+            }
+        }
+    }
+
     attenuate(decibelValue = 0)
     {
         let amplitude = Utilities.DecibelsToAmplitude(decibelValue);

@@ -29,7 +29,7 @@
     export { IS_Object } from "./modules/types/IS_Object.js"
     export { IS_Parameter } from "./modules/types/IS_Parameter.js";
     export { IS_Scale } from "./modules/types/IS_Scale.js";
-    export { IS_Sequence } from "./modules/types/IS_Sequence.js";
+    export { IS_SequenceArray } from "./modules/types/IS_SequenceArray.js";
     export { IS_Schedule } from "./modules/types/Schedule/IS_Schedule.js"
 
 // utilities

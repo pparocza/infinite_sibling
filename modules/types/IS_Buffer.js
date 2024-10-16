@@ -1032,7 +1032,13 @@ export class IS_Buffer extends IS_Object
         }
     }
 
-    insertBuffer(buffer, insertPercent)
+    /**
+     *
+     * @param buffer
+     * @param insertPercent
+     * @param writeMode
+     */
+    insertBuffer(buffer, insertPercent, writeMode = 0)
     {
         let otherBuffer = null;
         let nowBuffering = null;
@@ -1056,7 +1062,18 @@ export class IS_Buffer extends IS_Object
 
             for (let sample = 0; sample < otherNowBuffering.length; sample++)
             {
-                nowBuffering[sample + insertSample] = otherNowBuffering[sample];
+                switch(writeMode)
+                {
+                    case 0:
+                        nowBuffering[sample + insertSample] = otherNowBuffering[sample];
+                        break;
+                    case 1:
+                        nowBuffering[sample + insertSample] += otherNowBuffering[sample];
+                        break;
+                    default:
+                        nowBuffering[sample + insertSample] = otherNowBuffering[sample];
+                        break;
+                }
             }
         }
     }

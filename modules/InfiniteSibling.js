@@ -12,6 +12,7 @@ import { IS_StereoDelay } from "./nodes/custom/IS_StereoDelay.js";
 import { IS_Convolver } from "./nodes/core/effect/IS_Convolver.js";
 import { IS_AmplitudeModulator } from "./nodes/custom/IS_AmplitudeModulator.js";
 
+
 // enums
 import { IS_Interval } from "./enums/IS_Interval.js";
 import { IS_KeyboardNote } from "./enums/IS_KeyboardNote.js";
@@ -105,6 +106,12 @@ export class InfiniteSibling
         return new IS_Gain(this, gainValue);
     }
 
+    /**
+     * Create an IS_Buffer
+     * @param numberOfChannels
+     * @param duration length of the buffer in seconds
+     * @returns {IS_Buffer}
+     */
     createBuffer(numberOfChannels = 1, duration = 1)
     {
         return new IS_Buffer(this, numberOfChannels, duration, this.sampleRate);
@@ -164,7 +171,7 @@ export class InfiniteSibling
 
     scheduleStop(startableNode, time)
     {
-        this.schedule.scheduleStop();
+        this.schedule.scheduleStop(startableNode, time);
     }
 
     startSchedules()

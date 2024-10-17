@@ -44,11 +44,42 @@ export class InfiniteSibling
         this.schedule = new IS_Schedule();
         this.schedules = [];
         this.sequences = [];
+
+        this.loadCallbacks = [];
+        this.readyCallbacks = [];
     }
 
     /*
     Audio Status
      */
+    load()
+    {
+        for(let loadCallbackIndex = 0; loadCallbackIndex < this.loadCallbacks.length; loadCallbackIndex++)
+        {
+            this.loadCallbacks[loadCallbackIndex]();
+        }
+
+        this.ready();
+    }
+
+    onLoad(callback)
+    {
+        this.loadCallbacks.push(callback);
+    }
+
+    ready()
+    {
+        for(let readyCallbackIndex = 0; readyCallbackIndex < this.readyCallbacks.length; readyCallbackIndex++)
+        {
+            this.readyCallbacks[readyCallbackIndex]();
+        }
+    }
+
+    onReady(callback)
+    {
+        this.readyCallbacks.push(callback);
+    }
+
     start()
     {
         this.audioContext.resume();

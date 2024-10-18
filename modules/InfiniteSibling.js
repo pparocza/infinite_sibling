@@ -47,6 +47,8 @@ export class InfiniteSibling
 
         this.loadCallbacks = [];
         this.readyCallbacks = [];
+        this.startCallbacks = [];
+        this.stopCallbacks = [];
     }
 
     /*
@@ -87,10 +89,26 @@ export class InfiniteSibling
         this.startSchedules();
     }
 
+    onStart(callback)
+    {
+        for(let startCallbackIndex = 0; startCallbackIndex < this.startCallbacks.length; startCallbackIndex++)
+        {
+            this.startCallbacks[startCallbackIndex]();
+        }
+    }
+
     stop()
     {
         this.stopSchedules();
         this.audioContext.close();
+    }
+
+    onStop(callback)
+    {
+        for(let stopCallbackIndex = 0; stopCallbackIndex < this.stopCallbacks.length; stopCallbackIndex++)
+        {
+            this.stopCallbacks[stopCallbackIndex]();
+        }
     }
 
     /*

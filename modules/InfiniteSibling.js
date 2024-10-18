@@ -86,7 +86,10 @@ export class InfiniteSibling
     {
         this.audioContext.resume();
 
-        this.onStart();
+        for(let startCallbackIndex = 0; startCallbackIndex < this.startCallbacks.length; startCallbackIndex++)
+        {
+            this.startCallbacks[startCallbackIndex]();
+        }
 
         this.scheduleSequences();
         this.startSchedules();
@@ -94,15 +97,17 @@ export class InfiniteSibling
 
     onStart(callback)
     {
-        for(let startCallbackIndex = 0; startCallbackIndex < this.startCallbacks.length; startCallbackIndex++)
-        {
-            this.startCallbacks[startCallbackIndex]();
-        }
+        this.startCallbacks.push(callback);
     }
 
     stop()
     {
         this.onStop();
+
+        for(let stopCallbackIndex = 0; stopCallbackIndex < this.stopCallbacks.length; stopCallbackIndex++)
+        {
+            this.stopCallbacks[stopCallbackIndex]();
+        }
 
         this.stopSchedules();
         this.audioContext.close();
@@ -110,10 +115,7 @@ export class InfiniteSibling
 
     onStop(callback)
     {
-        for(let stopCallbackIndex = 0; stopCallbackIndex < this.stopCallbacks.length; stopCallbackIndex++)
-        {
-            this.stopCallbacks[stopCallbackIndex]();
-        }
+        this.stopCallbacks.push(callback);
     }
 
     /*

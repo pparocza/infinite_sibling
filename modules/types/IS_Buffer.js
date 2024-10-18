@@ -8,13 +8,13 @@ import { BufferPrint } from "../utilities/BufferPrint.js";
 import { Utilities } from "../utilities/Utilities.js";
 
 const IS_BufferParamNames =
-{
-    buffer: "buffer",
-    numberOfChannels: "numberOfChannels",
-    duration: "duration",
-    length: "length",
-    sampleRate: "sampleRate"
-}
+    {
+        buffer: "buffer",
+        numberOfChannels: "numberOfChannels",
+        duration: "duration",
+        length: "length",
+        sampleRate: "sampleRate"
+    }
 
 export class IS_Buffer extends IS_Object
 {
@@ -873,7 +873,8 @@ export class IS_Buffer extends IS_Object
             nowBuffering = this.buffer.getChannelData(channel);
             otherNowBuffering = otherBuffer.getChannelData(channel);
 
-            let shorterBufferLength = nowBuffering < otherNowBuffering ? nowBuffering : otherNowBuffering;
+            let shorterBufferLength = nowBuffering < otherNowBuffering ?
+                nowBuffering.length : otherNowBuffering.length;
 
             for (let sample= 0; sample < shorterBufferLength; sample++)
             {
@@ -906,7 +907,8 @@ export class IS_Buffer extends IS_Object
             nowBuffering = this.buffer.getChannelData(channel);
             otherNowBuffering = otherBuffer.getChannelData(channel);
 
-            let shorterBufferLength = nowBuffering < otherNowBuffering ? nowBuffering : otherNowBuffering;
+            let shorterBufferLength = nowBuffering < otherNowBuffering ?
+                nowBuffering.length : otherNowBuffering.length;
 
             for (let sample= 0; sample < shorterBufferLength; sample++)
             {
@@ -972,7 +974,8 @@ export class IS_Buffer extends IS_Object
             nowBuffering = this.buffer.getChannelData(channel);
             otherNowBuffering = otherBuffer.getChannelData(channel);
 
-            let shorterBufferLength = nowBuffering < otherNowBuffering ? nowBuffering : otherNowBuffering;
+            let shorterBufferLength = nowBuffering < otherNowBuffering ?
+                nowBuffering.length : otherNowBuffering.length;
 
             for (let sample= 0; sample < shorterBufferLength; sample++)
             {

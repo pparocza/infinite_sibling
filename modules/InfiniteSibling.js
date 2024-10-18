@@ -85,6 +85,9 @@ export class InfiniteSibling
     start()
     {
         this.audioContext.resume();
+
+        this.onStart();
+
         this.scheduleSequences();
         this.startSchedules();
     }
@@ -99,6 +102,8 @@ export class InfiniteSibling
 
     stop()
     {
+        this.onStop();
+
         this.stopSchedules();
         this.audioContext.close();
     }

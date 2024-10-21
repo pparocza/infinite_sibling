@@ -12,11 +12,11 @@ import { IS_StereoDelay } from "./nodes/custom/IS_StereoDelay.js";
 import { IS_Convolver } from "./nodes/core/effect/IS_Convolver.js";
 import { IS_AmplitudeModulator } from "./nodes/custom/IS_AmplitudeModulator.js";
 
-
 // enums
 import { IS_Interval } from "./enums/IS_Interval.js";
 import { IS_KeyboardNote } from "./enums/IS_KeyboardNote.js";
 import { IS_Mode } from "./enums/IS_Mode.js";
+import { IS_Type } from "./enums/IS_Type.js";
 
 // types
 import { IS_Array } from "./types/IS_Array.js";
@@ -129,6 +129,22 @@ export class InfiniteSibling
     set outputVolume(value)
     {
         this.output.gain.value = this.decibelsToAmplitude(value);
+    }
+
+    connectToMainOutput(...audioNodes)
+    {
+        for (let audioNodeIndex = 0; audioNodeIndex < audioNodes.length; audioNodeIndex++)
+        {
+            let audioNode = audioNodes[audioNodeIndex];
+
+            if (audioNode.iSType !== undefined && audioNode.iSType === IS_Type.IS_Effect)
+            {
+                audioNode.connect(this.output);
+            } else
+            {
+                audioNode.connect(this.output);
+            }
+        }
     }
 
     /*

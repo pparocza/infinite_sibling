@@ -12,15 +12,36 @@ export class IS_Effect extends IS_Node
         this.input = new GainNode(this.siblingContext.audioContext);
     }
 
-    connectInputTo(audioNode)
+    connectInputTo(...audioNodes)
     {
-        if(audioNode.iSType !== undefined && audioNode.iSType === IS_Type.IS_Effect)
+        for(let audioNodeIndex = 0; audioNodeIndex < audioNodes.length; audioNodeIndex++)
         {
-            this.input.connect(audioNode.input);
+            let audioNode = audioNodes[audioNodeIndex];
+            
+            if(audioNode.iSType !== undefined && audioNode.iSType === IS_Type.IS_Effect)
+            {
+                this.input.connect(audioNode.input);
+            }
+            else
+            {
+                this.input.connect(audioNode);
+            }
         }
-        else
+    }
+
+    connectToInput(...audioNodes)
+    {
+        for (let audioNodeIndex = 0; audioNodeIndex < audioNodes.length; audioNodeIndex++)
         {
-            this.input.connect(audioNode);
+            let audioNode = audioNodes[audioNodeIndex];
+
+            if (audioNode.iSType !== undefined && audioNode.iSType === IS_Type.IS_Effect)
+            {
+                audioNode.connect(this.input);
+            } else
+            {
+                audioNode.connect(this.input);
+            }
         }
     }
 }

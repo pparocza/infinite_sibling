@@ -20,9 +20,9 @@ export class IS_Node extends IS_Object
 
     /**
      *
-     * @param audioNode
+     * @param audioNodes
      */
-    connect(audioNode)
+    connect(...audioNodes)
     {
         /*
         if(audioNode == parameter)
@@ -30,14 +30,19 @@ export class IS_Node extends IS_Object
             connect to parameter inlet
         }
          */
-        // TODO: resolve this with node inlets
-        if(audioNode.iSType !== undefined && audioNode.iSType === IS_Type.IS_Effect)
+        for(let nodeIndex = 0; nodeIndex < audioNodes.length; nodeIndex++)
         {
-            this.output.connect(audioNode.input);
-        }
-        else
-        {
-            this.output.connect(audioNode);
+            let audioNode = audioNodes[nodeIndex];
+
+            // TODO: resolve this with node inlets
+            if(audioNode.iSType !== undefined && audioNode.iSType === IS_Type.IS_Effect)
+            {
+                this.output.connect(audioNode.input);
+            }
+            else
+            {
+                this.output.connect(audioNode);
+            }
         }
     }
 

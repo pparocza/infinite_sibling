@@ -16,7 +16,10 @@ export class IS_StartableNode extends IS_Node
         {
             if(this.initializeCallback === null)
             {
-                throw new Error("IS_StartableNode initializeCallback has not been defined. Please define in extending class");
+                throw new Error
+                (
+                    "IS_StartableNode initializeCallback has not been defined. Please define in extending class"
+                );
             }
             this.initializeCallback();
         }
@@ -30,5 +33,15 @@ export class IS_StartableNode extends IS_Node
     {
         this.node.stop(time + this.siblingContext.now);
         this.isInitialized = false;
+    }
+
+    scheduleStart(time, duration)
+    {
+        this.siblingContext.scheduleStart(this, time, duration);
+    }
+
+    scheduleStop(time)
+    {
+        this.siblingContext.scheduleStop(this, time, duration);
     }
 }

@@ -129,6 +129,23 @@ export class InfiniteSibling
         this.output.gain.value = this.decibelsToAmplitude(value);
     }
 
+    connectSeries(...audioNodes)
+    {
+        for (let audioNodeIndex = 1; audioNodeIndex < audioNodes.length; audioNodeIndex++)
+        {
+            let previousNode = audioNodes[audioNodeIndex - 1];
+            let audioNode = audioNodes[audioNodeIndex];
+
+            if (audioNode.iSType !== undefined && audioNode.iSType === IS_Type.IS_Effect)
+            {
+                previousNode.connect(audioNode);
+            } else
+            {
+                previousNode.connect(audioNode);
+            }
+        }
+    }
+
     connectToMainOutput(...audioNodes)
     {
         for (let audioNodeIndex = 0; audioNodeIndex < audioNodes.length; audioNodeIndex++)

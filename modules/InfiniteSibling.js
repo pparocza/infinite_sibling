@@ -301,9 +301,9 @@ export class InfiniteSibling
     /*
     Utilities
      */
-    array(array = [])
+    array(...values)
     {
-        return new IS_Array(array);
+        return new IS_Array(values);
     }
 
     MidiToFrequency(midiNoteNumber)

@@ -102,8 +102,6 @@ export class InfiniteSibling
 
     stop()
     {
-        this.onStop();
-
         for(let stopCallbackIndex = 0; stopCallbackIndex < this.stopCallbacks.length; stopCallbackIndex++)
         {
             this.stopCallbacks[stopCallbackIndex]();

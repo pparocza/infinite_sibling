@@ -2,12 +2,12 @@ import { IS_MixEffect } from "./IS_MixEffect.js";
 import { IS_Type } from "../../../enums/IS_Type.js";
 
 const IS_ConvolverParamNames =
-{
-    buffer: "buffer",
-    normalize: "normalize",
-    // TODO: Implement wetMix (IS_MixEffect superclass?)
-    wetMix: "wetMix"
-}
+    {
+        buffer: "buffer",
+        normalize: "normalize",
+        // TODO: Implement wetMix (IS_MixEffect superclass?)
+        wetMix: "wetMix"
+    }
 
 export class IS_Convolver extends IS_MixEffect
 {
@@ -23,7 +23,14 @@ export class IS_Convolver extends IS_MixEffect
 
         if(buffer !== null)
         {
-            this.setParam(this.paramNames.buffer, buffer);
+            if(buffer.iSType !== undefined && buffer.iSType === IS_Type.IS_Buffer)
+            {
+                this.setParam(this.paramNames.buffer, buffer.buffer);
+            }
+            else
+            {
+                this.setParam(this.paramNames.buffer, buffer)
+            }
         }
         else
         {

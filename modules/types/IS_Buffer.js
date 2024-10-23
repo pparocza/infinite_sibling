@@ -8,13 +8,13 @@ import { BufferPrint } from "../utilities/BufferPrint.js";
 import { Utilities } from "../utilities/Utilities.js";
 
 const IS_BufferParamNames =
-    {
-        buffer: "buffer",
-        numberOfChannels: "numberOfChannels",
-        duration: "duration",
-        length: "length",
-        sampleRate: "sampleRate"
-    }
+{
+    buffer: "buffer",
+    numberOfChannels: "numberOfChannels",
+    duration: "duration",
+    length: "length",
+    sampleRate: "sampleRate"
+}
 
 export class IS_Buffer extends IS_Object
 {
@@ -712,7 +712,7 @@ export class IS_Buffer extends IS_Object
                     this.bufferOperationsArray[sample] = Math.pow(value, upExp);
                     break;
                 case (sample > upPoint && sample < downPoint):
-                    this.bufferOperationsArray = 1;
+                    this.bufferOperationsArray[sample] = 1;
                     break;
                 case (sample >= downPoint && sample < rampEnd):
                     value = 1 - ((sample - downPoint) / downLength);

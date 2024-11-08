@@ -26,12 +26,22 @@ export class IS_Array extends IS_Object
 
     get max()
     {
-        return(Math.max(...this.value));
+        return Math.max(...this.value);
     }
 
     get min()
     {
-        return(Math.min(...this.value));
+        return Math.min(...this.value);
+    }
+
+    get first()
+    {
+        return this.value[0];
+    }
+
+    get last()
+    {
+        return this.value[this.value.length - 1]
     }
 
     push(value)
@@ -157,9 +167,9 @@ export class IS_Array extends IS_Object
                 break;
             case("insert"):
             case(2):
-                /*
-                 TODO: splices "array" into "this.array" starting at "insertIndex"
-                 */
+            /*
+             TODO: splices "array" into "this.array" starting at "insertIndex"
+             */
         }
     }
 
@@ -225,8 +235,62 @@ export class IS_Array extends IS_Object
             }
             return;
         }
-            generatePermutations(this.value, length);
+        generatePermutations(this.value, length);
 
-            return results;
+        return results;
+    }
+
+    timeSequence
+    (
+        length,
+        possibleDurations = [], startTime = 0, includeStart = true,
+        speed = 1, drunk = 0,
+        density = 1
+    )
+    {
+        let possibleDurationsArray;
+
+        // Ensure that timeBetweenStarts is an IS_Array
+        if(possibleDurations.iSType !== undefined && possibleDurations.iSType === IS_Type.IS_Array)
+        {
+            possibleDurationsArray = possibleDurations;
+        }
+        else
+        {
+            possibleDurationsArray = this.siblingContext.array();
+            possibleDurationsArray.value = possibleDurations;
+        }
+
+        let speedFactor = 1 / speed;
+        let previousTime = startTime;
+
+        for (let timeIndex = 0; timeIndex < length; timeIndex++)
+        {
+            if (timeIndex == 0 && includeStart)
+            {
+                if(IS_Random.randomFloat(0, 1) < density)
+                {
+                    this.value.push(startTime);
+                }
+                continue;
+            }
+
+            let timeToNext = possibleDurationsArray.random() * speedFactor;
+            let drunkAdjustment = timeToNext * IS_Random.randomFloat(-drunk, drunk);
+
+            let nextTime = previousTime + timeToNext + drunkAdjustment;
+
+            if (IS_Random.randomFloat(0, 1) < density)
+            {
+                this.value.push(nextTime);
+            }
+
+            previousTime = nextTime;
+        }
+    }
+
+    print()
+    {
+        console.log(this.value);
     }
 }

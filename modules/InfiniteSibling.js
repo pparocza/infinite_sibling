@@ -325,6 +325,11 @@ export class InfiniteSibling
         return IS_Random.randomFloat(min, max);
     }
 
+    coinToss(probabilityOfTrue = 0.5)
+    {
+        return IS_Random.coinToss(probabilityOfTrue);
+    }
+
     scale(tonic = IS_KeyboardNote.C, mode = IS_Mode.major)
     {
         return new IS_Scale(tonic, mode);

@@ -50,7 +50,7 @@ export class IS_Schedule
         {
             let scheduleItem = this.scheduleItems[scheduleItemIndex];
 
-            if (this.duration >= 0)
+            if (this.duration > 0)
             {
                 scheduleItem.duration = Math.max(this.duration - scheduleItem.startTime, 0);
             }

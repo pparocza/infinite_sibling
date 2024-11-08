@@ -33,7 +33,7 @@ export class IS_ScheduleItem
     {
         this.startableNode.start(this.startTime);
 
-        if (this.duration >= 0)
+        if (this.duration > 0)
         {
             this.startableNode.stop(this.startTime + this.duration);
         }

@@ -9,6 +9,7 @@ export class IS_Array extends IS_Object
         super(IS_Type.IS_Array);
 
         this.value = array !== null ? array : [];
+        this.urnArray = [];
     }
 
     print()
@@ -287,6 +288,24 @@ export class IS_Array extends IS_Object
 
             previousTime = nextTime;
         }
+    }
+
+    urn()
+    {
+        if(this.value.length == 0)
+        {
+            for(let urnIndex = 0; urnIndex < this.urnArray.length; urnIndex++)
+            {
+                this.value[urnIndex] = this.urnArray[urnIndex];
+            }
+        }
+
+        let randomIndex = IS_Random.randomInt(0, this.value.length);
+        let randomValue = this.value[randomIndex];
+        this.urnArray.push(randomValue);
+        this.value.splice(randomIndex, 1);
+
+        return randomValue;
     }
 
     print()

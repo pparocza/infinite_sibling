@@ -175,6 +175,7 @@ export class InfiniteSibling
         return this.audioContext.sampleRate;
     }
 
+    // TODO: replace with NodeFactory class?
     /*
     Node Creation
      */
@@ -238,10 +239,10 @@ export class InfiniteSibling
         return new IS_AmplitudeModulator(this, buffer, modulatorPlaybackRate, loop);
     }
 
+    // TODO: replace with Scheduler class?
     /*
     Schedule
      */
-
     /**
      * Create an IS_Schedule and add it to the Schedule Registry
      * @returns {IS_Schedule}
@@ -279,7 +280,6 @@ export class InfiniteSibling
     /*
     Sequence
      */
-
     createSequence()
     {
         return new IS_Sequence();

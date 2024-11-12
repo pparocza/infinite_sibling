@@ -428,15 +428,26 @@ export class IS_Buffer extends IS_Object
      * @param amplitude
      * @returns {IS_Buffer}
      */
-    sine(frequency = 1)
+    sine(frequency, normalize = true)
     {
         let time = 0;
-        let value = 0;
+        let frequencies = Array.isArray(frequency) ? frequency : [frequency];
+        let nFrequencies = frequencies.length;
 
         for(let sample= 0; sample < this.bufferOperationsArray.length; sample++)
         {
+            let value = 0;
             time = sample / this.bufferOperationsArray.length;
-            value = Math.sin(frequency * IS_TWO_PI * time);
+
+            for(let frequency = 0; frequency < nFrequencies; frequency++)
+            {
+                value += Math.sin(frequencies[frequency] * IS_TWO_PI * time);
+            }
+
+            if(normalize)
+            {
+                value /= nFrequencies;
+            }
 
             this.bufferOperationsArray[sample] = Math.abs(value) <= IS_SAMPLE_MIN_VALUE ? 0 : value;
         }
@@ -449,15 +460,26 @@ export class IS_Buffer extends IS_Object
      * @param amplitude
      * @returns {IS_Buffer}
      */
-    unipolarSine(frequency = 1)
+    unipolarSine(frequency, normalize = true)
     {
         let time = 0;
         let value = 0;
+        let frequencies = Array.isArray(frequency) ? frequency : [frequency];
+        let nFrequencies = frequencies.length;
 
         for (let sample= 0; sample < this.bufferOperationsArray.length; sample++)
         {
             time = sample / this.bufferOperationsArray.length;
-            value = (( 0.5 * (Math.sin(frequency * IS_TWO_PI * time))) + 0.5);
+
+            for(let frequency = 0; frequency < nFrequencies; frequency++)
+            {
+                value += (( 0.5 * (Math.sin(frequencies[frequency] * IS_TWO_PI * time))) + 0.5);
+            }
+
+            if(normalize)
+            {
+                value /= nFrequencies;
+            }
 
             this.bufferOperationsArray[sample] = Math.abs(value) <= IS_SAMPLE_MIN_VALUE ? 0 : value;
         }
@@ -597,19 +619,42 @@ export class IS_Buffer extends IS_Object
      * @param modulatorGain
      * @returns {IS_Buffer}
      */
-    frequencyModulatedSine(carrierFrequency, modulatorFrequency, modulatorGain)
+    frequencyModulatedSine(carrierFrequency, modulatorFrequency, modulatorGain, normalize = true)
     {
+        let carrierFrequencyArray = Array.isArray(carrierFrequency) ? carrierFrequency : [carrierFrequency];
+        let modulatorFrequencyArray = Array.isArray(modulatorFrequency) ? modulatorFrequency : [modulatorFrequency];
+        let modulatorGainArray = Array.isArray(modulatorGain) ? modulatorGain : [modulatorGain];
+
+        let nCarrierFrequencies = carrierFrequencyArray.length;
+        let nModulatorFrequences = modulatorFrequencyArray.length;
+        let nModulatorGains = modulatorGainArray.length;
+
+        let longestArrayLength = Math.max(nCarrierFrequencies, nModulatorFrequences, nModulatorGains);
+
         let progressPercent = 0;
-        let value = 0;
         let time = 0;
-        let modulatorAmplitude = 0;
 
         for (let sample= 0; sample < this.bufferOperationsArray.length; sample++)
         {
+            let value = 0;
+
             progressPercent = sample / this.bufferOperationsArray.length;
             time = progressPercent * IS_TWO_PI;
-            modulatorAmplitude = modulatorGain * Math.sin(modulatorFrequency * time);
-            value = Math.sin((carrierFrequency + modulatorAmplitude) * time);
+
+            for (let i = 0; i < longestArrayLength; i++)
+            {
+                let modulatorGain = modulatorGainArray[i % nModulatorGains];
+                let modulatorFrequency = modulatorFrequencyArray[i % nModulatorFrequences];
+                let carrierFrequency = carrierFrequencyArray[i %nCarrierFrequencies];
+
+                let modulatorAmplitude = modulatorGain * Math.sin(modulatorFrequency * time);
+                value += Math.sin((carrierFrequency + modulatorAmplitude) * time);
+            }
+
+            if (normalize)
+            {
+                value /= longestArrayLength;
+            }
 
             this.bufferOperationsArray[sample] = Math.abs(value) <= IS_SAMPLE_MIN_VALUE ? 0 : value;
         }
@@ -623,19 +668,42 @@ export class IS_Buffer extends IS_Object
      * @param modulatorGain
      * @returns {IS_Buffer}
      */
-    amplitudeModulatedSine(carrierFrequency, modulatorFrequency, modulatorGain)
+    amplitudeModulatedSine(carrierFrequency, modulatorFrequency, modulatorGain, normalize = true)
     {
+        let carrierFrequencyArray = Array.isArray(carrierFrequency) ? carrierFrequency : [carrierFrequency];
+        let modulatorFrequencyArray = Array.isArray(modulatorFrequency) ? modulatorFrequency : [modulatorFrequency];
+        let modulatorGainArray = Array.isArray(modulatorGain) ? modulatorGain : [modulatorGain];
+
+        let nCarrierFrequencies = carrierFrequencyArray.length;
+        let nModulatorFrequences = modulatorFrequencyArray.length;
+        let nModulatorGains = modulatorGainArray.length;
+
+        let longestArrayLength = Math.max(nCarrierFrequencies, nModulatorFrequences, nModulatorGains);
+
         let progressPercent = 0;
-        let value = 0;
         let time = 0;
-        let modulatorAmplitude = 0;
 
         for (let sample= 0; sample < this.bufferOperationsArray.length; sample++)
         {
+            let value = 0;
+
             progressPercent = sample / this.bufferOperationsArray.length;
             time = progressPercent * IS_TWO_PI;
-            modulatorAmplitude = modulatorGain * Math.sin(modulatorFrequency * time);
-            value = modulatorAmplitude * Math.sin(carrierFrequency * time);
+
+            for (let i = 0; i < longestArrayLength; i++)
+            {
+                let modulatorGain = modulatorGainArray[i % nModulatorGains];
+                let modulatorFrequency = modulatorFrequencyArray[i % nModulatorFrequences];
+                let carrierFrequency = carrierFrequencyArray[i %nCarrierFrequencies];
+
+                let modulatorAmplitude = modulatorGain * Math.sin(modulatorFrequency * time);
+                value += modulatorAmplitude * Math.sin(carrierFrequency * time);
+            }
+
+            if (normalize)
+            {
+                value /= longestArrayLength;
+            }
 
             this.bufferOperationsArray[sample] = Math.abs(value) <= IS_SAMPLE_MIN_VALUE ? 0 : value;
         }

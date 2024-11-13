@@ -246,7 +246,7 @@ export class IS_Array extends IS_Object
         length,
         possibleDurations = [], startTime = 0, includeStart = true,
         speed = 1, drunk = 0,
-        density = 1
+        density = 1, timeLimit = -1
     )
     {
         let possibleDurationsArray;
@@ -258,8 +258,7 @@ export class IS_Array extends IS_Object
         }
         else
         {
-            possibleDurationsArray = this.siblingContext.array();
-            possibleDurationsArray.value = possibleDurations;
+            possibleDurationsArray = new IS_Array(possibleDurations);
         }
 
         let speedFactor = 1 / speed;
@@ -267,7 +266,7 @@ export class IS_Array extends IS_Object
 
         for (let timeIndex = 0; timeIndex < length; timeIndex++)
         {
-            if (timeIndex == 0 && includeStart)
+            if (timeIndex === 0 && includeStart)
             {
                 if(IS_Random.randomFloat(0, 1) < density)
                 {
@@ -281,6 +280,11 @@ export class IS_Array extends IS_Object
 
             let nextTime = previousTime + timeToNext + drunkAdjustment;
 
+            if(timeLimit >=0 && nextTime > timeLimit)
+            {
+                break;
+            }
+
             if (IS_Random.randomFloat(0, 1) < density)
             {
                 this.value.push(nextTime);
@@ -292,7 +296,7 @@ export class IS_Array extends IS_Object
 
     urn()
     {
-        if(this.value.length == 0)
+        if(this.value.length === 0)
         {
             for(let urnIndex = 0; urnIndex < this.urnArray.length; urnIndex++)
             {

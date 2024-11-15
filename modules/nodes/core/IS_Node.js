@@ -1,7 +1,7 @@
 import { IS_Object } from "../../types/IS_Object.js";
 import { IS_Type } from "../../enums/IS_Type.js";
 import { Utilities } from "../../utilities/Utilities.js";
-import {IS_AudioParameter} from "../../types/parameter/IS_AudioParameter";
+import { IS_AudioParameter } from "../../types/parameter/IS_AudioParameter.js";
 
 export class IS_Node extends IS_Object
 {

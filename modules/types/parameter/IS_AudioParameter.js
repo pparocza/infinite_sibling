@@ -3,14 +3,17 @@ import { IS_Type } from "../../enums/IS_Type.js";
 
 export class IS_AudioParameter extends IS_Object
 {
-    constructor(audioParameter = null, value = 0)
+    constructor(audioParameter = null, value = null)
     {
         super(IS_Type.IS_AudioParameter);
 
         if(audioParameter !== null)
         {
             this._parameter = audioParameter;
-            this._parameter.value = value;
+            if(value !== null)
+            {
+                this._parameter.value = value;
+            }
         }
     }
 

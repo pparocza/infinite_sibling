@@ -1,12 +1,12 @@
-import { IS_Object } from "./IS_Object.js";
-import { IS_Type } from "../enums/IS_Type.js";
-import { IS_TWO_PI } from "../utilities/Constants.js";
-import { IS_SAMPLE_MIN_VALUE } from "../utilities/Constants.js";
-import { IS_Random } from "../utilities/IS_Random.js";
-import { IS_Array } from "./IS_Array.js";
-import { BufferPrint } from "../utilities/BufferPrint.js";
-import { Utilities } from "../utilities/Utilities.js";
-import { IS_BufferPresets } from "../presets/IS_BufferPresets.js";
+import { IS_Object } from "../IS_Object.js";
+import { IS_Type } from "../../enums/IS_Type.js";
+import { IS_TWO_PI } from "../../utilities/Constants.js";
+import { IS_SAMPLE_MIN_VALUE } from "../../utilities/Constants.js";
+import { IS_Random } from "../../utilities/IS_Random.js";
+import { IS_Array } from "../array/IS_Array.js";
+import { BufferPrint } from "../../utilities/BufferPrint.js";
+import { Utilities } from "../../utilities/Utilities.js";
+import { IS_BufferPresets } from "../../presets/IS_BufferPresets.js";
 
 export class IS_Buffer extends IS_Object
 {
@@ -129,7 +129,7 @@ export class IS_Buffer extends IS_Object
     }
 
     /*
-    Buffer Operations
+    buffer Operations
      */
 
     /**

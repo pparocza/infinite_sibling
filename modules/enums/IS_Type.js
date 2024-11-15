@@ -5,7 +5,7 @@ export const IS_Type =
 
     IS_Node: "IS_Node",
     IS_Array: "IS_Array",
-    IS_Parameter: "IS_Parameter",
+    IS_AudioParameter: "IS_AudioParameter",
     IS_Buffer: "IS_Buffer",
     IS_BufferSource: "IS_BufferSource",
 

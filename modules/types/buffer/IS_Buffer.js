@@ -6,15 +6,7 @@ import { IS_Random } from "../utilities/IS_Random.js";
 import { IS_Array } from "./IS_Array.js";
 import { BufferPrint } from "../utilities/BufferPrint.js";
 import { Utilities } from "../utilities/Utilities.js";
-
-const IS_BufferParamNames =
-{
-    buffer: "buffer",
-    numberOfChannels: "numberOfChannels",
-    duration: "duration",
-    length: "length",
-    sampleRate: "sampleRate"
-}
+import { IS_BufferPresets } from "../presets/IS_BufferPresets.js";
 
 export class IS_Buffer extends IS_Object
 {
@@ -27,42 +19,17 @@ export class IS_Buffer extends IS_Object
             sampleRate = siblingContext.sampleRate;
         }
 
-        this.params = {};
-        this.paramNames = IS_BufferParamNames;
-
         let lengthSamples = siblingContext.SecondsToSamples(duration, sampleRate);
 
-        this.numberOfChannels = numberOfChannels;
-        this.duration = duration;
-        this.length = lengthSamples;
-        this.sampleRate = sampleRate;
+        this._numberOfChannels = numberOfChannels;
+        this._duration = duration;
+        this._length = lengthSamples;
+        this._sampleRate = sampleRate;
 
         this.bufferOperationsArray = new Float32Array(this.length);
         this.buffer = siblingContext.audioContext.createBuffer(numberOfChannels, lengthSamples, this.sampleRate);
-    }
 
-    /*
-    Getters and Setters
-     */
-
-    /**
-     *
-     * @param key
-     * @param value
-     */
-    setParam(key, value)
-    {
-        this.params[key] = value;
-    }
-
-    /**
-     *
-     * @param key
-     * @returns {*}
-     */
-    getParam(key)
-    {
-        return this.params[key];
+        this.preset = new IS_BufferPresets(this);
     }
 
     /**
@@ -71,18 +38,18 @@ export class IS_Buffer extends IS_Object
      */
     get buffer()
     {
-        return this.getParam(this.paramNames.buffer);
+        return this._buffer;
     }
 
     set buffer(buffer)
     {
         if(buffer.iSType !== undefined && buffer.iSType === IS_Type.IS_Buffer)
         {
-            this.setParam(this.paramNames.buffer, buffer.buffer);
+            this._buffer = buffer.buffer;
         }
         else
         {
-            this.setParam(this.paramNames.buffer, buffer);
+            this._buffer = buffer;
         }
     }
 
@@ -92,7 +59,7 @@ export class IS_Buffer extends IS_Object
      */
     get duration()
     {
-        return this.getParam(this.paramNames.duration);
+        return this._duration;
     }
 
     /**
@@ -101,7 +68,8 @@ export class IS_Buffer extends IS_Object
      */
     set duration(value)
     {
-        this.setParam(this.paramNames.duration, value);
+        this._duration = value;
+        this.buffer.duration = this._duration;
     }
 
     /**
@@ -110,7 +78,7 @@ export class IS_Buffer extends IS_Object
      */
     get length()
     {
-        return this.getParam(this.paramNames.length);
+        return this._length;
     }
 
     /**
@@ -119,7 +87,8 @@ export class IS_Buffer extends IS_Object
      */
     set length(value)
     {
-        this.setParam(this.paramNames.length, value);
+        this._length = value;
+        this.buffer.length = this._length;
     }
 
     /**
@@ -127,7 +96,7 @@ export class IS_Buffer extends IS_Object
      */
     get numberOfChannels()
     {
-        return this.getParam(this.paramNames.numberOfChannels);
+        return this._numberOfChannels;
     }
 
     /**
@@ -136,7 +105,8 @@ export class IS_Buffer extends IS_Object
      */
     set numberOfChannels(value)
     {
-        this.setParam(this.paramNames.numberOfChannels, value);
+        this._numberOfChannels = value;
+        this.buffer.numberOfChannels = this._numberOfChannels;
     }
 
     /**
@@ -145,7 +115,7 @@ export class IS_Buffer extends IS_Object
      */
     get sampleRate()
     {
-        return this.getParam(this.paramNames.sampleRate);
+        return this._sampleRate;
     }
 
     /**
@@ -154,7 +124,8 @@ export class IS_Buffer extends IS_Object
      */
     set sampleRate(value)
     {
-        this.setParam(this.paramNames.sampleRate, value);
+        this._sampleRate = value;
+        this.buffer.sampleRate = this._sampleRate;
     }
 
     /*
@@ -370,10 +341,6 @@ export class IS_Buffer extends IS_Object
             }
         }
     }
-
-    /*
-    Buffer "values"
-     */
 
     amplitude(value)
     {

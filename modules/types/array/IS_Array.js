@@ -266,7 +266,7 @@ export class IS_Array extends IS_Object
 
         for (let timeIndex = 0; timeIndex < length; timeIndex++)
         {
-            if (timeIndex === 0 && includeStart)
+            if (timeIndex == 0 && includeStart)
             {
                 if(IS_Random.randomFloat(0, 1) < density)
                 {
@@ -296,7 +296,7 @@ export class IS_Array extends IS_Object
 
     urn()
     {
-        if(this.value.length === 0)
+        if(this.value.length == 0)
         {
             for(let urnIndex = 0; urnIndex < this.urnArray.length; urnIndex++)
             {

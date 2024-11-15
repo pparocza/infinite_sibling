@@ -4,7 +4,7 @@ const iSAudioContext = new AudioContext();
 import { IS_Gain } from "./nodes/core/effect/IS_Gain.js";
 import { IS_Oscillator } from "./nodes/core/source/IS_Oscillator.js";
 import { IS_BiquadFilter } from "./nodes/core/effect/IS_BiquadFilter.js";
-import { IS_Buffer } from "./types/IS_Buffer.js";
+import { IS_Buffer } from "./types/buffer/IS_Buffer.js";
 import { IS_BufferSource } from "./nodes/core/source/IS_BufferSource.js";
 import { IS_Delay } from "./nodes/core/effect/IS_Delay.js";
 import { IS_StereoPanner } from "./nodes/core/effect/IS_StereoPanner.js";
@@ -19,10 +19,10 @@ import { IS_Mode } from "./enums/IS_Mode.js";
 import { IS_Type } from "./enums/IS_Type.js";
 
 // types
-import { IS_Array } from "./types/IS_Array.js";
-import { IS_Scale } from "./types/IS_Scale.js";
-import { IS_Schedule } from "./types/Schedule/IS_Schedule.js";
-import { IS_Sequence } from "./types/Sequence/IS_Sequence.js";
+import { IS_Array } from "./types/array/IS_Array.js";
+import { IS_Scale } from "./types/array/IS_Scale.js";
+import { IS_Schedule } from "./types/schedule/IS_Schedule.js";
+import { IS_Sequence } from "./types/sequence/IS_Sequence.js";
 
 // utilities
 import { IS_Random } from "./utilities/IS_Random.js";
@@ -241,10 +241,10 @@ export class InfiniteSibling
 
     // TODO: replace with Scheduler class?
     /*
-    Schedule
+    schedule
      */
     /**
-     * Create an IS_Schedule and add it to the Schedule Registry
+     * Create an IS_Schedule and add it to the schedule Registry
      * @returns {IS_Schedule}
      */
     createSchedule()
@@ -278,7 +278,7 @@ export class InfiniteSibling
     }
 
     /*
-    Sequence
+    sequence
      */
     createSequence()
     {

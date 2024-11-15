@@ -7,10 +7,11 @@ export class IS_AudioParameter extends IS_Object
     {
         super(IS_Type.IS_AudioParameter);
 
-        if(audioParameter !== null)
+        if (audioParameter !== null)
         {
             this._parameter = audioParameter;
-            if(value !== null)
+
+            if (value !== null)
             {
                 this._parameter.value = value;
             }

@@ -1,55 +1,42 @@
 import { IS_MixEffect } from "./IS_MixEffect.js";
-
-const IS_DelayParamNames =
-{
-    delayTime: "delayTime",
-    feedbackPercent: "feedbackPercent",
-}
+import { IS_AudioParameter } from "../../../types/parameter/IS_AudioParameter.js";
 
 export class IS_Delay extends IS_MixEffect
 {
-    constructor(siblingContext, delayTime = 1, feedbackPercent = 0.25,
-                wetMix = 0.5, maxDelayTime = 1)
+    constructor
+    (
+        siblingContext,
+        delayTime = 1, feedbackPercent = 0.25, wetMix = 0.5, maxDelayTime = 1
+    )
     {
-        super(siblingContext, wetMix);
+        super(siblingContext, siblingContext.audioContext.createDelay(maxDelayTime));
 
-        this.node = this.siblingContext.audioContext.createDelay(maxDelayTime);
+        this.feedbackGain = new GainNode(siblingContext.audioContext);
 
-        this.paramNames = IS_DelayParamNames;
+        this._delayTime = new IS_AudioParameter(this.node.delayTime, delayTime);
+        this._feedbackPercent = new IS_AudioParameter(this.feedbackGain.gain, feedbackPercent);
 
-        this.setParam(this.paramNames.delayTime, delayTime);
-        this.setParamValue(this.paramNames.feedbackPercent, feedbackPercent);
-
-        this.feedbackGain = this.siblingContext.createGain();
-
-        this.node.delayTime.value = this.delayTime;
-        this.feedbackGain.gain = this.feedbackPercent;
-
-        this.connectInputTo(this.node);
-        this.node.connect(this.feedbackGain.input);
+        this.node.connect(this.feedbackGain);
         this.feedbackGain.connect(this.node);
-
-        this.connectToWetGain(this.node);
     }
 
     get delayTime()
     {
-        return this.getParamValue(this.paramNames.delayTime);
+        return this._delayTime;
     }
 
     set delayTime(value)
     {
-        this.setParamValue(this.paramNames.delayTime, value);
+        this._delayTime.value = value;
     }
 
     get feedbackPercent()
     {
-        return this.getParamValue(this.paramNames.feedbackPercent);
+        return this._feedbackPercent;
     }
 
     set feedbackPercent(value)
     {
-        this.setParamValue(this.paramNames.feedbackPercent, value);
-        this.feedbackGain.gain = this.feedbackPercent;
+        this._feedbackPercent.value = value;
     }
 }

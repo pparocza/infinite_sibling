@@ -1,33 +1,22 @@
 import { IS_Effect } from "./IS_Effect.js";
-
-const IS_StereoPannerParamNames =
-{
-    pan: "pan"
-}
+import { IS_AudioParameter } from "../../../types/parameter/IS_AudioParameter.js";
 
 export class IS_StereoPanner extends IS_Effect
 {
     constructor(siblingContext, pan = 0)
     {
-        super(siblingContext);
+        super(siblingContext, new StereoPannerNode(siblingContext.audioContext));
 
-        this.node = new StereoPannerNode(this.siblingContext.audioContext);
-
-        this.paramNames = IS_StereoPannerParamNames;
-
-        this.setParam(this.paramNames.pan, pan);
-
-        this.connectInputTo(this.node);
-        this.connectToOutput(this.node);
+        this._pan = new IS_AudioParameter(this.node.pan, pan)
     }
 
     get pan()
     {
-        return this.getParamValue(this.paramNames.pan);
+        return this._pan;
     }
 
     set pan(value)
     {
-        this.setParam(this.paramNames.pan, value);
+        this._pan.value = value;
     }
 }

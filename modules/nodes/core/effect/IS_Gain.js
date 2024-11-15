@@ -1,39 +1,22 @@
 import { IS_Effect } from "./IS_Effect.js";
-
-const IS_GainParamNames =
-{
-    gain: "gain",
-}
+import { IS_AudioParameter } from "../../../types/parameter/IS_AudioParameter.js";
 
 export class IS_Gain extends IS_Effect
 {
     constructor(siblingContext, gainValue = 1)
     {
-        super(siblingContext);
+        super(siblingContext, new GainNode(siblingContext.audioContext));
 
-        this.node = new GainNode(this.siblingContext.audioContext);
-
-        this.paramNames = IS_GainParamNames;
-
-        this.setParam(this.paramNames.gain, gainValue);
-
-        this.connectInputTo(this.node);
-        this.connectToOutput(this.node);
-    }
-
-    get gainInput()
-    {
-        // TODO: input/parameter management - Inlet class?
-        return this.node.gain;
+        this._gain = new IS_AudioParameter(this.node.gain, gainValue);
     }
 
     get gain()
     {
-        return this.getParamValue(this.paramNames.gain);
+        return this._gain;
     }
 
     set gain(value)
     {
-        this.setParam(this.paramNames.gain, value);
+        this._gain.value = value;
     }
 }

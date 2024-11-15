@@ -3,13 +3,21 @@ import { IS_Type } from "../../../enums/IS_Type.js";
 
 export class IS_Effect extends IS_Node
 {
-    constructor(siblingContext)
+    constructor(siblingContext, audioNode)
     {
-        super(siblingContext);
+        super(siblingContext, audioNode);
 
         this.iSType = IS_Type.IS_Effect;
 
         this.input = new GainNode(this.siblingContext.audioContext);
+
+        this.initializeConnections();
+    }
+
+    initializeConnections()
+    {
+        this.connectInputTo(this.node);
+        this.connectToOutput(this.node);
     }
 
     connectInputTo(...audioNodes)
@@ -17,7 +25,7 @@ export class IS_Effect extends IS_Node
         for(let audioNodeIndex = 0; audioNodeIndex < audioNodes.length; audioNodeIndex++)
         {
             let audioNode = audioNodes[audioNodeIndex];
-            
+
             if(audioNode.iSType !== undefined && audioNode.iSType === IS_Type.IS_Effect)
             {
                 this.input.connect(audioNode.input);

@@ -1,82 +1,59 @@
 import { IS_MixEffect } from "./IS_MixEffect.js";
 import { IS_Type } from "../../../enums/IS_Type.js";
-
-const IS_ConvolverParamNames =
-    {
-        buffer: "buffer",
-        normalize: "normalize",
-        // TODO: Implement wetMix (IS_MixEffect superclass?)
-        wetMix: "wetMix"
-    }
+import { IS_ConvolverPresets } from "../../../presets/IS_ConvolverPresets.js";
 
 export class IS_Convolver extends IS_MixEffect
 {
     constructor(siblingContext, buffer = null, normalize = true)
     {
-        super(siblingContext);
+        super(siblingContext, new ConvolverNode(siblingContext.audioContext));
 
-        this.node = new ConvolverNode(this.siblingContext.audioContext);
+        this.preset = new IS_ConvolverPresets(this);
 
-        this.paramNames = IS_ConvolverParamNames;
+        this.initializeBuffer(buffer);
 
-        this.setParam(this.paramNames.normalize, normalize);
+        this._normalize = normalize;
+        this.normalize = this._normalize;
+    }
 
-        if(buffer !== null)
+    initializeBuffer(buffer)
+    {
+        if (buffer === null)
         {
-            if(buffer.iSType !== undefined && buffer.iSType === IS_Type.IS_Buffer)
-            {
-                this.setParam(this.paramNames.buffer, buffer.buffer);
-            }
-            else
-            {
-                this.setParam(this.paramNames.buffer, buffer)
-            }
-        }
-        else
-        {
-            this.stereoNoiseReverb();
+            this.preset.stereoNoiseReverb();
+            return;
         }
 
-        this.connectInputTo(this.node);
-        this.connectToWetGain(this.node);
+        this.buffer = buffer;
     }
 
     get buffer()
     {
-        this.getParamValue(this.paramNames.buffer);
+        return this._buffer;
     }
 
     set buffer(buffer)
     {
         if(buffer.iSType !== undefined && buffer.iSType === IS_Type.IS_Buffer)
         {
-            this.setParam(this.paramNames.buffer, buffer.buffer);
+            this._buffer = buffer.buffer;
         }
         else
         {
-            this.setParam(this.paramNames.buffer, buffer);
+            this._buffer = buffer;
         }
+
+        this.node.buffer = this._buffer;
     }
 
     get normalize()
     {
-        this.getParamValue(this.paramNames.normalize);
+        return this._normalize;
     }
 
     set normalize(value)
     {
-        this.setParam(this.paramNames.normalize, value);
-    }
-
-    stereoNoiseReverb(length = 3)
-    {
-        let buffer = this.siblingContext.createBuffer(2, length, this.siblingContext.sampleRate);
-
-        buffer.noise().fill(0);
-        buffer.noise().fill(1);
-        buffer.inverseSawtooth(2).multiply(0);
-        buffer.inverseSawtooth(2).multiply(1);
-
-        this.buffer = buffer;
+        this._normalize = value;
+        this.node.normalize = this._normalize;
     }
 }

@@ -1,82 +1,71 @@
 import { IS_Effect } from "./IS_Effect.js";
-
-const IS_BiquadFilterParamNames =
-{
-    type: "type",
-    frequency: "frequency",
-    Q: "Q",
-    gain: "gain",
-    detune: "detune"
-}
+import { IS_AudioParameter } from "../../../types/parameter/IS_AudioParameter.js";
 
 export class IS_BiquadFilter extends IS_Effect
 {
-    constructor(siblingContext, type = "lowpass", frequency = 220, Q = 1, gain = 1, detune = 0)
+    constructor
+    (
+        siblingContext,
+        type = "lowpass", frequency = 220, Q = 1, gain = 1, detune = 0
+    )
     {
-        super(siblingContext);
+        super(siblingContext, new BiquadFilterNode(siblingContext.audioContext))
 
-        this.node = new BiquadFilterNode(this.siblingContext.audioContext);
-
-        this.paramNames = IS_BiquadFilterParamNames;
-
-        this.setParam(this.paramNames.type, type);
-        this.setParam(this.paramNames.frequency, frequency);
-        this.setParam(this.paramNames.Q, Q);
-        this.setParam(this.paramNames.gain, gain);
-        this.setParam(this.paramNames.detune, detune);
-
-        this.connectInputTo(this.node);
-        this.connectToOutput(this.node);
+        this._type = type;
+        this._frequency = new IS_AudioParameter(this.node.frequency, frequency);
+        this._Q = new IS_AudioParameter(this.node.Q, Q);
+        this._gain = new IS_AudioParameter(this.node.gain, gain);
+        this._detune = new IS_AudioParameter(this.node.detune, detune);
     }
 
     get type()
     {
-        return this.getParamValue(this.paramNames.type);
-
+        return this._type;
     }
 
     set type(value)
     {
-        this.setParam(this.paramNames.type, value)
+        this._type = value;
+        this.node.type = value;
     }
 
     get frequency()
     {
-        return this.getParamValue(this.paramNames.frequency);
+        return this._frequency;
     }
 
     set frequency(value)
     {
-        this.setParam(this.paramNames.frequency, value);
+        this._frequency.value = value;
     }
 
     get Q()
     {
-        return this.getParamValue(this.paramNames.Q);
+        return this._Q;
     }
 
     set Q(value)
     {
-        this.setParam(this.paramNames.Q, value);
+        this._Q.value = value;
     }
 
     get gain()
     {
-        return this.getParamValue(this.paramNames.gain);
+        return this._gain.value;
     }
 
     set gain(value)
     {
-        this.setParam(this.paramNames.gain, value);
+        this._gain.value = value;
     }
 
     get detune()
     {
-        return this.getParamValue(this.paramNames.detune);
+        this._detune.value;
     }
 
     set detune(value)
     {
-        this.setParam(this.paramNames.detune, value);
+        this._detune.value = value;
     }
 }

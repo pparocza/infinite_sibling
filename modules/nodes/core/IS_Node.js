@@ -1,21 +1,19 @@
 import { IS_Object } from "../../types/IS_Object.js";
 import { IS_Type } from "../../enums/IS_Type.js";
 import { Utilities } from "../../utilities/Utilities.js";
+import {IS_AudioParameter} from "../../types/parameter/IS_AudioParameter";
 
 export class IS_Node extends IS_Object
 {
-    constructor(siblingContext)
+    constructor(siblingContext, audioNode)
     {
         super(IS_Type.IS_Node);
 
         this.siblingContext = siblingContext;
+        this.node = audioNode;
 
-        this.node = null;
-        this.params = {};
-        // TODO: inlets and parameter connections
-        this.inlet = {};
-
-        this.output = new GainNode(this.siblingContext.audioContext);
+        this._output = new GainNode(siblingContext.audioContext);
+        this._gain = new IS_AudioParameter(this._output.gain);
     }
 
     /**
@@ -24,39 +22,34 @@ export class IS_Node extends IS_Object
      */
     connect(...audioNodes)
     {
-        /*
-        if(audioNode == parameter)
-        {
-            connect to parameter inlet
-        }
-         */
         for(let nodeIndex = 0; nodeIndex < audioNodes.length; nodeIndex++)
         {
             let audioNode = audioNodes[nodeIndex];
 
-            // TODO: resolve this with node inlets
-            if(audioNode.iSType !== undefined && audioNode.iSType === IS_Type.IS_Effect)
+            if(audioNode.iSType !== undefined)
             {
-                this.output.connect(audioNode.input);
+                switch (audioNode.iSType)
+                {
+                    case (IS_Type.IS_Effect):
+                        this._output.connect(audioNode.input);
+                        break;
+                    case (IS_Type.IS_AudioParameter):
+                        this._output.connect(audioNode.parameter);
+                        break;
+                    default:
+                        break;
+                }
             }
             else
             {
-                this.output.connect(audioNode);
+                this._output.connect(audioNode);
             }
         }
     }
 
-    /**
-     *
-     */
-    disconnect()
-    {
-        // TODO: IS_Connectable class?
-    }
-
     connectToOutput(audioNode)
     {
-        audioNode.connect(this.output);
+        audioNode.connect(this._output);
     }
 
     /**
@@ -64,7 +57,7 @@ export class IS_Node extends IS_Object
      */
     connectToMainOutput()
     {
-        this.output.connect(this.siblingContext.output);
+        this._output.connect(this.siblingContext.output);
     }
 
     /**
@@ -72,7 +65,7 @@ export class IS_Node extends IS_Object
      */
     connectToAudioDestination()
     {
-        this.output.connect(this.siblingContext.destination);
+        this._output.connect(this.siblingContext.destination);
     }
 
     /**
@@ -81,7 +74,7 @@ export class IS_Node extends IS_Object
      */
     get gain()
     {
-        return this.output.gain.value;
+        return this._gain;
     }
 
     /**
@@ -90,7 +83,7 @@ export class IS_Node extends IS_Object
      */
     set gain(value)
     {
-        this.output.gain.value = value;
+        this._gain.value = value;
     }
 
     /**
@@ -99,7 +92,7 @@ export class IS_Node extends IS_Object
      */
     set volume(value)
     {
-        this.output.gain.value = Utilities.DecibelsToAmplitude(value);
+        this._gain.value = Utilities.DecibelsToAmplitude(value);
     }
 
     /**
@@ -108,50 +101,6 @@ export class IS_Node extends IS_Object
      */
     get volume()
     {
-        return Utilities.AmplitudeToDecibels(this.output.gain.value);
-    }
-
-    /**
-     *
-     * @param key
-     * @param value
-     */
-    setParamValue(key, value)
-    {
-        this.params[key] = value;
-    }
-
-    /**
-     *
-     * @param key
-     * @returns {*}
-     */
-    getParamValue(key)
-    {
-        return this.params[key];
-    }
-
-    /**
-     * Sets value of an audio parameter // TODO: SET AT TIME
-     * @param key - key used to index parameter value
-     * @param value - parameter value
-     */
-    setParam(key, value)
-    {
-        this.setParamValue(key, value);
-
-        if(value === null)
-        {
-            return;
-        }
-
-        if(this.node[key] !== null && this.node[key].value !== undefined)
-        {
-            this.node[key].value = this.params[key];
-        }
-        else
-        {
-            this.node[key] = this.params[key];
-        }
+        return Utilities.AmplitudeToDecibels(this._gain.value);
     }
 }

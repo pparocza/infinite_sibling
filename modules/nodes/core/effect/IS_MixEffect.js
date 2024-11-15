@@ -1,45 +1,34 @@
 import { IS_Effect } from "./IS_Effect.js";
 
-const IS_MixEffectParamNames =
-{
-    wetMix: "wetMix"
-}
-
 export class IS_MixEffect extends IS_Effect
 {
-    constructor(siblingContext, wetMix = 1)
+    constructor(siblingContext, audioNode, wetMix = 1)
     {
-        super(siblingContext);
+        super(siblingContext, audioNode);
 
         this.dryGain = this.siblingContext.createGain();
         this.wetGain = this.siblingContext.createGain();
 
-        this.setParamValue(IS_MixEffectParamNames.wetMix, wetMix);
-
-        this.wetMix = wetMix;
+        this._wetMix = wetMix;
+        this.wetMix = this._wetMix;
 
         this.connectInputTo(this.dryGain.input);
         this.connectToOutput(this.dryGain);
 
+        this.wetGain.connect(this.node);
         this.connectToOutput(this.wetGain);
-    }
-
-    connectToWetGain(audioNode)
-    {
-        // TODO: WAAPI Node Wrapper so that you never have to specify "input"
-        audioNode.connect(this.wetGain.input);
     }
 
     get wetMix()
     {
-        return this.getParamValue(IS_MixEffectParamNames.wetMix);
+        return this._wetMix;
     }
 
     set wetMix(value)
     {
-        this.setParamValue(IS_MixEffectParamNames.wetMix, value);
+        this._wetMix = value;
 
-        this.dryGain.gain = 1 - this.wetMix;
-        this.wetGain.gain = this.wetMix;
+        this.dryGain.gain = 1 - this._wetMix;
+        this.wetGain.gain = this._wetMix;
     }
 }

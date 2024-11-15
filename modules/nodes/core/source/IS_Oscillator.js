@@ -1,11 +1,5 @@
 import { IS_StartableNode } from "../IS_StartableNode.js";
-
-const IS_OscillatorParamNames =
-{
-    type: "type",
-    frequency: "frequency",
-    detune: "detune"
-}
+import { IS_StartableNodeAudioParameter } from "../../../types/parameter/IS_StartableNodeAudioParameter.js";
 
 export class IS_Oscillator extends IS_StartableNode
 {
@@ -13,62 +7,65 @@ export class IS_Oscillator extends IS_StartableNode
     {
         super(siblingContext);
 
-        this.paramNames = IS_OscillatorParamNames;
+        this._type = type;
 
-        this.setParamValue(this.paramNames.type, type);
-        this.setParamValue(this.paramNames.frequency, frequency);
-        this.setParamValue(this.paramNames.detune, detune);
+        this._frequency = new IS_StartableNodeAudioParameter(siblingContext);
+        this._detune = new IS_StartableNodeAudioParameter(siblingContext);
 
         this.initializeCallback = this.initialize;
         this.initialize();
+
+        this.frequency = frequency;
+        this.detune = detune;
     }
 
     initialize()
     {
         this.node = new OscillatorNode(this.siblingContext.audioContext);
 
-        this.setParam(this.paramNames.type, this.type);
-        this.setParam(this.paramNames.frequency, this.frequency);
-        this.setParam(this.paramNames.detune, this.detune);
+        this.node.frequency.value = 0;
+        this.node.detune.value = 0;
 
-        /*
-            // TODO: Parameter abstraction and initialization method
-            this.inlet[this.paramNames.frequency] = new IS_Parameter(this.siblingContext, this.frequency);
-            this.inlet[this.paramNames.detune] = new IS_Parameter(this.siblingContext, this.detune);
-        */
+        this.node.type = this._type;
 
-        this.node.connect(this.output);
+        this._frequency.outlet.connect(this.node.frequency);
+        this._detune.outlet.connect(this.node.detune);
+
+        this.node.connect(this._output);
 
         this.isInitialized = true;
     }
 
     get type()
     {
-        return this.getParamValue(this.paramNames.type);
+        this._type;
     }
 
     set type(value)
     {
-        this.setParam(this.paramNames.type, value);
+        this._type = value;
+        this.node.type = this._type;
     }
 
     get frequency()
     {
-        return this.getParamValue(this.paramNames.frequency);
+        return this._frequency.parameter;
     }
 
     set frequency(value)
     {
-        this.setParam(this.paramNames.frequency, value);
+        this._frequency.value = value;
+        this.node.frequency.value = this._frequency.value;
     }
 
     get detune()
     {
-        return this.getParamValue(this.paramNames.detune);
+        this._detune.parameter;
     }
 
     set detune(value)
     {
-        this.setParam(this.paramNames.detune, value);
+        this._detune.value = value;
+        this.node.detune.value = this._detune.value;
     }
 }

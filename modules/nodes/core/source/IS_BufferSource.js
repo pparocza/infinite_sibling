@@ -1,16 +1,7 @@
 import { IS_StartableNode } from "../IS_StartableNode.js";
 import { IS_Type } from "../../../enums/IS_Type.js";
 import { BufferPrint } from "../../../utilities/BufferPrint.js";
-
-const IS_BufferSourceParamNames =
-{
-    buffer: "buffer",
-    detune: "detune",
-    loop: "loop",
-    loopStart: "loopStart",
-    loopEnd: "loopEnd",
-    playbackRate: "playbackRate"
-}
+import { IS_StartableNodeAudioParameter } from "../../../types/parameter/IS_StartableNodeAudioParameter.js";
 
 /**
  * Play IS_Buffers
@@ -23,29 +14,14 @@ export class IS_BufferSource extends IS_StartableNode
     {
         super(siblingContext);
 
-        this.paramNames = IS_BufferSourceParamNames;
+        this.initializeBuffer(buffer);
 
-        this.setParamValue(this.paramNames.detune , detune);
-        this.setParamValue(this.paramNames.loop, loop);
-        this.setParamValue(this.paramNames.loopStart, loopStart);
-        this.setParamValue(this.paramNames.loopEnd, loopEnd);
-        this.setParamValue(this.paramNames.playbackRate, playbackRate);
+        this._loop = loop;
+        this._loopStart = loopStart;
+        this._loopEnd = loopEnd;
 
-        if(buffer !== null)
-        {
-            if(buffer.iSType !== undefined && buffer.iSType === IS_Type.IS_Buffer)
-            {
-                this.setParamValue(this.paramNames.buffer, buffer.buffer);
-            }
-            else
-            {
-                this.setParamValue(this.paramNames.buffer, buffer)
-            }
-        }
-        else
-        {
-            this.setParamValue(this.paramNames.buffer, null);
-        }
+        this._detune = new IS_StartableNodeAudioParameter(siblingContext, detune);
+        this._playbackRate = new IS_StartableNodeAudioParameter(siblingContext, playbackRate);
 
         this.initializeCallback = this.initialize;
         this.initialize();
@@ -55,83 +31,104 @@ export class IS_BufferSource extends IS_StartableNode
     {
         this.node = new AudioBufferSourceNode(this.siblingContext.audioContext);
 
-        this.setParam(this.paramNames.buffer, this.buffer);
-        this.setParam(this.paramNames.detune , this.detune);
-        this.setParam(this.paramNames.loop, this.loop);
-        this.setParam(this.paramNames.loopStart, this.loopStart);
-        this.setParam(this.paramNames.loopEnd, this.loopEnd);
-        this.setParam(this.paramNames.playbackRate, this.playbackRate);
+        this.node.buffer = this.buffer;
 
-        this.node.connect(this.output);
+        this.node.detune.value = 0;
+        this.node.playbackRate.value = 0;
+
+        this._detune.outlet.connect(this.node.detune);
+        this._playbackRate.outlet.connect(this.node.playbackRate);
+
+        this.node.loop = this.loop;
+
+        this.node.loopStart = this.loopStart;
+        this.node.loopEnd = this.loopEnd;
+
+        this.node.connect(this._output);
 
         this.isInitialized = true;
     }
 
+    initializeBuffer(buffer)
+    {
+        if (buffer === null)
+        {
+            return;
+        }
+
+        this.buffer = buffer;
+    }
+
     get buffer()
     {
-        return this.getParamValue(this.paramNames.buffer);
+        return this._buffer;
     }
 
     set buffer(buffer)
     {
         if(buffer.iSType !== undefined && buffer.iSType === IS_Type.IS_Buffer)
         {
-            this.setParam(this.paramNames.buffer, buffer.buffer);
+            this._buffer = buffer.buffer;
         }
         else
         {
-            this.setParam(this.paramNames.buffer, buffer);
+            this._buffer = buffer;
         }
     }
 
     get detune()
     {
-        return this.getParamValue(this.paramNames.detune);
+        return this._detune.parameter;
     }
 
     set detune(value)
     {
-        this.setParam(this.paramNames.detune, value);
+        this._detune.value = value;
+        this.node.detune.value = this._detune.value;
     }
 
     get loop()
     {
-        return this.getParamValue(this.paramNames.loop);
+        return this._loop;
     }
 
     set loop(value)
     {
-        this.setParam(this.paramNames.loop, value);
+        this._loop = value;
+        this.node.loop = this._loop;
     }
 
     get loopStart()
     {
-        return this.getParamValue(this.paramNames.loopStart);
+        return this._loopStart;
     }
 
     set loopStart(value)
     {
-        this.setParam(this.paramNames.loopStart, value);
+        this._loopStart = value;
+        this.node.loopStart = this._loopStart;
     }
 
     get loopEnd()
     {
-        return this.getParamValue(this.paramNames.loopEnd);
+        return this._loopEnd;
     }
 
     set loopEnd(value)
     {
-        this.setParam(this.paramNames.loopEnd, value);
+        this._loopEnd = value;
+        this.node.loopEnd = this._loopEnd;
     }
 
     get playbackRate()
     {
-        return this.getParamValue(this.paramNames.playbackRate);
+        return this._playbackRate.parameter;
     }
 
     set playbackRate(value)
     {
-        this.setParam(this.paramNames.playbackRate, value);
+        this._playbackRate.value = value;
+        this.node.playbackRate.value = this._playbackRate.value;
     }
 
     printBuffer()

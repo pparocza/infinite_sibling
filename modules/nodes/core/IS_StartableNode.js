@@ -42,6 +42,6 @@ export class IS_StartableNode extends IS_Node
 
     scheduleStop(time)
     {
-        this.siblingContext.scheduleStop(this, time, duration);
+        this.siblingContext.scheduleStop(this, time);
     }
 }

@@ -12,10 +12,11 @@ export class IS_MixEffect extends IS_Effect
         this._wetMix = wetMix;
         this.wetMix = this._wetMix;
 
-        this.connectInputTo(this.dryGain.input);
+        this.connectInputTo(this.dryGain);
         this.connectToOutput(this.dryGain);
 
-        this.wetGain.connect(this.node);
+        this.connectInputTo(this.node);
+        this.node.connect(this.wetGain.input);
         this.connectToOutput(this.wetGain);
     }
 

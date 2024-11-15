@@ -3,7 +3,7 @@ import { IS_Type } from "../../../enums/IS_Type.js";
 
 export class IS_Effect extends IS_Node
 {
-    constructor(siblingContext, audioNode)
+    constructor(siblingContext, audioNode, initializeConnections = true)
     {
         super(siblingContext, audioNode);
 
@@ -11,7 +11,10 @@ export class IS_Effect extends IS_Node
 
         this.input = new GainNode(this.siblingContext.audioContext);
 
-        this.initializeConnections();
+        if(initializeConnections)
+        {
+            this.initializeConnections();
+        }
     }
 
     initializeConnections()

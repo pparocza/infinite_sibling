@@ -4,7 +4,7 @@ export class IS_MixEffect extends IS_Effect
 {
     constructor(siblingContext, audioNode, wetMix = 1)
     {
-        super(siblingContext, audioNode);
+        super(siblingContext, audioNode, false);
 
         this.dryGain = this.siblingContext.createGain();
         this.wetGain = this.siblingContext.createGain();

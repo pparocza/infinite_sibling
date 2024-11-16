@@ -1,5 +1,6 @@
 import { IS_Effect } from "./IS_Effect.js";
 import { IS_AudioParameter } from "../../../types/parameter/IS_AudioParameter.js";
+import { IS_Type } from "../../../enums/IS_Type.js";
 
 export class IS_MixEffect extends IS_Effect
 {
@@ -7,11 +8,11 @@ export class IS_MixEffect extends IS_Effect
     {
         super(siblingContext);
 
-        this._mixEffectInputNode = new GainNode(siblingContext.audioContext);
-        this._mixEffectOutputNode = new GainNode(siblingContext.audioContext);
+        this._mixEffectInputNode = this.siblingContext.createGain();
+        this._mixEffectOutputNode = this.siblingContext.createGain();
 
-        this.dryGainNode = new GainNode(siblingContext.audioContext);
-        this.wetGainNode = new GainNode(siblingContext.audioContext);
+        this.dryGainNode = this.siblingContext.createGain();
+        this.wetGainNode = this.siblingContext.createGain();
 
         this._dryGain = new IS_AudioParameter(this.dryGainNode.gain, 0);
         this._wetGain = new IS_AudioParameter(this.wetGainNode.gain, 1);
@@ -27,7 +28,15 @@ export class IS_MixEffect extends IS_Effect
     configureWetIO(input, output)
     {
         this._mixEffectInputNode.connect(input);
-        output.connect(this._mixEffectOutputNode);
+
+        if(output.iSType !== undefined)
+        {
+            output.connect(this._mixEffectOutputNode);
+        }
+        else
+        {
+            output.connect(this._mixEffectOutputNode.input);
+        }
     }
 
     get dryGain()

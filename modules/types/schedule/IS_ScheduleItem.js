@@ -8,7 +8,7 @@ export class IS_ScheduleItem
 {
     constructor(startableNode, scheduleAction, startTime, duration = -1)
     {
-        this.startableNode = startableNode;
+        this._startableNode = startableNode;
         this.scheduleAction = scheduleAction;
         this.startTime = startTime;
         this.duration = duration
@@ -31,11 +31,11 @@ export class IS_ScheduleItem
 
     scheduleStart()
     {
-        this.startableNode.start(this.startTime);
+        this._startableNode.start(this.startTime);
 
         if (this.duration > 0)
         {
-            this.startableNode.stop(this.startTime + this.duration);
+            this._startableNode.stop(this.startTime + this.duration);
         }
     }
 
@@ -43,16 +43,16 @@ export class IS_ScheduleItem
     {
         let stopTime = offset + this.startTime;
 
-        this.startableNode.stop(stopTime);
+        this._startableNode.stop(stopTime);
     }
 
     start()
     {
-        this.startableNode.start();
+        this._startableNode.start();
     }
 
     stop()
     {
-        this.startableNode.stop();
+        this._startableNode.stop();
     }
 }

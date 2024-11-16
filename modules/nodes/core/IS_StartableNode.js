@@ -6,6 +6,8 @@ export class IS_StartableNode extends IS_Node
     {
         super(siblingContext);
 
+        this._startableNode = null;
+
         this.isInitialized = false;
         this.initializeCallback = null;
     }
@@ -24,14 +26,14 @@ export class IS_StartableNode extends IS_Node
             this.initializeCallback();
         }
 
-        this.node.start(time + this.siblingContext.now);
+        this._startableNode.start(time + this.siblingContext.now);
 
         this.isInitialized = false;
     }
 
     stop(time = this.siblingContext.now)
     {
-        this.node.stop(time + this.siblingContext.now);
+        this._startableNode.stop(time + this.siblingContext.now);
         this.isInitialized = false;
     }
 

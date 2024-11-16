@@ -5,12 +5,11 @@ import { IS_AudioParameter } from "../../types/parameter/IS_AudioParameter.js";
 
 export class IS_Node extends IS_Object
 {
-    constructor(siblingContext, audioNode)
+    constructor(siblingContext)
     {
         super(IS_Type.IS_Node);
 
         this.siblingContext = siblingContext;
-        this.node = audioNode;
 
         this._output = new GainNode(siblingContext.audioContext);
         this._gain = new IS_AudioParameter(this._output.gain);

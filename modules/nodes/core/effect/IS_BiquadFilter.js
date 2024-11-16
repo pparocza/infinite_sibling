@@ -9,13 +9,17 @@ export class IS_BiquadFilter extends IS_Effect
         type = "lowpass", frequency = 220, Q = 1, gain = 1, detune = 0
     )
     {
-        super(siblingContext, new BiquadFilterNode(siblingContext.audioContext))
+        super(siblingContext)
+
+        this._filterNode = new BiquadFilterNode(siblingContext.audioContext);
 
         this._type = type;
-        this._frequency = new IS_AudioParameter(this.node.frequency, frequency);
-        this._Q = new IS_AudioParameter(this.node.Q, Q);
-        this._gain = new IS_AudioParameter(this.node.gain, gain);
-        this._detune = new IS_AudioParameter(this.node.detune, detune);
+        this._frequency = new IS_AudioParameter(this._filterNode.frequency, frequency);
+        this._Q = new IS_AudioParameter(this._filterNode.Q, Q);
+        this._gain = new IS_AudioParameter(this._filterNode.gain, gain);
+        this._detune = new IS_AudioParameter(this._filterNode.detune, detune);
+
+        this.configureIO(this._filterNode, this._filterNode);
     }
 
     get type()
@@ -26,7 +30,7 @@ export class IS_BiquadFilter extends IS_Effect
     set type(value)
     {
         this._type = value;
-        this.node.type = value;
+        this._filterNode.type = value;
     }
 
     get frequency()

@@ -21,17 +21,17 @@ export class IS_Oscillator extends IS_StartableNode
 
     initialize()
     {
-        this.node = new OscillatorNode(this.siblingContext.audioContext);
+        this._startableNode = new OscillatorNode(this.siblingContext.audioContext);
 
-        this.node.frequency.value = 0;
-        this.node.detune.value = 0;
+        this._startableNode.frequency.value = 0;
+        this._startableNode.detune.value = 0;
 
-        this.node.type = this._type;
+        this._startableNode.type = this._type;
 
-        this._frequency.outlet.connect(this.node.frequency);
-        this._detune.outlet.connect(this.node.detune);
+        this._frequency.outlet.connect(this._startableNode.frequency);
+        this._detune.outlet.connect(this._startableNode.detune);
 
-        this.node.connect(this._output);
+        this._startableNode.connect(this._output);
 
         this.isInitialized = true;
     }
@@ -44,7 +44,7 @@ export class IS_Oscillator extends IS_StartableNode
     set type(value)
     {
         this._type = value;
-        this.node.type = this._type;
+        this._startableNode.type = this._type;
     }
 
     get frequency()
@@ -55,7 +55,7 @@ export class IS_Oscillator extends IS_StartableNode
     set frequency(value)
     {
         this._frequency.value = value;
-        this.node.frequency.value = this._frequency.value;
+        this._startableNode.frequency.value = this._frequency.value;
     }
 
     get detune()
@@ -66,6 +66,6 @@ export class IS_Oscillator extends IS_StartableNode
     set detune(value)
     {
         this._detune.value = value;
-        this.node.detune.value = this._detune.value;
+        this._startableNode.detune.value = this._detune.value;
     }
 }

@@ -5,9 +5,13 @@ export class IS_StereoPanner extends IS_Effect
 {
     constructor(siblingContext, pan = 0)
     {
-        super(siblingContext, new StereoPannerNode(siblingContext.audioContext));
+        super(siblingContext);
 
-        this._pan = new IS_AudioParameter(this.node.pan, pan)
+        this._pannerNode = new StereoPannerNode(siblingContext.audioContext);
+
+        this._pan = new IS_AudioParameter(this._pannerNode.pan, pan)
+
+        this.configureIO(this._pannerNode, this._pannerNode);
     }
 
     get pan()

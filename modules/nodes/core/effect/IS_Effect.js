@@ -3,56 +3,32 @@ import { IS_Type } from "../../../enums/IS_Type.js";
 
 export class IS_Effect extends IS_Node
 {
-    constructor(siblingContext, audioNode, initializeConnections = true)
+    constructor(siblingContext)
     {
-        super(siblingContext, audioNode);
+        super(siblingContext);
 
         this.iSType = IS_Type.IS_Effect;
 
-        this.input = new GainNode(this.siblingContext.audioContext);
+        this._effectInputNode = new GainNode(siblingContext.audioContext);
+        this._effectOutputNode = new GainNode(siblingContext.audioContext);
+    }
 
-        if(initializeConnections)
+    configureIO(input, output)
+    {
+        this.connectInputTo(input);
+        output.connect(this._effectOutputNode);
+        this.connectToOutput(this._effectOutputNode);
+    }
+
+    connectInputTo(audioNode)
+    {
+        if(audioNode.iSType !== undefined && audioNode.iSType === IS_Type.IS_Effect)
         {
-            this.initializeConnections();
+            this._effectInputNode.connect(audioNode.input);
         }
-    }
-
-    initializeConnections()
-    {
-        this.connectInputTo(this.node);
-        this.connectToOutput(this.node);
-    }
-
-    connectInputTo(...audioNodes)
-    {
-        for(let audioNodeIndex = 0; audioNodeIndex < audioNodes.length; audioNodeIndex++)
+        else
         {
-            let audioNode = audioNodes[audioNodeIndex];
-
-            if(audioNode.iSType !== undefined && audioNode.iSType === IS_Type.IS_Effect)
-            {
-                this.input.connect(audioNode.input);
-            }
-            else
-            {
-                this.input.connect(audioNode);
-            }
-        }
-    }
-
-    connectToInput(...audioNodes)
-    {
-        for (let audioNodeIndex = 0; audioNodeIndex < audioNodes.length; audioNodeIndex++)
-        {
-            let audioNode = audioNodes[audioNodeIndex];
-
-            if (audioNode.iSType !== undefined && audioNode.iSType === IS_Type.IS_Effect)
-            {
-                audioNode.connect(this.input);
-            } else
-            {
-                audioNode.connect(this.input);
-            }
+            this._effectInputNode.connect(audioNode);
         }
     }
 }

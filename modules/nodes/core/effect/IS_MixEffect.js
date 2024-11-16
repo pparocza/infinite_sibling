@@ -3,9 +3,12 @@ import { IS_AudioParameter } from "../../../types/parameter/IS_AudioParameter.js
 
 export class IS_MixEffect extends IS_Effect
 {
-    constructor(siblingContext, audioNode, wetMix = 1)
+    constructor(siblingContext, wetMix = 1)
     {
-        super(siblingContext, audioNode, false);
+        super(siblingContext);
+
+        this._mixEffectInputNode = new GainNode(siblingContext.audioContext);
+        this._mixEffectOutputNode = new GainNode(siblingContext.audioContext);
 
         this.dryGainNode = new GainNode(siblingContext.audioContext);
         this.wetGainNode = new GainNode(siblingContext.audioContext);
@@ -15,12 +18,16 @@ export class IS_MixEffect extends IS_Effect
 
         this._wetMix = wetMix;
 
-        this.connectInputTo(this.dryGainNode);
-        this.connectToOutput(this.dryGainNode);
+        this._mixEffectInputNode.connect(this.dryGainNode);
+        this.dryGainNode.connect(this._mixEffectOutputNode);
 
-        this.connectInputTo(this.node);
-        this.node.connect(this.wetGainNode);
-        this.connectToOutput(this.wetGainNode);
+        this.configureIO(this._mixEffectInputNode, this._mixEffectOutputNode);
+    }
+
+    configureWetIO(input, output)
+    {
+        this._mixEffectInputNode.connect(input);
+        output.connect(this._mixEffectOutputNode);
     }
 
     get dryGain()

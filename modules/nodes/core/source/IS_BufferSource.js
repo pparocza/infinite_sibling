@@ -29,22 +29,22 @@ export class IS_BufferSource extends IS_StartableNode
 
     initialize()
     {
-        this.node = new AudioBufferSourceNode(this.siblingContext.audioContext);
+        this._startableNode = new AudioBufferSourceNode(this.siblingContext.audioContext);
 
-        this.node.buffer = this.buffer;
+        this._startableNode.buffer = this.buffer;
 
-        this.node.detune.value = 0;
-        this.node.playbackRate.value = 0;
+        this._startableNode.detune.value = 0;
+        this._startableNode.playbackRate.value = 0;
 
-        this._detune.outlet.connect(this.node.detune);
-        this._playbackRate.outlet.connect(this.node.playbackRate);
+        this._detune.outlet.connect(this._startableNode.detune);
+        this._playbackRate.outlet.connect(this._startableNode.playbackRate);
 
-        this.node.loop = this.loop;
+        this._startableNode.loop = this.loop;
 
-        this.node.loopStart = this.loopStart;
-        this.node.loopEnd = this.loopEnd;
+        this._startableNode.loopStart = this.loopStart;
+        this._startableNode.loopEnd = this.loopEnd;
 
-        this.node.connect(this._output);
+        this._startableNode.connect(this._output);
 
         this.isInitialized = true;
     }
@@ -84,7 +84,7 @@ export class IS_BufferSource extends IS_StartableNode
     set detune(value)
     {
         this._detune.value = value;
-        this.node.detune.value = this._detune.value;
+        this._startableNode.detune.value = this._detune.value;
     }
 
     get loop()
@@ -95,7 +95,7 @@ export class IS_BufferSource extends IS_StartableNode
     set loop(value)
     {
         this._loop = value;
-        this.node.loop = this._loop;
+        this._startableNode.loop = this._loop;
     }
 
     get loopStart()
@@ -106,7 +106,7 @@ export class IS_BufferSource extends IS_StartableNode
     set loopStart(value)
     {
         this._loopStart = value;
-        this.node.loopStart = this._loopStart;
+        this._startableNode.loopStart = this._loopStart;
     }
 
     get loopEnd()
@@ -117,7 +117,7 @@ export class IS_BufferSource extends IS_StartableNode
     set loopEnd(value)
     {
         this._loopEnd = value;
-        this.node.loopEnd = this._loopEnd;
+        this._startableNode.loopEnd = this._loopEnd;
     }
 
     get playbackRate()
@@ -128,7 +128,7 @@ export class IS_BufferSource extends IS_StartableNode
     set playbackRate(value)
     {
         this._playbackRate.value = value;
-        this.node.playbackRate.value = this._playbackRate.value;
+        this._startableNode.playbackRate.value = this._playbackRate.value;
     }
 
     printBuffer()

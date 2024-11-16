@@ -1,12 +1,5 @@
 import { IS_MixEffect } from "../core/effect/IS_MixEffect.js";
 
-const IS_StereoDelayParamNames =
-{
-    delayTimeLeft: "delayTimeLeft",
-    delayTimeRight: "delayTimeRight",
-    feedbackPercent: "feedbackPercent",
-}
-
 export class IS_StereoDelay extends IS_MixEffect
 {
     constructor(siblingContext, delayTimeLeft = 0.5, delayTimeRight = 0.25,
@@ -14,58 +7,63 @@ export class IS_StereoDelay extends IS_MixEffect
     {
         super(siblingContext, wetMix);
 
-        this.paramNames = IS_StereoDelayParamNames;
+        this._inputNode = this.siblingContext.createGain();
+        this._outputNode = this.siblingContext.createGain();
 
-        this.setParamValue(this.paramNames.delayTimeLeft, delayTimeLeft);
-        this.setParamValue(this.paramNames.delayTimeRight, delayTimeRight);
-        this.setParamValue(this.paramNames.feedbackPercent, feedbackPercent);
+        this._delayLeft = this.siblingContext.createDelay(delayTimeLeft, feedbackPercent, wetMix, maxDelayTime);
+        this._delayRight = this.siblingContext.createDelay(delayTimeRight, feedbackPercent, wetMix, maxDelayTime);
+        this._panLeft = this.siblingContext.createStereoPanner(-1);
+        this._panRight = this.siblingContext.createStereoPanner(1);
 
-        this.delayLeft = this.siblingContext.createDelay(this.delayTimeLeft, this.feedbackPercent, 1, maxDelayTime);
-        this.delayRight = this.siblingContext.createDelay(this.delayTimeRight, this.feedbackPercent, 1, maxDelayTime);
-        this.panLeft = this.siblingContext.createStereoPanner(-1);
-        this.panRight = this.siblingContext.createStereoPanner(1);
+        this._panLeft.pan = -1;
+        this._panRight.pan = 1;
 
-        this.connectInputTo(this.delayLeft.input);
-        this.connectInputTo(this.delayRight.input);
+        this._delayTimeLeft = this._delayLeft.delayTime;
+        this._delayTimeRight = this._delayRight.delayTime;
+        this._feedbackPercent = feedbackPercent;
 
-        this.delayLeft.connect(this.panLeft);
-        this.delayRight.connect(this.panRight);
+        this._delayLeft.connect(this._panLeft);
+        this._delayRight.connect(this._panRight);
 
-        this.connectToWetGain(this.panLeft);
-        this.connectToWetGain(this.panRight);
+        this._inputNode.connect(this._delayLeft);
+        this._inputNode.connect(this._delayRight);
+
+        this._panLeft.connect(this._outputNode);
+        this._panRight.connect(this._outputNode);
+
+        this.configureWetIO(this._inputNode, this._outputNode);
     }
 
     get delayTimeLeft()
     {
-        return this.getParamValue(this.paramNames.delayTimeLeft);
+        return this._delayTimeLeft;
     }
 
     set delayTimeLeft(value)
     {
-        this.setParamValue(this.paramNames.delayTimeLeft, value);
-        this.delayLeft.delayTime = this.delayTimeLeft;
+        this._delayTimeLeft = value;
     }
 
     get delayTimeRight()
     {
-        return this.getParamValue(this.paramNames.delayTimeRight);
+        return this._delayTimeRight;
     }
 
     set delayTimeRight(value)
     {
-        this.setParamValue(this.paramNames.delayTimeRight, value);
-        this.delayRight.delayTime = this.delayTimeRight;
+        this._delayTimeRight = value;
     }
 
     get feedbackPercent()
     {
-        return this.getParamValue(this.paramNames.feedbackPercent);
+        return this._feedbackPercent;
     }
 
     set feedbackPercent(value)
     {
-        this.setParamValue(this.paramNames.feedbackPercent, value)
-        this.delayRight.feedbackPercent = this.feedbackPercent;
-        this.delayLeft.feedbackPercent = this.feedbackPercent;
+        this._feedbackPercent = value;
+
+        this._delayRight.feedbackPercent = this._feedbackPercent;
+        this._delayLeft.feedbackPercent = this._feedbackPercent;
     }
 }

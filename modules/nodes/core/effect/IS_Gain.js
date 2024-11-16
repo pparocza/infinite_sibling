@@ -5,9 +5,13 @@ export class IS_Gain extends IS_Effect
 {
     constructor(siblingContext, gainValue = 1)
     {
-        super(siblingContext, new GainNode(siblingContext.audioContext));
+        super(siblingContext);
 
-        this._gain = new IS_AudioParameter(this.node.gain, gainValue);
+        this._gainNode = new GainNode(siblingContext.audioContext);
+
+        this._gain = new IS_AudioParameter(this._gainNode.gain, gainValue);
+
+        this.configureIO(this._gainNode, this._gainNode);
     }
 
     get gain()

@@ -6,7 +6,9 @@ export class IS_Convolver extends IS_MixEffect
 {
     constructor(siblingContext, buffer = null, normalize = true)
     {
-        super(siblingContext, new ConvolverNode(siblingContext.audioContext));
+        super(siblingContext);
+
+        this._convolver = new ConvolverNode(siblingContext.audioContext);
 
         this.preset = new IS_ConvolverPresets(this);
 
@@ -14,6 +16,8 @@ export class IS_Convolver extends IS_MixEffect
 
         this._normalize = normalize;
         this.normalize = this._normalize;
+
+        this.configureWetIO(this._convolver, this._convolver);
     }
 
     initializeBuffer(buffer)
@@ -43,7 +47,7 @@ export class IS_Convolver extends IS_MixEffect
             this._buffer = buffer;
         }
 
-        this.node.buffer = this._buffer;
+        this._convolver.buffer = this._buffer;
     }
 
     get normalize()
@@ -54,6 +58,6 @@ export class IS_Convolver extends IS_MixEffect
     set normalize(value)
     {
         this._normalize = value;
-        this.node.normalize = this._normalize;
+        this._convolver.normalize = this._normalize;
     }
 }

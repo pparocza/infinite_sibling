@@ -21,7 +21,7 @@ export class IS_Delay extends IS_MixEffect
         this._delayNode.connect(this._feedbackGainNode);
         this._feedbackGainNode.connect(this._delayNode);
 
-        this.configureWetIO(this._delayNode, this._delayNode);
+        this.configureMixIO(this._delayNode, this._delayNode);
     }
 
     get delayTime()

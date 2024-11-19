@@ -10,7 +10,6 @@ export class IS_Effect extends IS_Node
         this.iSType = IS_Type.IS_Effect;
 
         this._effectInputNode = new GainNode(siblingContext.audioContext);
-        this._effectOutputNode = new GainNode(siblingContext.audioContext);
     }
 
     get input()
@@ -18,11 +17,9 @@ export class IS_Effect extends IS_Node
         return this._effectInputNode;
     }
 
-    configureIO(input, output)
+    configureInput(input)
     {
         this.connectInputTo(input);
-        output.connect(this._effectOutputNode);
-        this.connectToOutput(this._effectOutputNode);
     }
 
     connectInputTo(audioNode)

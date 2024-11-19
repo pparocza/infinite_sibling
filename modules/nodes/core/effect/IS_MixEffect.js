@@ -22,10 +22,11 @@ export class IS_MixEffect extends IS_Effect
         this._mixEffectInputNode.connect(this.dryGainNode);
         this.dryGainNode.connect(this._mixEffectOutputNode);
 
-        this.configureIO(this._mixEffectInputNode, this._mixEffectOutputNode);
+        this.configureInput(this._mixEffectInputNode);
+        this.configureOutput(this._mixEffectOutputNode);
     }
 
-    configureWetIO(input, output)
+    configureMixIO(input, output)
     {
         this._mixEffectInputNode.connect(input);
 

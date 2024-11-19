@@ -31,7 +31,7 @@ export class IS_StereoDelay extends IS_MixEffect
         this._panLeft.connect(this._outputNode);
         this._panRight.connect(this._outputNode);
 
-        this.configureWetIO(this._inputNode, this._outputNode);
+        this.configureMixIO(this._inputNode, this._outputNode);
     }
 
     get delayTimeLeft()

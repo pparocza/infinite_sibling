@@ -32,19 +32,17 @@ export class IS_BufferSource extends IS_StartableNode
         this._startableNode = new AudioBufferSourceNode(this.siblingContext.audioContext);
 
         this._startableNode.buffer = this.buffer;
-
         this._startableNode.detune.value = 0;
         this._startableNode.playbackRate.value = 0;
+        this._startableNode.loopStart = this.loopStart;
+        this._startableNode.loopEnd = this.loopEnd;
+
+        this._startableNode.loop = this.loop;
 
         this._detune.outlet.connect(this._startableNode.detune);
         this._playbackRate.outlet.connect(this._startableNode.playbackRate);
 
-        this._startableNode.loop = this.loop;
-
-        this._startableNode.loopStart = this.loopStart;
-        this._startableNode.loopEnd = this.loopEnd;
-
-        this._startableNode.connect(this._output);
+        this.configureOutput(this._startableNode);
 
         this.isInitialized = true;
     }

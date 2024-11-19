@@ -11,7 +11,8 @@ export class IS_StereoPanner extends IS_Effect
 
         this._pan = new IS_AudioParameter(this._pannerNode.pan, pan)
 
-        this.configureIO(this._pannerNode, this._pannerNode);
+        this.configureInput(this._pannerNode);
+        this.configureOutput(this._pannerNode);
     }
 
     get pan()

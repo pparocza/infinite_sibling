@@ -46,7 +46,7 @@ export class IS_Node extends IS_Object
         }
     }
 
-    connectToOutput(audioNode)
+    configureOutput(audioNode)
     {
         audioNode.connect(this._output);
     }

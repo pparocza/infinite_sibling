@@ -31,7 +31,7 @@ export class IS_Oscillator extends IS_StartableNode
         this._frequency.outlet.connect(this._startableNode.frequency);
         this._detune.outlet.connect(this._startableNode.detune);
 
-        this._startableNode.connect(this._output);
+        this.configureOutput(this._startableNode);
 
         this.isInitialized = true;
     }

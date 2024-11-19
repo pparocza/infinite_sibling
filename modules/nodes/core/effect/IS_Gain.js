@@ -11,7 +11,8 @@ export class IS_Gain extends IS_Effect
 
         this._gain = new IS_AudioParameter(this._gainNode.gain, gainValue);
 
-        this.configureIO(this._gainNode, this._gainNode);
+        this.configureInput(this._gainNode);
+        this.configureOutput(this._gainNode);
     }
 
     get gain()

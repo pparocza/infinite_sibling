@@ -17,7 +17,7 @@ export class IS_Convolver extends IS_MixEffect
         this._normalize = normalize;
         this.normalize = this._normalize;
 
-        this.configureWetIO(this._convolver, this._convolver);
+        this.configureMixIO(this._convolver, this._convolver);
     }
 
     initializeBuffer(buffer)

@@ -24,7 +24,6 @@ export class IS_BufferSource extends IS_StartableNode
         this._playbackRate = new IS_StartableNodeAudioParameter(siblingContext, playbackRate);
 
         this.initializeCallback = this.initialize;
-        this.initialize();
     }
 
     initialize()
@@ -82,7 +81,6 @@ export class IS_BufferSource extends IS_StartableNode
     set detune(value)
     {
         this._detune.value = value;
-        this._startableNode.detune.value = this._detune.value;
     }
 
     get loop()
@@ -93,7 +91,6 @@ export class IS_BufferSource extends IS_StartableNode
     set loop(value)
     {
         this._loop = value;
-        this._startableNode.loop = this._loop;
     }
 
     get loopStart()
@@ -104,7 +101,6 @@ export class IS_BufferSource extends IS_StartableNode
     set loopStart(value)
     {
         this._loopStart = value;
-        this._startableNode.loopStart = this._loopStart;
     }
 
     get loopEnd()
@@ -115,7 +111,6 @@ export class IS_BufferSource extends IS_StartableNode
     set loopEnd(value)
     {
         this._loopEnd = value;
-        this._startableNode.loopEnd = this._loopEnd;
     }
 
     get playbackRate()
@@ -126,7 +121,6 @@ export class IS_BufferSource extends IS_StartableNode
     set playbackRate(value)
     {
         this._playbackRate.value = value;
-        this._startableNode.playbackRate.value = this._playbackRate.value;
     }
 
     printBuffer()

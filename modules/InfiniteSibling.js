@@ -146,6 +146,20 @@ export class InfiniteSibling
         }
     }
 
+    connectMatrix(inputNodes = [], outputNodes = [])
+    {
+        for(let input = 0; input < inputNodes.length; input++)
+        {
+            let currentInputNode = inputNodes[input];
+
+            for(let output = 0; output < outputNodes.length; output++)
+            {
+                let currentOutputNode = outputNodes[output];
+                this.connectSeries(currentInputNode, currentOutputNode);
+            }
+        }
+    }
+
     connectToMainOutput(...audioNodes)
     {
         for (let audioNodeIndex = 0; audioNodeIndex < audioNodes.length; audioNodeIndex++)

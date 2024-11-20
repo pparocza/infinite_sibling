@@ -1,8 +1,8 @@
 # Infinite Sibling
 
-A collection of custom synthesizers and effects made with the Web Audio API
+Package of custom audio tools made with the Web Audio API
 
-## Live Pieces
+## Live Examples
 
 [upcast](https://pparocza.github.io/upcast/) // [hsl](https://pparocza.github.io/hsl/) // [living in the mouth](https://pparocza.github.io/living_in_the_mouth/) // [edge customer](https://pparocza.github.io/edge_customer/) // 
 [&&gift](https://pparocza.github.io/-_gift/) // [await promise](https://pparocza.github.io/await_promise/) // [n-stop designer](https://pparocza.github.io/n-stop_designer/) // [assembly expression](https://pparocza.github.io/assembly_expression/) // 

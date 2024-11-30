@@ -146,16 +146,21 @@ export class InfiniteSibling
         }
     }
 
-    connectMatrix(inputNodes = [], outputNodes = [])
+    connectMatrix(...matrix)
     {
-        for(let input = 0; input < inputNodes.length; input++)
+        for(let matrixRow = 1; matrixRow < matrix.length; matrixRow++)
         {
-            let currentInputNode = inputNodes[input];
+            let outputRow = matrix[matrixRow - 1];
+            let inputRow = matrix[matrixRow];
 
-            for(let output = 0; output < outputNodes.length; output++)
+            for(let outputNodeIndex = 0; outputNodeIndex < outputRow.length; outputNodeIndex++)
             {
-                let currentOutputNode = outputNodes[output];
-                this.connectSeries(currentInputNode, currentOutputNode);
+                let outputNode = outputRow[outputNodeIndex];
+
+                for(let inputNodeIndex = 0; inputNodeIndex < inputRow.length; inputNodeIndex++)
+                {
+                    outputNode.connect(inputRow[inputNodeIndex])
+                }
             }
         }
     }

@@ -38,8 +38,8 @@ export class IS_BufferSource extends IS_StartableNode
 
         this._startableNode.loop = this.loop;
 
-        this._detune.outlet.connect(this._startableNode.detune);
-        this._playbackRate.outlet.connect(this._startableNode.playbackRate);
+        this._detune.connect(this._startableNode.detune);
+        this._playbackRate.connect(this._startableNode.playbackRate);
 
         this.configureOutput(this._startableNode);
 

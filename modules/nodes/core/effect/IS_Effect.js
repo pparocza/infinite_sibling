@@ -33,4 +33,12 @@ export class IS_Effect extends IS_Node
             this._effectInputNode.connect(audioNode);
         }
     }
+
+    connectToInput(...audioNodes)
+    {
+        for (let node = 0; node < audioNodes.length; node++)
+        {
+            audioNodes[node].connect(this.input);
+        }
+    }
 }

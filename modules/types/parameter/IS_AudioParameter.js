@@ -42,6 +42,6 @@ export class IS_AudioParameter extends IS_Object
 
     setValueAtTime(value, time)
     {
-        this.parameter.setValueAtTime(value, this.siblingContext.now() + time);
+        this.parameter.setValueAtTime(value, this.siblingContext.now + time);
     }
 }

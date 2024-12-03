@@ -15,8 +15,8 @@ export class IS_Delay extends IS_MixEffect
 
         this._feedbackGainNode = new GainNode(siblingContext.audioContext);
 
-        this._delayTime = new IS_AudioParameter(this._delayNode.delayTime, delayTime);
-        this._feedbackPercent = new IS_AudioParameter(this._feedbackGainNode.gain, feedbackPercent);
+        this._delayTime = new IS_AudioParameter(this.siblingContext, this._delayNode.delayTime, delayTime);
+        this._feedbackPercent = new IS_AudioParameter(this.siblingContext, this._feedbackGainNode.gain, feedbackPercent);
 
         this._delayNode.connect(this._feedbackGainNode);
         this._feedbackGainNode.connect(this._delayNode);

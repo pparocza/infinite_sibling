@@ -12,7 +12,7 @@ export class IS_Node extends IS_Object
         this.siblingContext = siblingContext;
 
         this._output = new GainNode(siblingContext.audioContext);
-        this._gain = new IS_AudioParameter(this._output.gain);
+        this._gain = new IS_AudioParameter(this.siblingContext, this._output.gain);
     }
 
     /**

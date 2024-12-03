@@ -4,10 +4,10 @@ export class IS_StartableNodeAudioParameter extends IS_AudioParameter
 {
     constructor(siblingContext)
     {
-        super();
+        super(siblingContext);
 
         this._outlet = new ConstantSourceNode(siblingContext.audioContext);
-        this._parameter = new IS_AudioParameter(this._outlet.offset);
+        this._parameter = new IS_AudioParameter(this.siblingContext, this._outlet.offset);
 
         this._outlet.start();
     }

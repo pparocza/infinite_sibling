@@ -3,9 +3,11 @@ import { IS_Type } from "../../enums/IS_Type.js";
 
 export class IS_AudioParameter extends IS_Object
 {
-    constructor(audioParameter = null, value = null)
+    constructor(siblingContext, audioParameter = null, value = null)
     {
         super(IS_Type.IS_AudioParameter);
+
+        this.siblingContext = siblingContext;
 
         if (audioParameter !== null)
         {
@@ -40,6 +42,6 @@ export class IS_AudioParameter extends IS_Object
 
     setValueAtTime(value, time)
     {
-        this.parameter.setValueAtTime(value, time);
+        this.parameter.setValueAtTime(value, this.siblingContext.now() + time);
     }
 }

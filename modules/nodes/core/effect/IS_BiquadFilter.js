@@ -33,7 +33,7 @@ export class IS_BiquadFilter extends IS_Effect
     set type(value)
     {
         this._type = value;
-        this._filterNode.type = value;
+        this._filterNode.type = this._type;
     }
 
     get frequency()

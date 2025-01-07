@@ -19,6 +19,8 @@ export class IS_BiquadFilter extends IS_Effect
         this._gain = new IS_AudioParameter(this.siblingContext, this._filterNode.gain, gain);
         this._detune = new IS_AudioParameter(this.siblingContext, this._filterNode.detune, detune);
 
+        this._filterNode.type = this._type;
+
         this.configureInput(this._filterNode);
         this.configureOutput(this._filterNode);
     }

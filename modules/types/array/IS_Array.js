@@ -268,7 +268,7 @@ export class IS_Array extends IS_Object
         {
             if (timeIndex == 0 && includeStart)
             {
-                if(IS_Random.randomFloat(0, 1) < density)
+                if(IS_Random.coinToss(density))
                 {
                     this.value.push(startTime);
                 }

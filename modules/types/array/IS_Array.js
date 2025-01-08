@@ -241,6 +241,7 @@ export class IS_Array extends IS_Object
         return results;
     }
 
+    // TODO: .like(likenessPercent) - takes the existing array, gives back something "like" it based on the percent
     timeSequence
     (
         possibleDurations = [], startTime = 0, includeStart = true,

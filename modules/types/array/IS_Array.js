@@ -243,7 +243,6 @@ export class IS_Array extends IS_Object
 
     timeSequence
     (
-        length,
         possibleDurations = [], startTime = 0, includeStart = true,
         speed = 1, drunk = 0,
         density = 1, timeLimit = -1
@@ -263,8 +262,9 @@ export class IS_Array extends IS_Object
 
         let speedFactor = 1 / speed;
         let previousTime = startTime;
+        let nextTime = 0;
 
-        for (let timeIndex = 0; timeIndex < length; timeIndex++)
+        for (let timeIndex = 0; timeLimit >=0 && nextTime < timeLimit; timeIndex++)
         {
             if (timeIndex == 0 && includeStart)
             {
@@ -278,14 +278,9 @@ export class IS_Array extends IS_Object
             let timeToNext = possibleDurationsArray.random() * speedFactor;
             let drunkAdjustment = timeToNext * IS_Random.randomFloat(-drunk, drunk);
 
-            let nextTime = previousTime + timeToNext + drunkAdjustment;
+            nextTime = previousTime + timeToNext + drunkAdjustment;
 
-            if(timeLimit >=0 && nextTime > timeLimit)
-            {
-                break;
-            }
-
-            if (IS_Random.randomFloat(0, 1) < density)
+            if (IS_Random.coinToss(density))
             {
                 this.value.push(nextTime);
             }

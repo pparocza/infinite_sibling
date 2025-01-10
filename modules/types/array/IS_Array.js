@@ -242,6 +242,10 @@ export class IS_Array extends IS_Object
     }
 
     // TODO: .like(likenessPercent) - takes the existing array, gives back something "like" it based on the percent
+    /*
+     TODO: general cleanup - sometimes you might want a sequence duration, sometimes you might want a number of sequence items,
+     and in any case, the loops and conditions here are pretty messy
+     */
     timeSequence
     (
         possibleDurations = [], startTime = 0, includeStart = true,
@@ -265,9 +269,9 @@ export class IS_Array extends IS_Object
         let previousTime = startTime;
         let nextTime = 0;
 
-        for (let timeIndex = 0; timeLimit >=0 && nextTime < timeLimit; timeIndex++)
+        for (let timeIndex = 0; timeLimit >= 0 && nextTime < timeLimit; timeIndex++)
         {
-            if (timeIndex == 0 && includeStart)
+            if (timeIndex === 0 && includeStart)
             {
                 if(IS_Random.coinToss(density))
                 {
@@ -283,7 +287,10 @@ export class IS_Array extends IS_Object
 
             if (IS_Random.coinToss(density))
             {
-                this.value.push(nextTime);
+                if(nextTime < timeLimit)
+                {
+                    this.value.push(nextTime);
+                }
             }
 
             previousTime = nextTime;

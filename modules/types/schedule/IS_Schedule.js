@@ -24,21 +24,31 @@ export class IS_Schedule
      * @param startTime
      * @param duration
      */
-    scheduleStart(startableNode, startTime = 0, duration = -1)
+    scheduleStart(schedulable, startTime = 0, duration = -1)
     {
         let scheduleItem = new IS_ScheduleItem
         (
-            startableNode, IS_ScheduleAction.Start, startTime, duration
+            schedulable, IS_ScheduleAction.Start, startTime, duration
         );
 
         this.scheduleItems.push(scheduleItem);
     }
 
-    scheduleStop(startableNode, stopTime)
+    scheduleStop(schedulable, stopTime)
     {
         let scheduleItem = new IS_ScheduleItem
         (
-            startableNode, IS_ScheduleAction.Stop, stopTime
+            schedulable, IS_ScheduleAction.Stop, stopTime
+        );
+
+        this.scheduleItems.push(scheduleItem);
+    }
+
+    scheduleValue(schedulable, value, time)
+    {
+        let scheduleItem = new IS_ScheduleItem
+        (
+            schedulable, IS_ScheduleAction.SetValue, time, 0, value
         );
 
         this.scheduleItems.push(scheduleItem);

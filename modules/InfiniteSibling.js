@@ -23,6 +23,7 @@ import { IS_Array } from "./types/array/IS_Array.js";
 import { IS_Scale } from "./types/array/IS_Scale.js";
 import { IS_Schedule } from "./types/schedule/IS_Schedule.js";
 import { IS_Sequence } from "./types/sequence/IS_Sequence.js";
+import { IS_SequenceArray } from "./types/array/IS_SequenceArray.js";
 
 // utilities
 import { IS_Random } from "./utilities/IS_Random.js";
@@ -328,6 +329,11 @@ export class InfiniteSibling
     array(...values)
     {
         return new IS_Array(values);
+    }
+
+    sequenceArray(...values)
+    {
+        return new IS_SequenceArray(values);
     }
 
     MidiToFrequency(midiNoteNumber)

@@ -271,14 +271,19 @@ export class InfiniteSibling
         return new IS_Schedule();
     }
 
-    scheduleStart(startableNode, time = 0, duration = -1)
+    scheduleStart(schedulable, time = 0, duration = -1)
     {
-        this.schedule.scheduleStart(startableNode, time, duration);
+        this.schedule.scheduleStart(schedulable, time, duration);
     }
 
-    scheduleStop(startableNode, time)
+    scheduleStop(schedulable, time)
     {
-        this.schedule.scheduleStop(startableNode, time);
+        this.schedule.scheduleStop(schedulable, time);
+    }
+
+    scheduleValue(schedulable, value, time)
+    {
+        this.schedule.scheduleValue(schedulable, value, time);
     }
 
     startSchedules()

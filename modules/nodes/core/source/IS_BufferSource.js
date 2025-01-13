@@ -8,6 +8,16 @@ import { IS_StartableNodeAudioParameter } from "../../../types/parameter/IS_Star
  */
 export class IS_BufferSource extends IS_StartableNode
 {
+    /**
+     *
+     * @param siblingContext
+     * @param buffer
+     * @param detune
+     * @param loop
+     * @param loopStart
+     * @param loopEnd
+     * @param playbackRate
+     */
     constructor(siblingContext, buffer = null, detune = 0,
                 loop = false, loopStart = 0, loopEnd = 1,
                 playbackRate = 1)

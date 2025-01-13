@@ -12,7 +12,7 @@ export class IS_StartableNode extends IS_Node
         this.initializeCallback = null;
     }
 
-    start(time = this.siblingContext.now)
+    start(time = 0)
     {
         if(!this.isInitialized)
         {
@@ -31,19 +31,27 @@ export class IS_StartableNode extends IS_Node
         this.isInitialized = false;
     }
 
-    stop(time = this.siblingContext.now)
+    stop(time = 0)
     {
         this._startableNode.stop(time + this.siblingContext.now);
         this.isInitialized = false;
     }
 
-    scheduleStart(time, duration)
+    scheduleStart(time = 0, duration)
     {
         this.siblingContext.scheduleStart(this, time, duration);
     }
 
-    scheduleStop(time)
+    scheduleStop(time = 0)
     {
         this.siblingContext.scheduleStop(this, time);
+    }
+
+    sequence(sequence)
+    {
+        for(let sequenceIndex = 0; sequenceIndex < sequence.length; sequenceIndex++)
+        {
+            this.scheduleStart(sequence.value[sequenceIndex]);
+        }
     }
 }

@@ -40,7 +40,12 @@ export class IS_AudioParameter extends IS_Object
         this.parameter.value = value;
     }
 
-    setValueAtTime(value, time)
+    scheduleValue(value, time = 0)
+    {
+        this.siblingContext.scheduleValue(this, value, time);
+    }
+
+    setValueAtTime(value, time = 0)
     {
         this.parameter.setValueAtTime(value, this.siblingContext.now + time);
     }

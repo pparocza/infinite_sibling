@@ -5,5 +5,6 @@
 export const IS_ScheduleAction =
 {
     Start: "Start",
-    Stop: "Stop"
+    Stop: "Stop",
+    SetValue: "SetValue"
 }

@@ -6,12 +6,13 @@ import { IS_ScheduleAction } from "../../enums/IS_ScheduleAction.js";
  */
 export class IS_ScheduleItem
 {
-    constructor(startableNode, scheduleAction, startTime, duration = -1)
+    constructor(schedulable, scheduleAction, startTime, duration = -1, value = 0)
     {
-        this._startableNode = startableNode;
+        this._schedulable = schedulable;
         this.scheduleAction = scheduleAction;
         this.startTime = startTime;
-        this.duration = duration
+        this.duration = duration;
+        this.value = value;
     }
 
     schedule()
@@ -24,6 +25,9 @@ export class IS_ScheduleItem
             case (IS_ScheduleAction.Stop):
                 this.scheduleStop();
                 break;
+            case (IS_ScheduleAction.SetValue):
+                this.scheduleValue();
+                break;
             default:
                 break;
         }
@@ -31,11 +35,11 @@ export class IS_ScheduleItem
 
     scheduleStart()
     {
-        this._startableNode.start(this.startTime);
+        this._schedulable.start(this.startTime);
 
         if (this.duration > 0)
         {
-            this._startableNode.stop(this.startTime + this.duration);
+            this._schedulable.stop(this.startTime + this.duration);
         }
     }
 
@@ -43,16 +47,26 @@ export class IS_ScheduleItem
     {
         let stopTime = offset + this.startTime;
 
-        this._startableNode.stop(stopTime);
+        this._schedulable.stop(stopTime);
+    }
+
+    scheduleValue()
+    {
+        this._schedulable.setValueAtTime(this.value, this.startTime);
     }
 
     start()
     {
-        this._startableNode.start();
+        this._schedulable.start();
     }
 
     stop()
     {
-        this._startableNode.stop();
+        if(this.scheduleAction == IS_ScheduleAction.SetValue)
+        {
+            return;
+        }
+
+        this._schedulable.stop();
     }
 }

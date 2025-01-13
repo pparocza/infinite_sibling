@@ -47,7 +47,7 @@ export class IS_StartableNode extends IS_Node
         this.siblingContext.scheduleStop(this, time);
     }
 
-    sequence(sequence)
+    scheduleSequence(sequence)
     {
         for(let sequenceIndex = 0; sequenceIndex < sequence.length; sequenceIndex++)
         {

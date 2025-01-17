@@ -7,7 +7,7 @@ export class IS_ParallelEffect extends IS_Effect
 		super(siblingContext);
 	}
 
-	insertEffect(...audioNodes)
+	insert(...audioNodes)
 	{
 		this.configureInput(audioNodes[0]);
 		this.configureInput(audioNodes[audioNodes.length - 1]);

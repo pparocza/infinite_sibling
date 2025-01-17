@@ -22,14 +22,13 @@ export class IS_ParallelEffect extends IS_Effect
 	insertEffect(audioNode)
 	{
 		this.connectEffect(audioNode);
-
 	}
 
 	createEffect(effectType, ...effectArgs)
 	{
 		switch (effectType)
 		{
-			case IS_Type.IS_NodeType.IS_BiquadFilter:
+			case IS_Type.IS_NodeType.BiquadFilter:
 				this.addFilter(effectArgs)
 				break;
 			default:

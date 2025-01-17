@@ -17,6 +17,6 @@ export const IS_Type =
 
     IS_NodeType:
     {
-        IS_BiquadFilter: "IS_BiquadFilter"
+        BiquadFilter: "IS_BiquadFilter"
     },
 }

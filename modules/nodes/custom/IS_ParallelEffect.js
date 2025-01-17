@@ -10,7 +10,7 @@ export class IS_ParallelEffect extends IS_Effect
 	insert(...audioNodes)
 	{
 		this.configureInput(audioNodes[0]);
-		this.configureInput(audioNodes[audioNodes.length - 1]);
+		this.configureOutput(audioNodes[audioNodes.length - 1]);
 
 		if(audioNodes.length === 1)
 		{

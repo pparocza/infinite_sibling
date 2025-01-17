@@ -1,53 +1,25 @@
 import { IS_Effect } from "../core/effect/IS_Effect.js";
-import { IS_BiquadFilterArgs } from "../core/effect/IS_BiquadFilter.js";
-import { IS_Type } from "../../enums/IS_Type.js";
 
 export class IS_ParallelEffect extends IS_Effect
 {
 	constructor(siblingContext)
 	{
 		super(siblingContext);
-
-		this._effects = [];
 	}
 
-	connectEffect(audioNode)
+	insertEffect(...audioNodes)
 	{
-		this.configureInput(audioNode);
-		this.configureOutput(audioNode);
+		this.configureInput(audioNodes[0]);
+		this.configureInput(audioNodes[audioNodes.length - 1]);
 
-		this._effects.push(audioNode);
-	}
-
-	insertEffect(audioNode)
-	{
-		this.connectEffect(audioNode);
-	}
-
-	createEffect(effectType, ...effectArgs)
-	{
-		switch (effectType)
+		if(audioNodes.length === 1)
 		{
-			case IS_Type.IS_NodeType.BiquadFilter:
-				this.addFilter(effectArgs)
-				break;
-			default:
-				break;
+			return;
 		}
-	}
 
-	addFilter(filterArgs)
-	{
-		let filter = this.siblingContext.createFilter();
-
-		let parameters = new IS_BiquadFilterArgs(filterArgs);
-
-		filter.type = parameters.type;
-		filter.frequency = parameters.frequency;
-		filter.Q = parameters.Q;
-		filter.gain = parameters.gain;
-		filter.detune = parameters.detune;
-
-		this.connectEffect(filter);
+		for(let nodeIndex = 1; nodeIndex < audioNodes.length; nodeIndex++)
+		{
+			audioNodes[nodeIndex - 1].connect(audioNodes[nodeIndex]);
+		}
 	}
 }

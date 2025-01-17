@@ -9,6 +9,7 @@ export class IS_Node extends IS_Object
     {
         super(IS_Type.IS_Node);
 
+        // TODO: change to this._siblingContext
         this.siblingContext = siblingContext;
 
         this._output = new GainNode(siblingContext.audioContext);

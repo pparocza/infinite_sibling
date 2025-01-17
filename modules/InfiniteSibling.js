@@ -11,6 +11,7 @@ import { IS_StereoPanner } from "./nodes/core/effect/IS_StereoPanner.js";
 import { IS_StereoDelay } from "./nodes/custom/IS_StereoDelay.js";
 import { IS_Convolver } from "./nodes/core/effect/IS_Convolver.js";
 import { IS_AmplitudeModulator } from "./nodes/custom/IS_AmplitudeModulator.js";
+import { IS_ParallelEffect } from "./nodes/custom/IS_ParallelEffect.js";
 
 // enums
 import { IS_Interval } from "./enums/IS_Interval.js";
@@ -50,6 +51,11 @@ export class InfiniteSibling
         this.readyCallbacks = [];
         this.startCallbacks = [];
         this.stopCallbacks = [];
+    }
+
+    get NodeType()
+    {
+        return IS_Type.IS_NodeType;
     }
 
     /*
@@ -197,13 +203,14 @@ export class InfiniteSibling
 
     // TODO: replace with NodeFactory class?
     /*
-    Node Creation
+    Nodes
      */
     createOscillator(type = "sine", frequency = 440, detune = 0)
     {
         return new IS_Oscillator(this, type, frequency, detune);
     }
 
+    // TODO: replace these arguments with objects like IS_BiquadFilterArgs
     createFilter(type = "lowpass", frequency = 220, Q = 1, gain = 1, detune = 0)
     {
         return new IS_BiquadFilter(this, type, frequency, Q, gain, detune);
@@ -257,6 +264,11 @@ export class InfiniteSibling
     createAmplitudeModulator(buffer = null, modulatorPlaybackRate = 1, loop = true)
     {
         return new IS_AmplitudeModulator(this, buffer, modulatorPlaybackRate, loop);
+    }
+
+    createParallelEffect()
+    {
+        return new IS_ParallelEffect(this);
     }
 
     // TODO: replace with Scheduler class?

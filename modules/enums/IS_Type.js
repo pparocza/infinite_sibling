@@ -13,5 +13,10 @@ export const IS_Type =
         TODO: until IS_Object can handle type hierarchies, IS_Scale and IS_SequenceArray are of type "IS_Array"
      */
     IS_Scale: "IS_Scale",
-    IS_Sequence: "IS_Sequence"
+    IS_Sequence: "IS_Sequence",
+
+    IS_NodeType:
+    {
+        IS_BiquadFilter: "IS_BiquadFilter"
+    },
 }

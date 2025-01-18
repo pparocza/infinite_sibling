@@ -78,6 +78,43 @@ export class IS_Array extends IS_Object
         }
     }
 
+    chord(scaleDegree = 1, inversion = 0, nNotes = 3, baseInterval = 3)
+    {
+        let chordArray = [];
+        let baseIntervalOffset = baseInterval - 1;
+        let scaleDegreeOffset = scaleDegree - 1;
+
+        for(let noteIndex = 0; noteIndex < nNotes; noteIndex++)
+        {
+            chordArray.push
+            (
+                this.value
+                [
+                    (scaleDegreeOffset + (baseIntervalOffset * noteIndex)) % this.value.length
+                ]
+            );
+        }
+
+        if(inversion === 0)
+        {
+            return new IS_Array(chordArray);
+        }
+
+        let inversionArray = [];
+
+        for(let noteIndex = inversion; noteIndex < nNotes; noteIndex++)
+        {
+            inversionArray.push(chordArray[noteIndex]);
+        }
+
+        for(let noteIndex = 0; noteIndex < inversion; noteIndex++)
+        {
+            inversionArray.push(chordArray[noteIndex]);
+        }
+
+        return new IS_Array(inversionArray);
+    }
+
     /*
     add specified value to all array values
      */

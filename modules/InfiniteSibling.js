@@ -372,12 +372,12 @@ export class InfiniteSibling
         return IS_Random.coinToss(probabilityOfTrue);
     }
 
-    scale(tonic = IS_KeyboardNote.C, mode = IS_Mode.major)
+    scale(tonic = IS_KeyboardNote.C, mode = IS_Mode.Major)
     {
         return new IS_Scale(tonic, mode);
     }
 
-    ratioScale(tonic = IS_KeyboardNote.C, mode = IS_Mode.major)
+    frequencyScale(tonic = IS_KeyboardNote.C, mode = IS_Mode.Major)
     {
         let scaleArray = [];
         let midiScale = this.scale(tonic, mode).value;
@@ -389,6 +389,24 @@ export class InfiniteSibling
         }
 
         return new IS_Array(scaleArray);
+    }
+
+    ratioScale(mode = IS_Mode.Major)
+    {
+        let frequencyScale = this.frequencyScale(IS_KeyboardNote.C, mode);
+        frequencyScale.divide(frequencyScale.value[0]);
+
+        return frequencyScale;
+    }
+
+    get Mode()
+    {
+        return IS_Mode;
+    }
+
+    get KeyboardNote()
+    {
+        return IS_KeyboardNote;
     }
 
     intervalRatio(intervalString)

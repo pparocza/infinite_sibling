@@ -9,13 +9,10 @@ export class IS_Oscillator extends IS_StartableNode
 
         this._type = type;
 
-        this._frequency = new IS_StartableNodeAudioParameter(siblingContext);
-        this._detune = new IS_StartableNodeAudioParameter(siblingContext);
+        this._frequency = new IS_StartableNodeAudioParameter(siblingContext, frequency);
+        this._detune = new IS_StartableNodeAudioParameter(siblingContext, detune);
 
         this.initializeCallback = this.initialize;
-
-        this.frequency = frequency;
-        this.detune = detune;
     }
 
     initialize()

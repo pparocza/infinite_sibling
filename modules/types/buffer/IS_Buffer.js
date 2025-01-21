@@ -29,7 +29,7 @@ export class IS_Buffer extends IS_Object
         this.bufferOperationsArray = new Float32Array(this.length);
         this.buffer = siblingContext.audioContext.createBuffer(numberOfChannels, lengthSamples, this.sampleRate);
 
-        this.preset = new IS_BufferPresets(this);
+        this._preset = new IS_BufferPresets(this);
     }
 
     /**
@@ -131,6 +131,31 @@ export class IS_Buffer extends IS_Object
     /*
     buffer Operations
      */
+
+    clear(channel = -1)
+    {
+        if(channel !== -1)
+        {
+            this.clearChannel(channel);
+        }
+        else
+        {
+            for(let channel = 0; channel < this.numberOfChannels; channel++)
+            {
+                this.clearChannel(channel);
+            }
+        }
+    }
+
+    clearChannel(channel)
+    {
+        let nowBuffering = this.buffer.getChannelData(channel);
+
+        for (let sample= 0; sample < this.buffer.length; sample++)
+        {
+            nowBuffering[sample] = 0;
+        }
+    }
 
     /**
      *
@@ -1278,5 +1303,10 @@ export class IS_Buffer extends IS_Object
         }
 
         BufferPrint.print(bufferData);
+    }
+
+    get preset()
+    {
+        return this._preset;
     }
 }

@@ -51,7 +51,6 @@ export class IS_Oscillator extends IS_StartableNode
     set frequency(value)
     {
         this._frequency.value = value;
-        this._startableNode.frequency.value = this._frequency.value;
     }
 
     get detune()
@@ -62,6 +61,5 @@ export class IS_Oscillator extends IS_StartableNode
     set detune(value)
     {
         this._detune.value = value;
-        this._startableNode.detune.value = this._detune.value;
     }
 }

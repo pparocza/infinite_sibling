@@ -12,6 +12,7 @@ import { IS_StereoDelay } from "./nodes/custom/IS_StereoDelay.js";
 import { IS_Convolver } from "./nodes/core/effect/IS_Convolver.js";
 import { IS_AmplitudeModulator } from "./nodes/custom/IS_AmplitudeModulator.js";
 import { IS_ParallelEffect } from "./nodes/custom/IS_ParallelEffect.js";
+import { IS_Effect } from "./nodes/core/effect/IS_Effect.js";
 
 // enums
 import { IS_Interval } from "./enums/IS_Interval.js";
@@ -264,6 +265,11 @@ export class InfiniteSibling
     createAmplitudeModulator(buffer = null, modulatorPlaybackRate = 1, loop = true)
     {
         return new IS_AmplitudeModulator(this, buffer, modulatorPlaybackRate, loop);
+    }
+
+    createEffect()
+    {
+        return new IS_Effect(this);
     }
 
     createParallelEffect()

@@ -84,7 +84,7 @@ export class IS_BiquadFilter extends IS_Effect
 
     get detune()
     {
-        this._detune.value;
+        return this._detune;
     }
 
     set detune(value)

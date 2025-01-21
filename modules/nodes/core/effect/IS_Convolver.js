@@ -10,7 +10,7 @@ export class IS_Convolver extends IS_MixEffect
 
         this._convolver = new ConvolverNode(siblingContext.audioContext);
 
-        this.preset = new IS_ConvolverPresets(this);
+        this._preset = new IS_ConvolverPresets(this);
 
         this.initializeBuffer(buffer);
 
@@ -59,5 +59,10 @@ export class IS_Convolver extends IS_MixEffect
     {
         this._normalize = value;
         this._convolver.normalize = this._normalize;
+    }
+
+    get preset()
+    {
+        return this._preset;
     }
 }

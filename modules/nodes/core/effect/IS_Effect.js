@@ -1,5 +1,6 @@
 import { IS_Node } from "../IS_Node.js";
 import { IS_Type } from "../../../enums/IS_Type.js";
+import { IS_EffectPresets } from "../../../presets/IS_EffectPresets.js";
 
 export class IS_Effect extends IS_Node
 {
@@ -8,6 +9,8 @@ export class IS_Effect extends IS_Node
         super(siblingContext);
 
         this.iSType = IS_Type.IS_Effect;
+
+        this._preset = new IS_EffectPresets(this);
 
         this._effectInputNode = new GainNode(siblingContext.audioContext);
     }
@@ -40,5 +43,10 @@ export class IS_Effect extends IS_Node
         {
             audioNodes[node].connect(this.input);
         }
+    }
+
+    get preset()
+    {
+        return this._preset;
     }
 }

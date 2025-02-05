@@ -34,7 +34,7 @@ export class IS_Oscillator extends IS_StartableNode
 
     get type()
     {
-        this._type;
+        return this._type;
     }
 
     set type(value)

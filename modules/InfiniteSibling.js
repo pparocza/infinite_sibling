@@ -13,6 +13,7 @@ import { IS_Convolver } from "./nodes/core/effect/IS_Convolver.js";
 import { IS_AmplitudeModulator } from "./nodes/custom/IS_AmplitudeModulator.js";
 import { IS_ParallelEffect } from "./nodes/custom/IS_ParallelEffect.js";
 import { IS_Effect } from "./nodes/core/effect/IS_Effect.js";
+import { IS_NodeMatrix } from "./nodes/custom/IS_NodeMatrix.js";
 
 // enums
 import { IS_Interval } from "./enums/IS_Interval.js";
@@ -278,7 +279,11 @@ export class InfiniteSibling
         return new IS_ParallelEffect(this);
     }
 
-    // TODO: replace with Scheduler class?
+    createNodeMatrix()
+    {
+        return new IS_NodeMatrix(this);
+    }
+
     /*
     schedule
      */

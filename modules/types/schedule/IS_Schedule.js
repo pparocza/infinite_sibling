@@ -24,7 +24,7 @@ export class IS_Schedule
      * @param startTime
      * @param duration
      */
-    scheduleStart(schedulable, startTime = 0, duration = -1)
+    scheduleStart(schedulable, startTime = 0, duration = null)
     {
         let scheduleItem = new IS_ScheduleItem
         (

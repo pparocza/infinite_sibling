@@ -23,6 +23,7 @@ export { IS_Oscillator } from "./modules/nodes/core/source/IS_Oscillator.js";
 export { IS_AmplitudeModulator } from "./modules/nodes/custom/IS_AmplitudeModulator.js";
 export { IS_ParallelEffect } from "./modules/nodes/custom/IS_ParallelEffect.js";
 export { IS_StereoDelay } from "./modules/nodes/custom/IS_StereoDelay.js";
+import { IS_NodeMatrix } from "./modules/nodes/custom/IS_NodeMatrix.js";
 
 // types
 export { IS_Array } from "./modules/types/array/IS_Array.js"

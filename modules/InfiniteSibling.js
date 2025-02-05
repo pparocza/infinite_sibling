@@ -52,6 +52,7 @@ export class InfiniteSibling
         this.readyCallbacks = [];
         this.startCallbacks = [];
         this.stopCallbacks = [];
+        
     }
 
     get NodeType()

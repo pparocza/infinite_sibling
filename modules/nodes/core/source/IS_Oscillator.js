@@ -24,8 +24,8 @@ export class IS_Oscillator extends IS_StartableNode
 
         this._startableNode.type = this._type;
 
-        this._frequency.outlet.connect(this._startableNode.frequency);
-        this._detune.outlet.connect(this._startableNode.detune);
+        this._frequency.connect(this._startableNode.frequency);
+        this._detune.connect(this._startableNode.detune);
 
         this.configureOutput(this._startableNode);
 

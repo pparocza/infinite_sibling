@@ -296,7 +296,7 @@ export class InfiniteSibling
         return new IS_Schedule();
     }
 
-    scheduleStart(schedulable, time = 0, duration = -1)
+    scheduleStart(schedulable, time = 0, duration = null)
     {
         this.schedule.scheduleStart(schedulable, time, duration);
     }

@@ -6,7 +6,7 @@ import { IS_ScheduleAction } from "../../enums/IS_ScheduleAction.js";
  */
 export class IS_ScheduleItem
 {
-    constructor(schedulable, scheduleAction, startTime, duration = -1, value = 0)
+    constructor(schedulable, scheduleAction, startTime, duration = null, value = 0)
     {
         this._schedulable = schedulable;
         this.scheduleAction = scheduleAction;
@@ -37,7 +37,7 @@ export class IS_ScheduleItem
     {
         this._schedulable.start(this.startTime);
 
-        if (this.duration > 0)
+        if (this.duration !== null)
         {
             this._schedulable.stop(this.startTime + this.duration);
         }
@@ -62,7 +62,7 @@ export class IS_ScheduleItem
 
     stop()
     {
-        if(this.scheduleAction == IS_ScheduleAction.SetValue)
+        if(this.scheduleAction === IS_ScheduleAction.SetValue)
         {
             return;
         }

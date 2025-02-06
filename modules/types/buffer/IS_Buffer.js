@@ -26,10 +26,13 @@ export class IS_Buffer extends IS_Object
         this._length = lengthSamples;
         this._sampleRate = sampleRate;
 
-        this.bufferOperationsArray = new Float32Array(this.length);
+        this._bufferShapeArray = new Float32Array(this.length);
+        this._suspendedOperationsArray = new Float32Array(this.length);
         this.buffer = siblingContext.audioContext.createBuffer(numberOfChannels, lengthSamples, this.sampleRate);
 
         this._preset = new IS_BufferPresets(this);
+
+        this._suspendOperation = false;
     }
 
     /**
@@ -132,9 +135,32 @@ export class IS_Buffer extends IS_Object
     buffer Operations
      */
 
-    clear(channel = -1)
+    get suspendOperation()
     {
-        if(channel !== -1)
+        return this._suspendOperation;
+    }
+
+    set suspendOperation(value)
+    {
+        this._suspendOperation = value;
+    }
+
+    suspendOperations()
+    {
+        this._suspendOperation = true;
+    }
+
+    applySuspendedOperations()
+    {
+        this._bufferShapeArray = [...this._suspendedOperationsArray];
+        this._suspendedOperationsArray = new Float32Array(this.length);
+        this._suspendOperation = false;
+        return this;
+    }
+
+    clear(channel = null)
+    {
+        if(channel !== null)
         {
             this.clearChannel(channel);
         }
@@ -161,39 +187,9 @@ export class IS_Buffer extends IS_Object
      *
      * @param channel
      */
-    // TODO: -1 = apply to all channels, and is default?
-    fill(channel = -1)
+    add(channel = null)
     {
-        if(channel !== -1)
-        {
-            this.fillChannel(channel);
-        }
-        else
-        {
-            for(let channel = 0; channel < this.numberOfChannels; channel++)
-            {
-                this.fillChannel(channel);
-            }
-        }
-    }
-
-    fillChannel(channel)
-    {
-        let nowBuffering = this.buffer.getChannelData(channel);
-
-        for (let sample= 0; sample < this.buffer.length; sample++)
-        {
-            nowBuffering[sample] = this.bufferOperationsArray[sample];
-        }
-    }
-
-    /**
-     *
-     * @param channel
-     */
-    add(channel = -1)
-    {
-        if(channel !== -1)
+        if(channel !== null)
         {
             this.addChannel(channel);
         }
@@ -212,7 +208,14 @@ export class IS_Buffer extends IS_Object
 
         for (let sample= 0; sample < this.buffer.length; sample++)
         {
-            nowBuffering[sample] += this.bufferOperationsArray[sample];
+            if(!this._suspendOperation)
+            {
+                nowBuffering[sample] += this._bufferShapeArray[sample];
+            }
+            else
+            {
+                this._suspendedOperationsArray[sample] += this._bufferShapeArray[sample];
+            }
         }
     }
 
@@ -220,7 +223,7 @@ export class IS_Buffer extends IS_Object
      *
      * @param channel
      */
-    multiply(channel = -1)
+    multiply(channel = null)
     {
         if(channel !== -1)
         {
@@ -241,7 +244,14 @@ export class IS_Buffer extends IS_Object
 
         for (let sample= 0; sample < this.buffer.length; sample++)
         {
-            nowBuffering[sample] *= this.bufferOperationsArray[sample];
+            if(!this._suspendOperation)
+            {
+                nowBuffering[sample] *= this._bufferShapeArray[sample];
+            }
+            else
+            {
+                this._suspendedOperationsArray[sample] *= this._bufferShapeArray[sample];
+            }
         }
     }
 
@@ -249,9 +259,9 @@ export class IS_Buffer extends IS_Object
      *
      * @param channel
      */
-    divide(channel = -1)
+    divide(channel = null)
     {
-        if(channel !== -1)
+        if(channel !== null)
         {
             this.divideChannel(channel);
         }
@@ -270,7 +280,14 @@ export class IS_Buffer extends IS_Object
 
         for (let sample= 0; sample < this.buffer.length; sample++)
         {
-            nowBuffering[sample] /= this.bufferOperationsArray[sample];
+            if(!this._suspendOperation)
+            {
+                nowBuffering[sample] /= this._bufferShapeArray[sample];
+            }
+            else
+            {
+                this._suspendedOperationsArray[sample] /= this._bufferShapeArray[sample];
+            }
         }
     }
 
@@ -278,9 +295,9 @@ export class IS_Buffer extends IS_Object
      *
      * @param channel
      */
-    subtract(channel = -1)
+    subtract(channel = null)
     {
-        if(channel !== -1)
+        if(channel !== null)
         {
             this.subtractChannel(channel);
         }
@@ -299,7 +316,14 @@ export class IS_Buffer extends IS_Object
 
         for (let sample= 0; sample < this.buffer.length; sample++)
         {
-            nowBuffering[sample] -= this.bufferOperationsArray[sample];
+            if(!this._suspendOperation)
+            {
+                nowBuffering[sample] -= this._bufferShapeArray[sample];
+            }
+            else
+            {
+                this._suspendedOperationsArray[sample] -= this._bufferShapeArray[sample];
+            }
         }
     }
 
@@ -345,7 +369,7 @@ export class IS_Buffer extends IS_Object
         {
             if(sample > startSample && sample < endSample)
             {
-                buffer[sample] += this.bufferOperationsArray[sample];
+                buffer[sample] += this._bufferShapeArray[sample];
             }
         }
     }
@@ -362,16 +386,16 @@ export class IS_Buffer extends IS_Object
         {
             if(sample > startSample && sample < endSample)
             {
-                buffer[sample] = this.bufferOperationsArray[sample - startSample];
+                buffer[sample] = this._bufferShapeArray[sample - startSample];
             }
         }
     }
 
     amplitude(value)
     {
-        for(let sample= 0; sample < this.bufferOperationsArray.length; sample++)
+        for(let sample= 0; sample < this._bufferShapeArray.length; sample++)
         {
-            this.bufferOperationsArray[sample] *= value;
+            this._bufferShapeArray[sample] *= value;
         }
         return this;
     }
@@ -380,9 +404,9 @@ export class IS_Buffer extends IS_Object
     {
         let amplitude = Utilities.DecibelsToAmplitude(value);
 
-        for(let sample= 0; sample < this.bufferOperationsArray.length; sample++)
+        for(let sample= 0; sample < this._bufferShapeArray.length; sample++)
         {
-            this.bufferOperationsArray[sample] *= amplitude;
+            this._bufferShapeArray[sample] *= amplitude;
         }
         return this;
     }
@@ -394,9 +418,9 @@ export class IS_Buffer extends IS_Object
      */
     constant(value)
     {
-        for(let sample= 0; sample < this.bufferOperationsArray.length; sample++)
+        for(let sample= 0; sample < this._bufferShapeArray.length; sample++)
         {
-            this.bufferOperationsArray[sample] = value;
+            this._bufferShapeArray[sample] = value;
         }
         return this;
     }
@@ -407,9 +431,9 @@ export class IS_Buffer extends IS_Object
      */
     impulse()
     {
-        for(let sample= 0; sample < this.bufferOperationsArray.length; sample++)
+        for(let sample= 0; sample < this._bufferShapeArray.length; sample++)
         {
-            this.bufferOperationsArray[sample] = sample === 0 ? 1 : 0;
+            this._bufferShapeArray[sample] = sample === 0 ? 1 : 0;
         }
         return this;
     }
@@ -426,10 +450,10 @@ export class IS_Buffer extends IS_Object
         let frequencies = Array.isArray(frequency) ? frequency : [frequency];
         let nFrequencies = frequencies.length;
 
-        for(let sample= 0; sample < this.bufferOperationsArray.length; sample++)
+        for(let sample= 0; sample < this._bufferShapeArray.length; sample++)
         {
             let value = 0;
-            time = sample / this.bufferOperationsArray.length;
+            time = sample / this._bufferShapeArray.length;
 
             for(let frequency = 0; frequency < nFrequencies; frequency++)
             {
@@ -441,7 +465,7 @@ export class IS_Buffer extends IS_Object
                 value /= nFrequencies;
             }
 
-            this.bufferOperationsArray[sample] = Math.abs(value) <= IS_SAMPLE_MIN_VALUE ? 0 : value;
+            this._bufferShapeArray[sample] = Math.abs(value) <= IS_SAMPLE_MIN_VALUE ? 0 : value;
         }
         return this;
     }
@@ -459,9 +483,9 @@ export class IS_Buffer extends IS_Object
         let frequencies = Array.isArray(frequency) ? frequency : [frequency];
         let nFrequencies = frequencies.length;
 
-        for (let sample= 0; sample < this.bufferOperationsArray.length; sample++)
+        for (let sample= 0; sample < this._bufferShapeArray.length; sample++)
         {
-            time = sample / this.bufferOperationsArray.length;
+            time = sample / this._bufferShapeArray.length;
 
             for(let frequency = 0; frequency < nFrequencies; frequency++)
             {
@@ -473,7 +497,7 @@ export class IS_Buffer extends IS_Object
                 value /= nFrequencies;
             }
 
-            this.bufferOperationsArray[sample] = Math.abs(value) <= IS_SAMPLE_MIN_VALUE ? 0 : value;
+            this._bufferShapeArray[sample] = Math.abs(value) <= IS_SAMPLE_MIN_VALUE ? 0 : value;
         }
         return this;
     }
@@ -487,10 +511,10 @@ export class IS_Buffer extends IS_Object
     {
         let value = 0;
 
-        for (let sample= 0; sample < this.bufferOperationsArray.length; sample++)
+        for (let sample= 0; sample < this._bufferShapeArray.length; sample++)
         {
-            value = sample / this.bufferOperationsArray.length;
-            this.bufferOperationsArray[sample] = Math.pow(value, exponent);
+            value = sample / this._bufferShapeArray.length;
+            this._bufferShapeArray[sample] = Math.pow(value, exponent);
         }
         return this;
     }
@@ -504,10 +528,10 @@ export class IS_Buffer extends IS_Object
     {
         let value = 0;
 
-        for (let sample= 0; sample < this.bufferOperationsArray.length; sample++)
+        for (let sample= 0; sample < this._bufferShapeArray.length; sample++)
         {
-            value = 1 - (sample / this.bufferOperationsArray.length);
-            this.bufferOperationsArray[sample] = Math.pow(value , exponent);
+            value = 1 - (sample / this._bufferShapeArray.length);
+            this._bufferShapeArray[sample] = Math.pow(value , exponent);
         }
         return this;
     }
@@ -520,10 +544,10 @@ export class IS_Buffer extends IS_Object
     triangle(exponent = 1)
     {
         let value = 0;
-        let halfOperationsArrayLength = this.bufferOperationsArray.length * 0.5;
+        let halfOperationsArrayLength = this._bufferShapeArray.length * 0.5;
         let ascending = true;
 
-        for (let sample=0; sample < this.bufferOperationsArray.length; sample++)
+        for (let sample=0; sample < this._bufferShapeArray.length; sample++)
         {
             ascending = sample <= halfOperationsArrayLength;
 
@@ -536,7 +560,7 @@ export class IS_Buffer extends IS_Object
                 value = 1 - ((sample - (halfOperationsArrayLength)) / (halfOperationsArrayLength));
             }
 
-            this.bufferOperationsArray[sample] = Math.pow(value, exponent);
+            this._bufferShapeArray[sample] = Math.pow(value, exponent);
         }
         return this;
     }
@@ -547,9 +571,9 @@ export class IS_Buffer extends IS_Object
      */
     noise()
     {
-        for (let sample= 0; sample < this.bufferOperationsArray.length; sample++)
+        for (let sample= 0; sample < this._bufferShapeArray.length; sample++)
         {
-            this.bufferOperationsArray[sample] = Math.random() * 2 - 1;
+            this._bufferShapeArray[sample] = Math.random() * 2 - 1;
         }
         return this;
     }
@@ -560,9 +584,9 @@ export class IS_Buffer extends IS_Object
      */
     unipolarNoise()
     {
-        for (let sample= 0; sample < this.bufferOperationsArray.length; sample++)
+        for (let sample= 0; sample < this._bufferShapeArray.length; sample++)
         {
-            this.bufferOperationsArray[sample] = Math.random();
+            this._bufferShapeArray[sample] = Math.random();
         }
         return this;
     }
@@ -574,11 +598,11 @@ export class IS_Buffer extends IS_Object
      */
     square(dutyCycle)
     {
-        let transitionSampleIndex = this.bufferOperationsArray.length * dutyCycle;
+        let transitionSampleIndex = this._bufferShapeArray.length * dutyCycle;
 
-        for (let sample=0; sample<this.bufferOperationsArray.length; sample++)
+        for (let sample=0; sample<this._bufferShapeArray.length; sample++)
         {
-            this.bufferOperationsArray[sample] = sample < transitionSampleIndex ? 1 : 0;
+            this._bufferShapeArray[sample] = sample < transitionSampleIndex ? 1 : 0;
         }
         return this;
     }
@@ -591,15 +615,15 @@ export class IS_Buffer extends IS_Object
      */
     floatingCycleSquare(start, end)
     {
-        let cycleStart = this.bufferOperationsArray.length * start;
-        let cycleEnd = this.bufferOperationsArray.length * end;
+        let cycleStart = this._bufferShapeArray.length * start;
+        let cycleEnd = this._bufferShapeArray.length * end;
         let inCycleBounds = false;
 
-        for (let sample=0; sample<this.bufferOperationsArray.length; sample++)
+        for (let sample=0; sample<this._bufferShapeArray.length; sample++)
         {
             inCycleBounds = sample >= cycleStart && sample >= cycleEnd;
 
-            this.bufferOperationsArray[sample] = inCycleBounds ? 1 : 0;
+            this._bufferShapeArray[sample] = inCycleBounds ? 1 : 0;
         }
         return this;
     }
@@ -626,11 +650,11 @@ export class IS_Buffer extends IS_Object
         let progressPercent = 0;
         let time = 0;
 
-        for (let sample= 0; sample < this.bufferOperationsArray.length; sample++)
+        for (let sample= 0; sample < this._bufferShapeArray.length; sample++)
         {
             let value = 0;
 
-            progressPercent = sample / this.bufferOperationsArray.length;
+            progressPercent = sample / this._bufferShapeArray.length;
             time = progressPercent * IS_TWO_PI;
 
             for (let i = 0; i < longestArrayLength; i++)
@@ -648,7 +672,7 @@ export class IS_Buffer extends IS_Object
                 value /= longestArrayLength;
             }
 
-            this.bufferOperationsArray[sample] = Math.abs(value) <= IS_SAMPLE_MIN_VALUE ? 0 : value;
+            this._bufferShapeArray[sample] = Math.abs(value) <= IS_SAMPLE_MIN_VALUE ? 0 : value;
         }
         return this;
     }
@@ -675,11 +699,11 @@ export class IS_Buffer extends IS_Object
         let progressPercent = 0;
         let time = 0;
 
-        for (let sample= 0; sample < this.bufferOperationsArray.length; sample++)
+        for (let sample= 0; sample < this._bufferShapeArray.length; sample++)
         {
             let value = 0;
 
-            progressPercent = sample / this.bufferOperationsArray.length;
+            progressPercent = sample / this._bufferShapeArray.length;
             time = progressPercent * IS_TWO_PI;
 
             for (let i = 0; i < longestArrayLength; i++)
@@ -697,7 +721,7 @@ export class IS_Buffer extends IS_Object
                 value /= longestArrayLength;
             }
 
-            this.bufferOperationsArray[sample] = Math.abs(value) <= IS_SAMPLE_MIN_VALUE ? 0 : value;
+            this._bufferShapeArray[sample] = Math.abs(value) <= IS_SAMPLE_MIN_VALUE ? 0 : value;
         }
         return this;
     }
@@ -710,14 +734,14 @@ export class IS_Buffer extends IS_Object
      */
     quantizedArrayBuffer(quantizationValue, valueArray)
     {
-        let nSamples = this.bufferOperationsArray.length;
+        let nSamples = this._bufferShapeArray.length;
         let mod = nSamples / quantizationValue;
         let modVal = 0;
         let value = 0;
 
         let j = 0;
 
-        for (let sample= 0; sample < this.bufferOperationsArray.length; sample++)
+        for (let sample= 0; sample < this._bufferShapeArray.length; sample++)
         {
             modVal = sample % mod;
 
@@ -727,7 +751,7 @@ export class IS_Buffer extends IS_Object
                 j++;
             }
 
-            this.bufferOperationsArray[sample] = value;
+            this._bufferShapeArray[sample] = value;
         }
         return this;
     }
@@ -747,8 +771,8 @@ export class IS_Buffer extends IS_Object
          upExp = 1, downExp = 1)
     {
 
-        let rampStart = Math.round(this.bufferOperationsArray.length * startPercent);
-        let rampEnd = Math.round(this.bufferOperationsArray.length * endPercent);
+        let rampStart = Math.round(this._bufferShapeArray.length * startPercent);
+        let rampEnd = Math.round(this._bufferShapeArray.length * endPercent);
 
         let rampLength = rampEnd - rampStart;
 
@@ -760,23 +784,23 @@ export class IS_Buffer extends IS_Object
 
         let value = 0;
 
-        for (let sample= 0; sample < this.bufferOperationsArray.length; sample++)
+        for (let sample= 0; sample < this._bufferShapeArray.length; sample++)
         {
             switch(true)
             {
                 case (sample < rampStart || sample >= rampEnd):
-                    this.bufferOperationsArray[sample] = 0;
+                    this._bufferShapeArray[sample] = 0;
                     break;
                 case (sample >= rampStart && sample <= upPoint):
                     value = (sample - rampStart) / upLength;
-                    this.bufferOperationsArray[sample] = Math.pow(value, upExp);
+                    this._bufferShapeArray[sample] = Math.pow(value, upExp);
                     break;
                 case (sample > upPoint && sample < downPoint):
-                    this.bufferOperationsArray[sample] = 1;
+                    this._bufferShapeArray[sample] = 1;
                     break;
                 case (sample >= downPoint && sample < rampEnd):
                     value = 1 - ((sample - downPoint) / downLength);
-                    this.bufferOperationsArray[sample] = Math.pow(value , downExp);
+                    this._bufferShapeArray[sample] = Math.pow(value , downExp);
                     break;
                 default:
                     break;
@@ -814,9 +838,9 @@ export class IS_Buffer extends IS_Object
 
         let nowBuffering = bandBuffer.buffer.getChannelData(0);
 
-        for(let sample= 0; sample < this.bufferOperationsArray.length; sample++)
+        for(let sample= 0; sample < this._bufferShapeArray.length; sample++)
         {
-            this.bufferOperationsArray[sample] = nowBuffering[sample];
+            this._bufferShapeArray[sample] = nowBuffering[sample];
         }
         return this;
     }
@@ -901,9 +925,9 @@ export class IS_Buffer extends IS_Object
 
         let nowBuffering = bandBuffer.buffer.getChannelData(0);
 
-        for (let sample= 0; sample < this.bufferOperationsArray.length; sample++)
+        for (let sample= 0; sample < this._bufferShapeArray.length; sample++)
         {
-            this.bufferOperationsArray[sample] = nowBuffering[sample];
+            this._bufferShapeArray[sample] = nowBuffering[sample];
         }
 
         return this;
@@ -1170,7 +1194,7 @@ export class IS_Buffer extends IS_Object
         let bufferArrayMin = 0;
         let normalizedValue = 0;
 
-        for (let channel=0; channel < this.buffer.numberOfChannels; channel++)
+        for (let channel= 0; channel < this.buffer.numberOfChannels; channel++)
         {
             bufferArray.value = this.buffer.getChannelData(channel);
             bufferArrayMax = bufferArray.max;
@@ -1296,6 +1320,23 @@ export class IS_Buffer extends IS_Object
 
         let bufferData = new Float32Array(this.length);
         this.buffer.copyFromChannel(bufferData, channel, 0);
+
+        for(let sample= 0; sample < bufferData.length; sample++)
+        {
+            bufferData[sample] = (0.5 * (100 + (Math.floor(bufferData[sample] * 100))));
+        }
+
+        BufferPrint.print(bufferData);
+    }
+
+    printSuspendedOperations(channel = 0, tag)
+    {
+        if (tag)
+        {
+            console.log(tag)
+        }
+
+        let bufferData = [...this._suspendedOperationsArray];
 
         for(let sample= 0; sample < bufferData.length; sample++)
         {

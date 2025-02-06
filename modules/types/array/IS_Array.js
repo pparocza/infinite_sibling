@@ -9,7 +9,9 @@ export class IS_Array extends IS_Object
         super(IS_Type.IS_Array);
 
         this.value = array !== null ? array : [];
+
         this.urnArray = [];
+        this.urnValueCopy = [];
     }
 
     print()
@@ -89,9 +91,9 @@ export class IS_Array extends IS_Object
             chordArray.push
             (
                 this.value
-                [
-                    (scaleDegreeOffset + (baseIntervalOffset * noteIndex)) % this.value.length
-                ]
+                    [
+                (scaleDegreeOffset + (baseIntervalOffset * noteIndex)) % this.value.length
+                    ]
             );
         }
 
@@ -165,6 +167,22 @@ export class IS_Array extends IS_Object
     random()
     {
         return this.value[IS_Random.randomInt(0, this.value.length)];
+    }
+
+    randomIntegers(length, min, max)
+    {
+        for(let i = 0; i < length; i++)
+        {
+            this.value.push(IS_Random.randomInt(min, max));
+        }
+    }
+
+    randomFloats(length, min, max)
+    {
+        for(let i = 0; i < length; i++)
+        {
+            this.value.push(IS_Random.randomFloat(min, max));
+        }
     }
 
     /*
@@ -280,18 +298,19 @@ export class IS_Array extends IS_Object
 
     urn()
     {
-        if(this.value.length == 0)
+        if(this.urnValueCopy.length === 0)
         {
-            for(let urnIndex = 0; urnIndex < this.urnArray.length; urnIndex++)
+            console.log("Reset!");
+            for(let urnIndex = 0; urnIndex < this.value.length; urnIndex++)
             {
-                this.value[urnIndex] = this.urnArray[urnIndex];
+                this.urnValueCopy.push(this.value[urnIndex]);
             }
         }
 
-        let randomIndex = IS_Random.randomInt(0, this.value.length);
-        let randomValue = this.value[randomIndex];
+        let randomIndex = IS_Random.randomInt(0, this.urnValueCopy.length);
+        let randomValue = this.urnValueCopy[randomIndex];
         this.urnArray.push(randomValue);
-        this.value.splice(randomIndex, 1);
+        this.urnValueCopy.splice(randomIndex, 1);
 
         return randomValue;
     }

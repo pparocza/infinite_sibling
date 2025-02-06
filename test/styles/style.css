@@ -1,0 +1,51 @@
+h1
+{
+    font: 28px Brush Script MT, sans-serif;
+}
+
+a
+{
+    font: 15px Trebuchet MS, sans-serif;
+}
+
+button
+{
+    font: 17px Garamond, sans-serif;
+}
+
+label
+{
+    font: 17px Courier, sans-serif;
+    color: whitesmoke;
+}
+
+span
+{
+    font: 17px Courier, sans-serif;
+}
+
+div
+{
+    font: 15px Trebuchet MS, sans-serif;
+    color: whitesmoke;
+}
+
+body
+{
+    background: black;
+}
+
+.TITLE_DIV
+{
+    font: 28px Brush Script MT, sans-serif;
+    text-align: center;
+    color: whitesmoke;
+}
+
+.UI_DIV
+{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+}

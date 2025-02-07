@@ -292,7 +292,6 @@ export class IS_Array extends IS_Object
     {
         if(this.urnValueCopy.length === 0)
         {
-            console.log("Reset!");
             for(let urnIndex = 0; urnIndex < this.value.length; urnIndex++)
             {
                 this.urnValueCopy.push(this.value[urnIndex]);

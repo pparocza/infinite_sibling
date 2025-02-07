@@ -14,14 +14,6 @@ export class IS_Array extends IS_Object
         this.urnValueCopy = [];
     }
 
-    print()
-    {
-        for(let i = 0; i < this.value.length; i++)
-        {
-            console.log(this.value[i]);
-        }
-    }
-
     get length()
     {
         return this.value.length;
@@ -300,7 +292,6 @@ export class IS_Array extends IS_Object
     {
         if(this.urnValueCopy.length === 0)
         {
-            console.log("Reset!");
             for(let urnIndex = 0; urnIndex < this.value.length; urnIndex++)
             {
                 this.urnValueCopy.push(this.value[urnIndex]);

@@ -53,7 +53,7 @@ export class InfiniteSibling
         this.readyCallbacks = [];
         this.startCallbacks = [];
         this.stopCallbacks = [];
-        
+
     }
 
     get NodeType()
@@ -306,9 +306,9 @@ export class InfiniteSibling
         this.schedule.scheduleStop(schedulable, time);
     }
 
-    scheduleValue(schedulable, value, time)
+    scheduleValue(schedulable, value, time, transitionTime = null)
     {
-        this.schedule.scheduleValue(schedulable, value, time);
+        this.schedule.scheduleValue(schedulable, value, time, transitionTime);
     }
 
     startSchedules()

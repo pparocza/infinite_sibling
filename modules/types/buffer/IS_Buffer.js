@@ -619,9 +619,9 @@ export class IS_Buffer extends IS_Object
         let cycleEnd = this._bufferShapeArray.length * end;
         let inCycleBounds = false;
 
-        for (let sample=0; sample<this._bufferShapeArray.length; sample++)
+        for (let sample= 0; sample < this._bufferShapeArray.length; sample++)
         {
-            inCycleBounds = sample >= cycleStart && sample >= cycleEnd;
+            inCycleBounds = sample >= cycleStart && sample <= cycleEnd;
 
             this._bufferShapeArray[sample] = inCycleBounds ? 1 : 0;
         }

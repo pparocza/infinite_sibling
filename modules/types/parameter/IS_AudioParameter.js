@@ -40,9 +40,9 @@ export class IS_AudioParameter extends IS_Object
         this.parameter.value = value;
     }
 
-    scheduleValue(value, time = 0)
+    scheduleValue(value, time = 0, transitionTime = null)
     {
-        this.siblingContext.scheduleValue(this, value, time);
+        this.siblingContext.scheduleValue(this, value, time, transitionTime);
     }
 
     scheduleValueSequence(valueSequence, timeSequence)
@@ -57,8 +57,15 @@ export class IS_AudioParameter extends IS_Object
         }
     }
 
-    setValueAtTime(value, time = 0)
+    setValueAtTime(value, time = 0, transitionTime = null)
     {
-        this.parameter.setValueAtTime(value, this.siblingContext.now + time);
+        if(transitionTime !== null)
+        {
+            this.parameter.setTargetAtTime(value, this.siblingContext.now + time, transitionTime);
+        }
+        else
+        {
+            this.parameter.setValueAtTime(value, this.siblingContext.now + time);
+        }
     }
 }

@@ -44,11 +44,11 @@ export class IS_Schedule
         this.scheduleItems.push(scheduleItem);
     }
 
-    scheduleValue(schedulable, value, time)
+    scheduleValue(schedulable, value, time, transitionTime = null)
     {
         let scheduleItem = new IS_ScheduleItem
         (
-            schedulable, IS_ScheduleAction.SetValue, time, 0, value
+            schedulable, IS_ScheduleAction.SetValue, time, 0, value, transitionTime
         );
 
         this.scheduleItems.push(scheduleItem);

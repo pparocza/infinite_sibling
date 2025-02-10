@@ -627,7 +627,7 @@ export class IS_Buffer extends IS_Object
         }
         return this;
     }
-    
+
     /**
      *
      * @param carrierFrequency

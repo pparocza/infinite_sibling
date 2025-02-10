@@ -10,8 +10,8 @@ export class IS_ConvolverPresets
     {
         let buffer = this.siblingContext.createBuffer(2, length, this.siblingContext.sampleRate);
 
-        buffer.noise().fill(0);
-        buffer.noise().fill(1);
+        buffer.noise().add(0);
+        buffer.noise().add(1);
         buffer.inverseSawtooth(2).multiply(0);
         buffer.inverseSawtooth(2).multiply(1);
 

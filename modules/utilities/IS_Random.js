@@ -28,6 +28,11 @@ export const IS_Random =
             return Math.random() * (max-min) + min;
         },
 
+        randomValue: function(...values)
+        {
+            return values[this.randomInt(0, values.length)];
+        },
+
         /**
          *
          * @param probabilityOfTrue

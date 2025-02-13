@@ -139,6 +139,15 @@ export class InfiniteSibling
         this.output.gain.value = this.decibelsToAmplitude(value);
     }
 
+    outputMono()
+    {
+        let channelMerger = this.audioContext.createChannelMerger(1);
+
+        this.output.disconnect();
+        this.output.connect(channelMerger);
+        channelMerger.connect(this.destination);
+    }
+
     connectSeries(...audioNodes)
     {
         for (let audioNodeIndex = 1; audioNodeIndex < audioNodes.length; audioNodeIndex++)

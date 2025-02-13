@@ -26,11 +26,12 @@ export class IS_Buffer extends IS_Object
         this._length = lengthSamples;
         this._sampleRate = sampleRate;
 
-        this._bufferShapeArray = new Float32Array(this.length);
-        this._suspendedOperationsArray = new Float32Array(this.length);
-        this.buffer = siblingContext.audioContext.createBuffer(numberOfChannels, lengthSamples, this.sampleRate);
+        this._bufferShapeArray = new Float32Array(this._length);
+        this._suspendedOperationsArray = new Float32Array(this._length);
+        this._buffer = siblingContext.audioContext.createBuffer(numberOfChannels, lengthSamples, this._sampleRate);
 
         this._preset = new IS_BufferPresets(this);
+        this._siblingContext = siblingContext;
 
         this._suspendOperation = false;
     }
@@ -72,7 +73,7 @@ export class IS_Buffer extends IS_Object
     set duration(value)
     {
         this._duration = value;
-        this.buffer.duration = this._duration;
+        this._buffer.duration = this._duration;
     }
 
     /**
@@ -91,7 +92,7 @@ export class IS_Buffer extends IS_Object
     set length(value)
     {
         this._length = value;
-        this.buffer.length = this._length;
+        this._buffer.length = this._length;
     }
 
     /**
@@ -109,7 +110,7 @@ export class IS_Buffer extends IS_Object
     set numberOfChannels(value)
     {
         this._numberOfChannels = value;
-        this.buffer.numberOfChannels = this._numberOfChannels;
+        this._buffer.numberOfChannels = this._numberOfChannels;
     }
 
     /**
@@ -128,7 +129,7 @@ export class IS_Buffer extends IS_Object
     set sampleRate(value)
     {
         this._sampleRate = value;
-        this.buffer.sampleRate = this._sampleRate;
+        this._buffer.sampleRate = this._sampleRate;
     }
 
     /*
@@ -153,7 +154,7 @@ export class IS_Buffer extends IS_Object
     applySuspendedOperations()
     {
         this._bufferShapeArray = [...this._suspendedOperationsArray];
-        this._suspendedOperationsArray = new Float32Array(this.length);
+        this._suspendedOperationsArray = new Float32Array(this._length);
         this._suspendOperation = false;
         return this;
     }
@@ -166,7 +167,7 @@ export class IS_Buffer extends IS_Object
         }
         else
         {
-            for(let channel = 0; channel < this.numberOfChannels; channel++)
+            for(let channel = 0; channel < this._numberOfChannels; channel++)
             {
                 this.clearChannel(channel);
             }
@@ -175,9 +176,9 @@ export class IS_Buffer extends IS_Object
 
     clearChannel(channel)
     {
-        let nowBuffering = this.buffer.getChannelData(channel);
+        let nowBuffering = this._buffer.getChannelData(channel);
 
-        for (let sample= 0; sample < this.buffer.length; sample++)
+        for (let sample= 0; sample < this._length; sample++)
         {
             nowBuffering[sample] = 0;
         }
@@ -195,7 +196,7 @@ export class IS_Buffer extends IS_Object
         }
         else
         {
-            for(let channel = 0; channel < this.numberOfChannels; channel++)
+            for(let channel = 0; channel < this._numberOfChannels; channel++)
             {
                 this.addChannel(channel);
             }
@@ -204,9 +205,9 @@ export class IS_Buffer extends IS_Object
 
     addChannel(channel)
     {
-        let nowBuffering = this.buffer.getChannelData(channel);
+        let nowBuffering = this._buffer.getChannelData(channel);
 
-        for (let sample= 0; sample < this.buffer.length; sample++)
+        for (let sample= 0; sample < this._length; sample++)
         {
             if(!this._suspendOperation)
             {
@@ -240,9 +241,9 @@ export class IS_Buffer extends IS_Object
 
     multiplyChannel(channel)
     {
-        let nowBuffering = this.buffer.getChannelData(channel);
+        let nowBuffering = this._buffer.getChannelData(channel);
 
-        for (let sample= 0; sample < this.buffer.length; sample++)
+        for (let sample= 0; sample < this._length; sample++)
         {
             if(!this._suspendOperation)
             {
@@ -276,9 +277,9 @@ export class IS_Buffer extends IS_Object
 
     divideChannel(channel)
     {
-        let nowBuffering = this.buffer.getChannelData(channel);
+        let nowBuffering = this._buffer.getChannelData(channel);
 
-        for (let sample= 0; sample < this.buffer.length; sample++)
+        for (let sample= 0; sample < this._length; sample++)
         {
             if(!this._suspendOperation)
             {
@@ -303,7 +304,7 @@ export class IS_Buffer extends IS_Object
         }
         else
         {
-            for(let channel = 0; channel < this.numberOfChannels; channel++)
+            for(let channel = 0; channel < this._numberOfChannels; channel++)
             {
                 this.subtractChannel(channel);
             }
@@ -312,9 +313,9 @@ export class IS_Buffer extends IS_Object
 
     subtractChannel(channel)
     {
-        let nowBuffering = this.buffer.getChannelData(channel);
+        let nowBuffering = this._buffer.getChannelData(channel);
 
-        for (let sample= 0; sample < this.buffer.length; sample++)
+        for (let sample= 0; sample < this._length; sample++)
         {
             if(!this._suspendOperation)
             {
@@ -323,6 +324,75 @@ export class IS_Buffer extends IS_Object
             else
             {
                 this._suspendedOperationsArray[sample] -= this._bufferShapeArray[sample];
+            }
+        }
+    }
+
+    convolve(channel = null)
+    {
+        if(channel !== null)
+        {
+            this.convolveChannel(channel);
+        }
+        else
+        {
+            for(let channel = 0; channel < this._numberOfChannels; channel++)
+            {
+                this.convolveChannel(channel);
+            }
+        }
+    }
+
+    convoleChannel(channel)
+    {
+        let nowBuffering = this._buffer.getChannelData(channel);
+
+        for (let sample= 0; sample < this._length; sample++)
+        {
+            if(!this._suspendOperation)
+            {
+                //
+            }
+            else
+            {
+                //
+            }
+        }
+    }
+
+    channelMerge(factor = 0.5)
+    {
+        let tempBuffer = this._siblingContext.audioContext.createBuffer
+        (
+            this._numberOfChannels, this._length, this._sampleRate
+        );
+
+        for(let channel = 0; channel < this._numberOfChannels; channel++)
+        {
+            tempBuffer.copyToChannel
+            (
+                this._buffer.getChannelData(channel),
+                this._numberOfChannels - channel - 1
+            );
+        }
+
+        for(let channel = 0; channel < this._numberOfChannels; channel++)
+        {
+            let tempChannel = tempBuffer.getChannelData(channel);
+            let nowBuffering = this._buffer.getChannelData(channel);
+
+            for(let sample = 0; sample < this._length; sample++)
+            {
+                let currentSampleValue = nowBuffering[sample];
+
+                if(!this._suspendOperation)
+                {
+                    nowBuffering[sample] = (currentSampleValue * factor) + (tempChannel[sample] * (1 - factor));
+                }
+                else
+                {
+                    this._suspendedOperationsArray[sample] = (currentSampleValue * factor) + (tempChannel[sample] * (1 - factor));
+                }
             }
         }
     }

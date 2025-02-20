@@ -1,11 +1,12 @@
 import { IS_Effect } from "../core/effect/IS_Effect.js";
+import { IS_Type } from "../../enums/IS_Type.js";
 
 const IS_AmplitudeModulatorParamNames =
-{
-    buffer: "buffer",
-    loop: "loop",
-    modulatorPlaybackRate: "modulatorPlaybackRate"
-}
+    {
+        buffer: "buffer",
+        loop: "loop",
+        modulatorPlaybackRate: "modulatorPlaybackRate"
+    }
 
 /**
  * Modulate the amplitude of an input signal with an IS_BufferSource
@@ -14,7 +15,7 @@ export class IS_AmplitudeModulator extends IS_Effect
 {
     constructor(siblingContext, buffer = null, modulatorPlaybackRate = 1, loop = true)
     {
-        super(siblingContext);
+        super(siblingContext, IS_Type.IS_EffectType.IS_AmplitudeModulator);
 
         this.paramNames = IS_AmplitudeModulatorParamNames;
 

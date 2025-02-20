@@ -3,11 +3,29 @@ import { IS_Type } from "../../enums/IS_Type.js";
 import { Utilities } from "../../utilities/Utilities.js";
 import { IS_AudioParameter } from "../../types/parameter/IS_AudioParameter.js";
 
+class NodeRegistryData
+{
+    constructor(audioNode)
+    {
+        this._audioNode = audioNode;
+
+        this._connections = [];
+    };
+
+    get audioNode() { return this._audioNode; };
+    get connections () { return this._connections };
+
+    registerConnection(nodeRegistryData)
+    {
+        this._connections.push(nodeRegistryData);
+    }
+}
+
 export class IS_Node extends IS_Object
 {
-    constructor(siblingContext)
+    constructor(siblingContext, iSType)
     {
-        super(IS_Type.IS_Node);
+        super(iSType);
 
         // TODO: change to this._siblingContext
         this.siblingContext = siblingContext;
@@ -16,9 +34,17 @@ export class IS_Node extends IS_Object
         this._gain = new IS_AudioParameter(this.siblingContext, this._output.gain);
 
         this._hasInput = false;
+
+        this._registryData = new NodeRegistryData
+        (
+            this, iSType
+        );
+
+        this.siblingContext.registerNode(this._registryData);
     }
 
-    get hasInput() { return this._hasInput };
+    get hasInput() { return this._hasInput; };
+    get registryData() { return this._registryData; };
 
     /**
      *
@@ -48,6 +74,8 @@ export class IS_Node extends IS_Object
             {
                 this._output.connect(audioNode);
             }
+
+            this._registryData.registerConnection(audioNode.registryData);
         }
     }
 

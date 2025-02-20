@@ -22,7 +22,7 @@ export class IS_BufferSource extends IS_StartableNode
                 loop = false, loopStart = 0, loopEnd = 1,
                 playbackRate = 1)
     {
-        super(siblingContext);
+        super(siblingContext, IS_Type.IS_SourceType.IS_BufferSource);
 
         this.initializeBuffer(buffer);
 
@@ -73,7 +73,7 @@ export class IS_BufferSource extends IS_StartableNode
 
     set buffer(buffer)
     {
-        if(buffer.iSType !== undefined && buffer.iSType === IS_Type.IS_Buffer)
+        if(buffer.iSType !== undefined && buffer.iSType === IS_Type.IS_Data.IS_Buffer)
         {
             this._buffer = buffer.buffer;
         }

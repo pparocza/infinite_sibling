@@ -6,7 +6,7 @@ export class IS_Convolver extends IS_MixEffect
 {
     constructor(siblingContext, buffer = null, normalize = true)
     {
-        super(siblingContext);
+        super(siblingContext, IS_Type.IS_EffectType.IS_Convolver);
 
         this._convolver = new ConvolverNode(siblingContext.audioContext);
 
@@ -38,7 +38,7 @@ export class IS_Convolver extends IS_MixEffect
 
     set buffer(buffer)
     {
-        if(buffer.iSType !== undefined && buffer.iSType === IS_Type.IS_Buffer)
+        if(buffer.iSType !== undefined && buffer.iSType === IS_Type.IS_Data.IS_Buffer)
         {
             this._buffer = buffer.buffer;
         }

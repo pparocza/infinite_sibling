@@ -6,7 +6,7 @@ export class IS_SequenceArray extends IS_Array
 {
     constructor()
     {
-        super();
+        super([], IS_Type.IS_Data.IS_SequenceArray);
     }
 
     valueSequence(possibleValues = [], length, random = false)

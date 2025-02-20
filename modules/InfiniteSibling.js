@@ -54,11 +54,22 @@ export class InfiniteSibling
         this.startCallbacks = [];
         this.stopCallbacks = [];
 
+        this._nodeRegistry = [];
     }
 
     get NodeType()
     {
         return IS_Type.IS_NodeType;
+    }
+
+    get nodeRegistry()
+    {
+        return this._nodeRegistry;
+    }
+
+    registerNode(nodeRegistryData)
+    {
+        this._nodeRegistry.push(nodeRegistryData);
     }
 
     /*

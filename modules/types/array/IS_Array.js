@@ -4,9 +4,12 @@ import { IS_Random } from "../../utilities/IS_Random.js";
 
 export class IS_Array extends IS_Object
 {
-    constructor(array = null)
+    constructor(array = null, iSType = null)
     {
-        super(IS_Type.IS_Array);
+        super
+        (
+            iSType === null ? IS_Type.IS_Data.IS_Array : iSType
+        );
 
         this.value = array !== null ? array : [];
 

@@ -1,11 +1,12 @@
 import { IS_StartableNode } from "../IS_StartableNode.js";
 import { IS_StartableNodeAudioParameter } from "../../../types/parameter/IS_StartableNodeAudioParameter.js";
+import { IS_Type } from "../../../enums/IS_Type.js";
 
 export class IS_Oscillator extends IS_StartableNode
 {
     constructor(siblingContext, type = "sine", frequency = 440, detune = 0)
     {
-        super(siblingContext);
+        super(siblingContext, IS_Type.IS_SourceType.IS_Oscillator);
 
         this._type = type;
 

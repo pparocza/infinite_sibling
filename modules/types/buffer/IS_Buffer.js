@@ -12,7 +12,7 @@ export class IS_Buffer extends IS_Object
 {
     constructor(siblingContext, numberOfChannels = 1, duration = 1, sampleRate = null)
     {
-        super(IS_Type.IS_Buffer);
+        super(IS_Type.IS_Data.IS_Buffer);
 
         if(sampleRate === null)
         {
@@ -360,38 +360,48 @@ export class IS_Buffer extends IS_Object
         }
     }
 
-    channelMerge(factor = 0.5)
+    channelMerge()
     {
+        let nChannels = this._numberOfChannels;
+
         let tempBuffer = this._siblingContext.audioContext.createBuffer
         (
-            this._numberOfChannels, this._length, this._sampleRate
+            nChannels, this._length, this._sampleRate
         );
 
-        for(let channel = 0; channel < this._numberOfChannels; channel++)
+        for(let channel = 0; channel < nChannels; channel++)
         {
             tempBuffer.copyToChannel
             (
                 this._buffer.getChannelData(channel),
-                this._numberOfChannels - channel - 1
+                nChannels - channel - 1
             );
         }
 
-        for(let channel = 0; channel < this._numberOfChannels; channel++)
+        for(let channel = 0; channel < nChannels; channel++)
         {
             let tempChannel = tempBuffer.getChannelData(channel);
             let nowBuffering = this._buffer.getChannelData(channel);
 
             for(let sample = 0; sample < this._length; sample++)
             {
-                let currentSampleValue = nowBuffering[sample];
+                let currentMergeFactor = Math.abs(this._bufferShapeArray[sample]);
+
+                let nowBufferingValue = nowBuffering[sample];
+                let otherChannelValue = tempChannel[sample];
+
+                let nowBufferingScaledAmplitude = nowBufferingValue * currentMergeFactor;
+                let otherChannelScaledAmplitude = otherChannelValue * (1 - currentMergeFactor);
+
+                let mergedValue = nowBufferingScaledAmplitude + otherChannelScaledAmplitude;
 
                 if(!this._suspendOperation)
                 {
-                    nowBuffering[sample] = (currentSampleValue * factor) + (tempChannel[sample] * (1 - factor));
+                    nowBuffering[sample] = mergedValue;
                 }
                 else
                 {
-                    this._suspendedOperationsArray[sample] = (currentSampleValue * factor) + (tempChannel[sample] * (1 - factor));
+                    this._suspendedOperationsArray[sample] = mergedValue;
                 }
             }
         }

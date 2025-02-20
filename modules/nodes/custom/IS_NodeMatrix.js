@@ -31,7 +31,7 @@ export class IS_NodeMatrix extends IS_Effect
 {
 	constructor(siblingContext)
 	{
-		super(siblingContext);
+		super(siblingContext, IS_Type.IS_EffectType.IS_NodeMatrix);
 
 		this._startableNodes = [];
 		this._channels = {};

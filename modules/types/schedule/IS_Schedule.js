@@ -1,13 +1,17 @@
+import { IS_Object } from "../../types/IS_Object.js";
 import { IS_ScheduleAction } from "../../enums/IS_ScheduleAction.js";
 import { IS_ScheduleItem } from "./IS_ScheduleItem.js";
+import { IS_Type } from "../../enums/IS_Type.js";
 
 /**
  * Schedule starts and stops of Startable Nodes
  */
-export class IS_Schedule
+export class IS_Schedule extends IS_Object
 {
     constructor()
     {
+        super(IS_Type.IS_Data.IS_Schedule);
+
         this.scheduleItems = [];
         this.offset = 0;
         this.duration = -1;

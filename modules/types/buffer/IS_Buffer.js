@@ -518,6 +518,7 @@ export class IS_Buffer extends IS_Object
         return this;
     }
 
+    // TODO: replace all Math.sin with direct-form digital resonator? (Synths w/ JUCE in C++ pg. 120)
     /**
      *
      * @param frequency

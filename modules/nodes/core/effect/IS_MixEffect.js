@@ -4,9 +4,9 @@ import { IS_Type } from "../../../enums/IS_Type.js";
 
 export class IS_MixEffect extends IS_Effect
 {
-    constructor(siblingContext, wetMix = 1)
+    constructor(siblingContext, iSEffectType = undefined, wetMix = 1)
     {
-        super(siblingContext);
+        super(siblingContext, iSEffectType);
 
         this._mixEffectInputNode = this.siblingContext.createGain();
         this._mixEffectOutputNode = this.siblingContext.createGain();

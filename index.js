@@ -8,6 +8,7 @@ export { IS_Type } from "./modules/enums/IS_Type.js";
 // core
 export { IS_Node } from "./modules/nodes/core/IS_Node.js";
 export { IS_StartableNode } from "./modules/nodes/core/IS_StartableNode.js";
+export { IS_NodeRegistry } from "./modules/nodes/core/IS_NodeRegistry.js";
 // effect
 export { IS_BiquadFilter } from "./modules/nodes/core/effect/IS_BiquadFilter.js";
 export { IS_Convolver } from "./modules/nodes/core/effect/IS_Convolver.js";
@@ -33,6 +34,7 @@ export { IS_AudioParameter } from "./modules/types/parameter/IS_AudioParameter.j
 export { IS_Scale } from "./modules/types/array/IS_Scale.js";
 export { IS_SequenceArray } from "./modules/types/array/IS_SequenceArray.js";
 export { IS_Schedule } from "./modules/types/schedule/IS_Schedule.js"
+export { IS_NodeData } from "./modules/types/IS_NodeData.js";
 
 // utilities
 export * from "./modules/utilities/Constants.js";

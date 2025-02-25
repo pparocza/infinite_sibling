@@ -1,13 +1,12 @@
 import { IS_Node } from "./IS_Node.js";
 import { IS_Type } from "../../enums/IS_Type.js";
 
+// TODO: replace IS_StartableNode with IS_NodeScheduler - it takes a node and manages its creation/destruction/timing
 export class IS_StartableNode extends IS_Node
 {
-    constructor(siblingContext)
+    constructor(siblingContext, iSType)
     {
-        super(siblingContext);
-
-        this.iSType = IS_Type.IS_StartableNode;
+        super(siblingContext, iSType);
 
         this._startableNode = null;
 

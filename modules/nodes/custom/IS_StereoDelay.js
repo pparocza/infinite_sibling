@@ -1,11 +1,12 @@
 import { IS_MixEffect } from "../core/effect/IS_MixEffect.js";
+import { IS_Type } from "../../enums/IS_Type.js";
 
 export class IS_StereoDelay extends IS_MixEffect
 {
     constructor(siblingContext, delayTimeLeft = 0.5, delayTimeRight = 0.25,
                 feedbackPercent = 0.5, wetMix = 0.5, maxDelayTime = 1)
     {
-        super(siblingContext, wetMix);
+        super(siblingContext, IS_Type.IS_EffectType.IS_MixEffect.IS_StereoDelay, wetMix);
 
         this._inputNode = this.siblingContext.createGain();
         this._outputNode = this.siblingContext.createGain();

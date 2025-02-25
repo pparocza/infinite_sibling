@@ -4,23 +4,19 @@ import { IS_EffectPresets } from "../../../presets/IS_EffectPresets.js";
 
 export class IS_Effect extends IS_Node
 {
-    constructor(siblingContext)
+    constructor(siblingContext, iSEffectType = undefined)
     {
-        super(siblingContext);
+        super(siblingContext, IS_Type.IS_Effect);
 
-        this.iSType = IS_Type.IS_Effect;
-
+        this._effectType = iSEffectType;
         this._preset = new IS_EffectPresets(this);
 
         this._effectInputNode = new GainNode(siblingContext.audioContext);
-
-        this._hasInput = true;
     }
 
-    get input()
-    {
-        return this._effectInputNode;
-    }
+    get input() { return this._effectInputNode; };
+    get effectType() { return this._effectType; };
+    get preset() { return this._preset };
 
     configureInput(input)
     {
@@ -45,10 +41,5 @@ export class IS_Effect extends IS_Node
         {
             audioNodes[node].connect(this.input);
         }
-    }
-
-    get preset()
-    {
-        return this._preset;
     }
 }

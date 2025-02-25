@@ -1,10 +1,11 @@
 import { IS_Effect } from "../core/effect/IS_Effect.js";
+import { IS_Type } from "../../enums/IS_Type.js";
 
 export class IS_ParallelEffect extends IS_Effect
 {
 	constructor(siblingContext)
 	{
-		super(siblingContext);
+		super(siblingContext, IS_Type.IS_EffectType.IS_ParallelEffect);
 	}
 
 	insert(...audioNodes)

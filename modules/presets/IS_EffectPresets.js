@@ -1,7 +1,12 @@
-export class IS_EffectPresets
+import { IS_Object } from "../types/IS_Object.js";
+import { IS_Type } from "../enums/IS_Type.js";
+
+export class IS_EffectPresets extends IS_Object
 {
 	constructor(IS_Effect)
 	{
+		super(IS_Type.IS_Data.IS_Presets.IS_EffectPresets);
+
 		this._effect = IS_Effect;
 		this.siblingContext = this._effect.siblingContext;
 	}

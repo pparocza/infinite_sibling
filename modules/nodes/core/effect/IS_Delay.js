@@ -1,5 +1,6 @@
 import { IS_MixEffect } from "./IS_MixEffect.js";
 import { IS_AudioParameter } from "../../../types/parameter/IS_AudioParameter.js";
+import { IS_Type } from "../../../enums/IS_Type.js";
 
 export class IS_Delay extends IS_MixEffect
 {
@@ -9,7 +10,7 @@ export class IS_Delay extends IS_MixEffect
         delayTime = 1, feedbackPercent = 0.25, wetMix = 0.5, maxDelayTime = 1
     )
     {
-        super(siblingContext);
+        super(siblingContext, IS_Type.IS_EffectType.IS_Delay);
 
         this._delayNode = siblingContext.audioContext.createDelay(maxDelayTime);
 

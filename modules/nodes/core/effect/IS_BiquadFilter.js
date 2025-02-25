@@ -1,5 +1,6 @@
 import { IS_Effect } from "./IS_Effect.js";
 import { IS_AudioParameter } from "../../../types/parameter/IS_AudioParameter.js";
+import { IS_Type } from "../../../enums/IS_Type.js";
 
 export class IS_BiquadFilterArgs
 {
@@ -23,7 +24,7 @@ export class IS_BiquadFilter extends IS_Effect
 {
     constructor(siblingContext, ...filterArgs)
     {
-        super(siblingContext)
+        super(siblingContext, IS_Type.IS_EffectType.IS_BiquadFilter)
 
         this._filterNode = new BiquadFilterNode(siblingContext.audioContext);
 

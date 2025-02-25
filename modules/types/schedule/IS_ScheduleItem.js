@@ -1,16 +1,20 @@
 import { IS_ScheduleAction } from "../../enums/IS_ScheduleAction.js";
+import { IS_Object } from "../../types/IS_Object.js";
+import { IS_Type } from "../../enums/IS_Type.js";
 
 /**
  * Schedule the Start or Stop of an IS_StartableNode
  * - maybe a schedule Item contains individual schedule actions?
  */
-export class IS_ScheduleItem
+export class IS_ScheduleItem extends IS_Object
 {
     constructor
     (
         schedulable, scheduleAction, startTime, duration = null, value = 0, transitionTime = null
     )
     {
+        super(IS_Type.IS_Data.IS_ScheduleItem);
+
         this._schedulable = schedulable;
         this.scheduleAction = scheduleAction;
         this.startTime = startTime;

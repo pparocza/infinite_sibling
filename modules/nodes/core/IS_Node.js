@@ -33,8 +33,6 @@ export class IS_Node extends IS_Object
         this._output = new GainNode(siblingContext.audioContext);
         this._gain = new IS_AudioParameter(this.siblingContext, this._output.gain);
 
-        this._hasInput = false;
-
         this._registryData = new NodeRegistryData
         (
             this, iSType
@@ -43,7 +41,6 @@ export class IS_Node extends IS_Object
         this.siblingContext.registerNode(this._registryData);
     }
 
-    get hasInput() { return this._hasInput; };
     get registryData() { return this._registryData; };
 
     /**

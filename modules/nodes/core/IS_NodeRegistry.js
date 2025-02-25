@@ -18,6 +18,11 @@ export class IS_NodeRegistry
 		this._registry.push(nodeData);
 	}
 
+	getNodeData(nodeHash)
+	{
+		return this._registry[nodeHash];
+	}
+
 	assignHash()
 	{
 		return this._registry.length;

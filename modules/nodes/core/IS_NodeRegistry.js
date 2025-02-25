@@ -7,6 +7,11 @@ export class IS_NodeRegistry
 		this._registry = [];
 	}
 
+	get nNodes()
+	{
+		return this._registry.length;
+	}
+
 	registerNode(nodeData)
 	{
 		nodeData._setHash(this.assignHash());

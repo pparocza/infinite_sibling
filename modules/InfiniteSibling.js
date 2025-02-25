@@ -1,5 +1,8 @@
 const iSAudioContext = new AudioContext();
 
+// core
+import { IS_NodeRegistry } from "./nodes/core/IS_NodeRegistry.js";
+
 // audio nodes
 import { IS_Gain } from "./nodes/core/effect/IS_Gain.js";
 import { IS_Oscillator } from "./nodes/core/source/IS_Oscillator.js";
@@ -54,7 +57,7 @@ export class InfiniteSibling
         this.startCallbacks = [];
         this.stopCallbacks = [];
 
-        this._nodeRegistry = [];
+        this._nodeRegistry = new IS_NodeRegistry();
     }
 
     get NodeType()
@@ -67,9 +70,9 @@ export class InfiniteSibling
         return this._nodeRegistry;
     }
 
-    registerNode(nodeRegistryData)
+    registerNode(nodeData)
     {
-        this._nodeRegistry.push(nodeRegistryData);
+        this._nodeRegistry.registerNode(nodeData);
     }
 
     /*

@@ -29,7 +29,7 @@ export const IS_Type =
             {
                 IS_BufferSource: "IS_BufferSource",
                 IS_ConstantSource: "IS_ConstantSource",
-                IS_Oscillator: "IS_ConstantSource",
+                IS_Oscillator: "IS_Oscillator",
             },
 
         IS_Data:

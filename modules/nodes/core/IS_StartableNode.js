@@ -28,25 +28,25 @@ export class IS_StartableNode extends IS_Node
             this.initializeCallback();
         }
 
-        this._startableNode.start(time + this.siblingContext.now);
+        this._startableNode.start(time + this._siblingContext.now);
 
         this.isInitialized = false;
     }
 
     stop(time = 0)
     {
-        this._startableNode.stop(time + this.siblingContext.now);
+        this._startableNode.stop(time + this._siblingContext.now);
         this.isInitialized = false;
     }
 
     scheduleStart(time = 0, duration)
     {
-        this.siblingContext.scheduleStart(this, time, duration);
+        this._siblingContext.scheduleStart(this, time, duration);
     }
 
     scheduleStop(time = 0)
     {
-        this.siblingContext.scheduleStop(this, time);
+        this._siblingContext.scheduleStop(this, time);
     }
 
     scheduleSequence(sequence)

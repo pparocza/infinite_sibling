@@ -31,7 +31,7 @@ export class IS_AmplitudeModulator extends IS_Effect
         this.setParamValue(this.paramNames.loop, loop);
         this.setParamValue(this.paramNames.modulatorPlaybackRate, modulatorPlaybackRate);
 
-        this.amplitudeModulationGain = this.siblingContext.createGain();
+        this.amplitudeModulationGain = this._siblingContext.createGain();
         this.amplitudeModulationGain.gain = 0;
         this.amplitudeModulatorBufferSource = siblingContext.createBufferSource();
 
@@ -77,12 +77,12 @@ export class IS_AmplitudeModulator extends IS_Effect
         this.amplitudeModulatorBufferSource.playbackRate = value;
     }
 
-    start(time = this.siblingContext.now)
+    start(time = this._siblingContext.now)
     {
         this.amplitudeModulatorBufferSource.start(time);
     }
 
-    stop(time = this.siblingContext.now)
+    stop(time = this._siblingContext.now)
     {
         this.amplitudeModulatorBufferSource.stop(time);
     }

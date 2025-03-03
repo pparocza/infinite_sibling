@@ -31,10 +31,10 @@ export class IS_BiquadFilter extends IS_Effect
         this._parameterValues = new IS_BiquadFilterArgs(filterArgs);
 
         this._type = this._parameterValues.type;
-        this._frequency = new IS_AudioParameter(this.siblingContext, this._filterNode.frequency, this._parameterValues.frequency);
-        this._Q = new IS_AudioParameter(this.siblingContext, this._filterNode.Q, this._parameterValues.Q);
-        this._gain = new IS_AudioParameter(this.siblingContext, this._filterNode.gain, this._parameterValues.gain);
-        this._detune = new IS_AudioParameter(this.siblingContext, this._filterNode.detune, this._parameterValues.detune);
+        this._frequency = new IS_AudioParameter(this._siblingContext, this._filterNode.frequency, this._parameterValues.frequency);
+        this._Q = new IS_AudioParameter(this._siblingContext, this._filterNode.Q, this._parameterValues.Q);
+        this._gain = new IS_AudioParameter(this._siblingContext, this._filterNode.gain, this._parameterValues.gain);
+        this._detune = new IS_AudioParameter(this._siblingContext, this._filterNode.detune, this._parameterValues.detune);
 
         this._filterNode.type = this._type;
 

@@ -38,7 +38,7 @@ export class IS_BufferSource extends IS_StartableNode
 
     initialize()
     {
-        this._startableNode = new AudioBufferSourceNode(this.siblingContext.audioContext);
+        this._startableNode = new AudioBufferSourceNode(this._siblingContext.audioContext);
 
         this._startableNode.buffer = this.buffer;
         this._startableNode.detune.value = 0;

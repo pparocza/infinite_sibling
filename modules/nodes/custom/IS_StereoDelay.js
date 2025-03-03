@@ -8,13 +8,13 @@ export class IS_StereoDelay extends IS_MixEffect
     {
         super(siblingContext, IS_Type.IS_EffectType.IS_MixEffect.IS_StereoDelay, wetMix);
 
-        this._inputNode = this.siblingContext.createGain();
-        this._outputNode = this.siblingContext.createGain();
+        this._inputNode = this._siblingContext.createGain();
+        this._outputNode = this._siblingContext.createGain();
 
-        this._delayLeft = this.siblingContext.createDelay(delayTimeLeft, feedbackPercent, wetMix, maxDelayTime);
-        this._delayRight = this.siblingContext.createDelay(delayTimeRight, feedbackPercent, wetMix, maxDelayTime);
-        this._panLeft = this.siblingContext.createStereoPanner(-1);
-        this._panRight = this.siblingContext.createStereoPanner(1);
+        this._delayLeft = this._siblingContext.createDelay(delayTimeLeft, feedbackPercent, wetMix, maxDelayTime);
+        this._delayRight = this._siblingContext.createDelay(delayTimeRight, feedbackPercent, wetMix, maxDelayTime);
+        this._panLeft = this._siblingContext.createStereoPanner(-1);
+        this._panRight = this._siblingContext.createStereoPanner(1);
 
         this._panLeft.pan = -1;
         this._panRight.pan = 1;

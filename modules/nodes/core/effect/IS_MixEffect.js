@@ -8,14 +8,14 @@ export class IS_MixEffect extends IS_Effect
     {
         super(siblingContext, iSEffectType);
 
-        this._mixEffectInputNode = this.siblingContext.createGain();
-        this._mixEffectOutputNode = this.siblingContext.createGain();
+        this._mixEffectInputNode = this._siblingContext.createGain();
+        this._mixEffectOutputNode = this._siblingContext.createGain();
 
-        this.dryGainNode = this.siblingContext.createGain();
-        this.wetGainNode = this.siblingContext.createGain();
+        this.dryGainNode = this._siblingContext.createGain();
+        this.wetGainNode = this._siblingContext.createGain();
 
-        this._dryGain = new IS_AudioParameter(this.siblingContext, this.dryGainNode.gain, 0);
-        this._wetGain = new IS_AudioParameter(this.siblingContext, this.wetGainNode.gain, 1);
+        this._dryGain = new IS_AudioParameter(this._siblingContext, this.dryGainNode.gain, 0);
+        this._wetGain = new IS_AudioParameter(this._siblingContext, this.wetGainNode.gain, 1);
 
         this._wetMix = wetMix;
 

@@ -34,6 +34,7 @@ export class IS_Buffer extends IS_Object
         this._siblingContext = siblingContext;
 
         this._suspendOperation = false;
+        this._periodicShapeIncrements = null;
     }
 
     /**
@@ -133,9 +134,8 @@ export class IS_Buffer extends IS_Object
     }
 
     /*
-    buffer Operations
+    Buffer Operations
      */
-
     get suspendOperation()
     {
         return this._suspendOperation;
@@ -531,24 +531,95 @@ export class IS_Buffer extends IS_Object
         let frequencies = Array.isArray(frequency) ? frequency : [frequency];
         let nFrequencies = frequencies.length;
 
-        for(let sample= 0; sample < this._bufferShapeArray.length; sample++)
+        // TODO: GLOBAL CACHE
+        let bufferLength = this._bufferShapeArray.length;
+        let timeIncrement = 1 / bufferLength;
+
+        this.setPeriodicShapeIncrements(frequencies);
+        this.setFastSineValues(frequencies);
+
+        for(let sampleIndex = 0; sampleIndex < bufferLength; sampleIndex++)
         {
-            let value = 0;
-            time = sample / this._bufferShapeArray.length;
-
-            for(let frequency = 0; frequency < nFrequencies; frequency++)
+            for(let frequencyIndex = 0; frequencyIndex < nFrequencies; frequencyIndex++)
             {
-                value += Math.sin(frequencies[frequency] * IS_TWO_PI * time);
+                let frequency = frequencies[frequencyIndex];
+                let value = frequency >= 10 ? this.fastSine(frequencyIndex) : Math.sin(frequency * IS_TWO_PI * time);
+                this._bufferShapeArray[sampleIndex] += Math.abs(value) <= IS_SAMPLE_MIN_VALUE ? 0 : value;
             }
-
-            if(normalize)
-            {
-                value /= nFrequencies;
-            }
-
-            this._bufferShapeArray[sample] = Math.abs(value) <= IS_SAMPLE_MIN_VALUE ? 0 : value;
+            time += timeIncrement;
         }
+
+        if(normalize)
+        {
+            this.normalizePeriodicWaves(nFrequencies);
+        }
+
         return this;
+    }
+
+    _fastSineValues = null;
+
+    fastSine(frequencyIndex)
+    {
+        let indexOffset = frequencyIndex * 3;
+
+        let sin0Index = indexOffset;
+        let sin1Index = indexOffset + 1;
+        let dSinIndex = indexOffset + 2;
+
+        let sin0 = this._fastSineValues[sin0Index];
+        let sin1 = this._fastSineValues[sin1Index];
+        let dSin = this._fastSineValues[dSinIndex];
+
+        let sinx = dSin * sin0 - sin1;
+
+        this._fastSineValues[sin1Index] = sin0;
+        this._fastSineValues[sin0Index] = sinx;
+
+        return sinx;
+    }
+
+    setFastSineValues(frequencies)
+    {
+        this._fastSineValues = new Float32Array(frequencies.length * 3);
+
+        for(let frequencyIndex = 0; frequencyIndex < frequencies.length; frequencyIndex++)
+        {
+            let increment = this._periodicShapeIncrements[frequencyIndex];
+
+            let sin0 = 0;
+            let sin1 = Math.sin(-increment * IS_TWO_PI);
+            let dSin = 2 * Math.cos(increment * IS_TWO_PI);
+
+            let indexOffset = frequencyIndex * 3;
+
+            this._fastSineValues[indexOffset] = sin0;
+            this._fastSineValues[indexOffset + 1] = sin1;
+            this._fastSineValues[indexOffset + 2] = dSin;
+        }
+    }
+
+    setPeriodicShapeIncrements(frequencies)
+    {
+        this._periodicShapeIncrements = new Float32Array(frequencies);
+
+        for(let frequencyIndex = 0; frequencyIndex < frequencies.length; frequencyIndex++)
+        {
+            let frequency = frequencies[frequencyIndex];
+            let increment = frequency / this._bufferShapeArray.length;
+            this._periodicShapeIncrements[frequencyIndex] = increment;
+        }
+    }
+
+    normalizePeriodicWaves(nWaves)
+    {
+        let normalizeRatio = 1 / nWaves;
+        let bufferLength = this._bufferShapeArray.length;
+
+        for(let sampleIndex = 0; sampleIndex < bufferLength; sampleIndex++)
+        {
+            this._bufferShapeArray[sampleIndex] *= normalizeRatio;
+        }
     }
 
     /**

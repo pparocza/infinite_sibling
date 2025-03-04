@@ -11,14 +11,14 @@ export class IS_Node extends IS_Object
         super(iSType);
 
         // TODO: change to this._siblingContext
-        this.siblingContext = siblingContext;
+        this._siblingContext = siblingContext;
 
         this._output = new GainNode(siblingContext.audioContext);
-        this._gain = new IS_AudioParameter(this.siblingContext, this._output.gain);
+        this._gain = new IS_AudioParameter(this._siblingContext, this._output.gain);
 
         let registryData = new IS_NodeData(this);
 
-        this.siblingContext.registerNode(registryData);
+        this._siblingContext.registerNode(registryData);
 
         this._analyser = null;
         this._registryData = registryData;
@@ -69,7 +69,7 @@ export class IS_Node extends IS_Object
      */
     connectToMainOutput()
     {
-        this._output.connect(this.siblingContext.output);
+        this._output.connect(this._siblingContext.output);
     }
 
     /**
@@ -77,7 +77,7 @@ export class IS_Node extends IS_Object
      */
     connectToAudioDestination()
     {
-        this._output.connect(this.siblingContext.destination);
+        this._output.connect(this._siblingContext.destination);
     }
 
     /**
@@ -123,7 +123,7 @@ export class IS_Node extends IS_Object
             return;
         }
 
-        let analayser = this.siblingContext.audioContext.createAnalyser();
+        let analayser = this._siblingContext.audioContext.createAnalyser();
         analayser.fftSize = fftSize;
 
         this._analyser = analayser;

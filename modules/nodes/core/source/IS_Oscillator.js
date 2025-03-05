@@ -16,6 +16,8 @@ export class IS_Oscillator extends IS_StartableNode
         this.initializeCallback = this.initialize;
     }
 
+    isOscillator = true;
+
     initialize()
     {
         this._startableNode = new OscillatorNode(this._siblingContext.audioContext);

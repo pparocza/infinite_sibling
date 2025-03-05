@@ -36,6 +36,8 @@ export class IS_BufferSource extends IS_StartableNode
         this.initializeCallback = this.initialize;
     }
 
+    isBufferSource = true;
+
     initialize()
     {
         this._startableNode = new AudioBufferSourceNode(this._siblingContext.audioContext);

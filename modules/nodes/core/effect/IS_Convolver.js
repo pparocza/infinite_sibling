@@ -20,6 +20,8 @@ export class IS_Convolver extends IS_MixEffect
         this.configureMixIO(this._convolver, this._convolver);
     }
 
+    isConvolver = true;
+
     initializeBuffer(buffer)
     {
         if (buffer === null)

@@ -9,4 +9,6 @@ export class IS_WaveShaper extends IS_Effect
 
         // TODO: Implement
     }
+
+    isWaveShaper = true;
 }

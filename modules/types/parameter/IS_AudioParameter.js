@@ -20,6 +20,8 @@ export class IS_AudioParameter extends IS_Object
         }
     }
 
+    isAudioParameter = true;
+
     get parameter()
     {
         return this._parameter;

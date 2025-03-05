@@ -9,4 +9,6 @@ export class IS_ConstantSource extends IS_StartableNode
 
         // TODO: Implement
     }
+
+    isConstantSource = true;
 }

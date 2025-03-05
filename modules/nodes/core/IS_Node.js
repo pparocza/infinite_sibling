@@ -24,6 +24,8 @@ export class IS_Node extends IS_Object
         this._registryData = registryData;
     }
 
+    isNode = true;
+
     get registryData() { return this._registryData; };
 
     /**
@@ -36,7 +38,7 @@ export class IS_Node extends IS_Object
         {
             let audioNode = audioNodes[nodeIndex];
 
-            if(audioNode.iSType !== undefined)
+            if(audioNode.isISObject)
             {
                 switch (audioNode.iSType)
                 {

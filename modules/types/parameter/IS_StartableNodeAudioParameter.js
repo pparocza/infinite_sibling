@@ -12,6 +12,8 @@ export class IS_StartableNodeAudioParameter extends IS_AudioParameter
         this._outlet.start();
     }
 
+    isStartableNodeAudioParameter = true;
+
     connect(audioParameter)
     {
         this._outlet.connect(audioParameter);

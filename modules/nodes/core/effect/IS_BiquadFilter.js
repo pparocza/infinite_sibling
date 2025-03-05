@@ -42,6 +42,8 @@ export class IS_BiquadFilter extends IS_Effect
         this.configureOutput(this._filterNode);
     }
 
+    isBiquadFilter = true;
+
     get type()
     {
         return this._type;

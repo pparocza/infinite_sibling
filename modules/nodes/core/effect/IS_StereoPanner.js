@@ -16,6 +16,8 @@ export class IS_StereoPanner extends IS_Effect
         this.configureOutput(this._pannerNode);
     }
 
+    isStereoPanner = true;
+
     get pan()
     {
         return this._pan;

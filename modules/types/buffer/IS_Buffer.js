@@ -37,6 +37,8 @@ export class IS_Buffer extends IS_Object
         this._periodicShapeIncrements = null;
     }
 
+    isBuffer = true;
+
     /**
      *
      * @returns {*}

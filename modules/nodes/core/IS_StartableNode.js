@@ -14,6 +14,8 @@ export class IS_StartableNode extends IS_Node
         this.initializeCallback = null;
     }
 
+    isStartableNode = true;
+
     start(time = 0)
     {
         if(!this.isInitialized)

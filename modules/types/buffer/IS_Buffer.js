@@ -35,6 +35,7 @@ export class IS_Buffer extends IS_Object
 
         this._suspendOperation = false;
         this._periodicShapeIncrements = null;
+        this._timeIncrement = 1 / lengthSamples;
     }
 
     isBuffer = true;
@@ -520,142 +521,6 @@ export class IS_Buffer extends IS_Object
         return this;
     }
 
-    // TODO: replace all Math.sin with direct-form digital resonator? (Synths w/ JUCE in C++ pg. 120)
-    /**
-     *
-     * @param frequency
-     * @param amplitude
-     * @returns {IS_Buffer}
-     */
-    sine(frequency, normalize = true)
-    {
-        let time = 0;
-        let frequencies = Array.isArray(frequency) ? frequency : [frequency];
-        let nFrequencies = frequencies.length;
-
-        // TODO: GLOBAL CACHE
-        let bufferLength = this._bufferShapeArray.length;
-        let timeIncrement = 1 / bufferLength;
-
-        this.setPeriodicShapeIncrements(frequencies);
-        this.setFastSineValues(frequencies);
-
-        for(let sampleIndex = 0; sampleIndex < bufferLength; sampleIndex++)
-        {
-            for(let frequencyIndex = 0; frequencyIndex < nFrequencies; frequencyIndex++)
-            {
-                let frequency = frequencies[frequencyIndex];
-                let value = frequency >= 10 ? this.fastSine(frequencyIndex) : Math.sin(frequency * IS_TWO_PI * time);
-                this._bufferShapeArray[sampleIndex] += Math.abs(value) <= IS_SAMPLE_MIN_VALUE ? 0 : value;
-            }
-            time += timeIncrement;
-        }
-
-        if(normalize)
-        {
-            this.normalizePeriodicWaves(nFrequencies);
-        }
-
-        return this;
-    }
-
-    _fastSineValues = null;
-
-    fastSine(frequencyIndex)
-    {
-        let indexOffset = frequencyIndex * 3;
-
-        let sin0Index = indexOffset;
-        let sin1Index = indexOffset + 1;
-        let dSinIndex = indexOffset + 2;
-
-        let sin0 = this._fastSineValues[sin0Index];
-        let sin1 = this._fastSineValues[sin1Index];
-        let dSin = this._fastSineValues[dSinIndex];
-
-        let sinx = dSin * sin0 - sin1;
-
-        this._fastSineValues[sin1Index] = sin0;
-        this._fastSineValues[sin0Index] = sinx;
-
-        return sinx;
-    }
-
-    setFastSineValues(frequencies)
-    {
-        this._fastSineValues = new Float32Array(frequencies.length * 3);
-
-        for(let frequencyIndex = 0; frequencyIndex < frequencies.length; frequencyIndex++)
-        {
-            let increment = this._periodicShapeIncrements[frequencyIndex];
-
-            let sin0 = 0;
-            let sin1 = Math.sin(-increment * IS_TWO_PI);
-            let dSin = 2 * Math.cos(increment * IS_TWO_PI);
-
-            let indexOffset = frequencyIndex * 3;
-
-            this._fastSineValues[indexOffset] = sin0;
-            this._fastSineValues[indexOffset + 1] = sin1;
-            this._fastSineValues[indexOffset + 2] = dSin;
-        }
-    }
-
-    setPeriodicShapeIncrements(frequencies)
-    {
-        this._periodicShapeIncrements = new Float32Array(frequencies);
-
-        for(let frequencyIndex = 0; frequencyIndex < frequencies.length; frequencyIndex++)
-        {
-            let frequency = frequencies[frequencyIndex];
-            let increment = frequency / this._bufferShapeArray.length;
-            this._periodicShapeIncrements[frequencyIndex] = increment;
-        }
-    }
-
-    normalizePeriodicWaves(nWaves)
-    {
-        let normalizeRatio = 1 / nWaves;
-        let bufferLength = this._bufferShapeArray.length;
-
-        for(let sampleIndex = 0; sampleIndex < bufferLength; sampleIndex++)
-        {
-            this._bufferShapeArray[sampleIndex] *= normalizeRatio;
-        }
-    }
-
-    /**
-     *
-     * @param frequency
-     * @param amplitude
-     * @returns {IS_Buffer}
-     */
-    unipolarSine(frequency, normalize = true)
-    {
-        let time = 0;
-        let value = 0;
-        let frequencies = Array.isArray(frequency) ? frequency : [frequency];
-        let nFrequencies = frequencies.length;
-
-        for (let sample= 0; sample < this._bufferShapeArray.length; sample++)
-        {
-            time = sample / this._bufferShapeArray.length;
-
-            for(let frequency = 0; frequency < nFrequencies; frequency++)
-            {
-                value += (( 0.5 * (Math.sin(frequencies[frequency] * IS_TWO_PI * time))) + 0.5);
-            }
-
-            if(normalize)
-            {
-                value /= nFrequencies;
-            }
-
-            this._bufferShapeArray[sample] = Math.abs(value) <= IS_SAMPLE_MIN_VALUE ? 0 : value;
-        }
-        return this;
-    }
-
     /**
      *
      * @param exponent
@@ -667,8 +532,8 @@ export class IS_Buffer extends IS_Object
 
         for (let sample= 0; sample < this._bufferShapeArray.length; sample++)
         {
-            value = sample / this._bufferShapeArray.length;
             this._bufferShapeArray[sample] = Math.pow(value, exponent);
+            value += this._timeIncrement;
         }
         return this;
     }
@@ -680,12 +545,12 @@ export class IS_Buffer extends IS_Object
      */
     inverseSawtooth(exponent = 1)
     {
-        let value = 0;
+        let value = 1;
 
         for (let sample= 0; sample < this._bufferShapeArray.length; sample++)
         {
-            value = 1 - (sample / this._bufferShapeArray.length);
             this._bufferShapeArray[sample] = Math.pow(value , exponent);
+            value -= this._timeIncrement;
         }
         return this;
     }
@@ -699,22 +564,23 @@ export class IS_Buffer extends IS_Object
     {
         let value = 0;
         let halfOperationsArrayLength = this._bufferShapeArray.length * 0.5;
+        let timeIncrement = 1 / halfOperationsArrayLength;
         let ascending = true;
 
-        for (let sample=0; sample < this._bufferShapeArray.length; sample++)
+        for (let sample= 0; sample < this._bufferShapeArray.length; sample++)
         {
             ascending = sample <= halfOperationsArrayLength;
 
+            this._bufferShapeArray[sample] = Math.pow(value, exponent);
+
             if(ascending)
             {
-                value = sample / halfOperationsArrayLength;
+                value += timeIncrement;
             }
             else
             {
-                value = 1 - ((sample - (halfOperationsArrayLength)) / (halfOperationsArrayLength));
+                value -= timeIncrement;
             }
-
-            this._bufferShapeArray[sample] = Math.pow(value, exponent);
         }
         return this;
     }
@@ -754,7 +620,7 @@ export class IS_Buffer extends IS_Object
     {
         let transitionSampleIndex = this._bufferShapeArray.length * dutyCycle;
 
-        for (let sample=0; sample<this._bufferShapeArray.length; sample++)
+        for (let sample= 0; sample < this._bufferShapeArray.length; sample++)
         {
             this._bufferShapeArray[sample] = sample < transitionSampleIndex ? 1 : 0;
         }
@@ -782,6 +648,85 @@ export class IS_Buffer extends IS_Object
         return this;
     }
 
+    // TODO: replace all Math.sin with direct-form digital resonator? (Synths w/ JUCE in C++ pg. 120)
+    /**
+     *
+     * @param frequency
+     * @param amplitude
+     * @returns {IS_Buffer}
+     */
+    sine(frequency, normalize = true)
+    {
+        let time = 0;
+        let frequencies = Array.isArray(frequency) ? frequency : [frequency];
+        let nFrequencies = frequencies.length;
+        let normalizeFactor = 1 / nFrequencies;
+
+        this._initializeFastSine(frequencies);
+
+        for(let sampleIndex = 0; sampleIndex < this.length; sampleIndex++)
+        {
+            let value = 0;
+
+            for(let frequencyIndex = 0; frequencyIndex < nFrequencies; frequencyIndex++)
+            {
+                let frequency = frequencies[frequencyIndex];
+                value += this._fastSine(frequency, frequencyIndex, time);
+            }
+
+            if (normalize)
+            {
+                value *= normalizeFactor;
+            }
+
+            this._bufferShapeArray[sampleIndex] = this._zeroClamp(value);
+
+            time += this._timeIncrement;
+        }
+
+        return this;
+    }
+
+    /**
+     *
+     * @param frequency
+     * @param amplitude
+     * @returns {IS_Buffer}
+     */
+    unipolarSine(frequency, normalize = true)
+    {
+        let time = 0;
+        let frequencies = Array.isArray(frequency) ? frequency : [frequency];
+        let nFrequencies = frequencies.length;
+        let normalizeFactor = 1 / nFrequencies;
+
+        this._initializeFastSine(frequencies);
+
+        for(let sampleIndex = 0; sampleIndex < this.length; sampleIndex++)
+        {
+            let value = 0;
+
+            for (let frequencyIndex = 0; frequencyIndex < nFrequencies; frequencyIndex++)
+            {
+                let frequency = frequencies[frequencyIndex];
+                value += this._fastSine(frequency, frequencyIndex, time);
+            }
+
+            value = 0.5 * value + 0.5;
+
+            if (normalize)
+            {
+                value *= normalizeFactor;
+            }
+
+            this._bufferShapeArray[sampleIndex] = this._zeroClamp(value);
+
+            time += this._timeIncrement;
+        }
+
+        return this;
+    }
+
     /**
      *
      * @param carrierFrequency
@@ -796,37 +741,43 @@ export class IS_Buffer extends IS_Object
         let modulatorGainArray = Array.isArray(modulatorGain) ? modulatorGain : [modulatorGain];
 
         let nCarrierFrequencies = carrierFrequencyArray.length;
-        let nModulatorFrequences = modulatorFrequencyArray.length;
+        let nModulatorFrequencies = modulatorFrequencyArray.length;
         let nModulatorGains = modulatorGainArray.length;
 
-        let longestArrayLength = Math.max(nCarrierFrequencies, nModulatorFrequences, nModulatorGains);
+        let longestArrayLength = Math.max(nCarrierFrequencies, nModulatorFrequencies, nModulatorGains);
+        let normalizeFactor = 1 / longestArrayLength;
 
-        let progressPercent = 0;
         let time = 0;
 
-        for (let sample= 0; sample < this._bufferShapeArray.length; sample++)
+        this._initializeFastSine(modulatorFrequencyArray);
+
+        for (let sample= 0; sample < this.length; sample++)
         {
             let value = 0;
 
-            progressPercent = sample / this._bufferShapeArray.length;
-            time = progressPercent * IS_TWO_PI;
-
-            for (let i = 0; i < longestArrayLength; i++)
+            for (let frequencyIndex = 0; frequencyIndex < longestArrayLength; frequencyIndex++)
             {
-                let modulatorGain = modulatorGainArray[i % nModulatorGains];
-                let modulatorFrequency = modulatorFrequencyArray[i % nModulatorFrequences];
-                let carrierFrequency = carrierFrequencyArray[i %nCarrierFrequencies];
+                let modulatorGain = modulatorGainArray[frequencyIndex % nModulatorGains];
+                let modulatorFrequencyIndex = frequencyIndex % nModulatorFrequencies;
+                let modulatorFrequency = modulatorFrequencyArray[modulatorFrequencyIndex];
+                let carrierFrequency = carrierFrequencyArray[frequencyIndex % nCarrierFrequencies];
 
-                let modulatorAmplitude = modulatorGain * Math.sin(modulatorFrequency * time);
-                value += Math.sin((carrierFrequency + modulatorAmplitude) * time);
+                let modulatedFrequencyValue = carrierFrequency +
+                    (
+                        modulatorGain * this._fastSine(modulatorFrequency, modulatorFrequencyIndex, time)
+                    )
+                // TODO: IS_FastSine - stores fast sine increments and returns .nextSample() for a given frequency
+                value += Math.sin(modulatedFrequencyValue * IS_TWO_PI * time);
             }
 
             if (normalize)
             {
-                value /= longestArrayLength;
+                value *= normalizeFactor;
             }
 
-            this._bufferShapeArray[sample] = Math.abs(value) <= IS_SAMPLE_MIN_VALUE ? 0 : value;
+            this._bufferShapeArray[sample] = this._zeroClamp(value);
+
+            time += this._timeIncrement;
         }
         return this;
     }
@@ -845,39 +796,141 @@ export class IS_Buffer extends IS_Object
         let modulatorGainArray = Array.isArray(modulatorGain) ? modulatorGain : [modulatorGain];
 
         let nCarrierFrequencies = carrierFrequencyArray.length;
-        let nModulatorFrequences = modulatorFrequencyArray.length;
+        let nModulatorFrequecies = modulatorFrequencyArray.length;
         let nModulatorGains = modulatorGainArray.length;
 
-        let longestArrayLength = Math.max(nCarrierFrequencies, nModulatorFrequences, nModulatorGains);
+        let longestArrayLength = Math.max(nCarrierFrequencies, nModulatorFrequecies, nModulatorGains);
+        let normalizeFactor = 1 / longestArrayLength;
 
-        let progressPercent = 0;
         let time = 0;
 
-        for (let sample= 0; sample < this._bufferShapeArray.length; sample++)
+        let frequencyArray = [...carrierFrequencyArray];
+        frequencyArray.push(...modulatorFrequencyArray);
+        let modulatorFrequencyIndexOffset = carrierFrequencyArray.length;
+
+        this._initializeFastSine(frequencyArray);
+
+        for (let sample= 0; sample < this.length; sample++)
         {
             let value = 0;
 
-            progressPercent = sample / this._bufferShapeArray.length;
-            time = progressPercent * IS_TWO_PI;
-
             for (let i = 0; i < longestArrayLength; i++)
             {
-                let modulatorGain = modulatorGainArray[i % nModulatorGains];
-                let modulatorFrequency = modulatorFrequencyArray[i % nModulatorFrequences];
-                let carrierFrequency = carrierFrequencyArray[i %nCarrierFrequencies];
+                let carrierFrequencyIndex = i % nCarrierFrequencies
+                let carrierFrequency = carrierFrequencyArray[carrierFrequencyIndex];
 
-                let modulatorAmplitude = modulatorGain * Math.sin(modulatorFrequency * time);
-                value += modulatorAmplitude * Math.sin(carrierFrequency * time);
+                let modulatorFrequencyIndex = i % nModulatorFrequecies;
+                let modulatorFrequency = modulatorFrequencyArray[modulatorFrequencyIndex];
+
+                let modulatorGain = modulatorGainArray[i % nModulatorGains];
+
+                let modulatorAmplitude = modulatorGain * this._fastSine
+                (
+                    modulatorFrequency, modulatorFrequencyIndex + modulatorFrequencyIndexOffset, time
+                );
+
+                value += modulatorAmplitude * this._fastSine(carrierFrequency, carrierFrequencyIndex, time);
             }
 
             if (normalize)
             {
-                value /= longestArrayLength;
+                value *= normalizeFactor;
             }
 
-            this._bufferShapeArray[sample] = Math.abs(value) <= IS_SAMPLE_MIN_VALUE ? 0 : value;
+            this._bufferShapeArray[sample] = this._zeroClamp(value);
+            time += this._timeIncrement;
         }
+
         return this;
+    }
+
+    _zeroClamp(value)
+    {
+        return Math.abs(value) <= IS_SAMPLE_MIN_VALUE ? 0 : value;
+    }
+
+    _fastSineValues = null;
+
+    _initializeFastSine(frequencyArray)
+    {
+        this._setFastSineIncrements(frequencyArray);
+        this._setFastSineValues(frequencyArray);
+    }
+
+    _fastSine(frequency, frequencyIndex, time)
+    {
+        if(frequency <= 10)
+        {
+            return Math.sin(this._fastSineIncrements[frequencyIndex] * time);
+        }
+
+        let indexOffset = frequencyIndex * 3;
+
+        let sin0Index = indexOffset;
+        let sin1Index = indexOffset + 1;
+        let dSinIndex = indexOffset + 2;
+
+        let sin0 = this._fastSineValues[sin0Index];
+        let sin1 = this._fastSineValues[sin1Index];
+        let dSin = this._fastSineValues[dSinIndex];
+
+        let sinx = dSin * sin0 - sin1;
+
+        this._fastSineValues[sin1Index] = sin0;
+        this._fastSineValues[sin0Index] = sinx;
+
+        return sinx;
+    }
+
+    _setFastSineValues(frequencies)
+    {
+        this._fastSineValues = new Float32Array(frequencies.length * 3);
+
+        for(let frequencyIndex = 0; frequencyIndex < frequencies.length; frequencyIndex++)
+        {
+            let increment = this._fastSineIncrements[frequencyIndex];
+
+            let sin0 = 0;
+            let sin1 = Math.sin(-increment * IS_TWO_PI);
+            let dSin = 2 * Math.cos(increment * IS_TWO_PI);
+
+            let indexOffset = frequencyIndex * 3;
+
+            this._fastSineValues[indexOffset] = sin0;
+            this._fastSineValues[indexOffset + 1] = sin1;
+            this._fastSineValues[indexOffset + 2] = dSin;
+        }
+    }
+
+    _setFastSineIncrements(frequencies)
+    {
+        this._fastSineIncrements = new Float32Array(frequencies);
+
+        for(let frequencyIndex = 0; frequencyIndex < frequencies.length; frequencyIndex++)
+        {
+            let frequency = frequencies[frequencyIndex];
+
+            if(frequency >= 10)
+            {
+                let increment = frequency / this.length;
+                this._fastSineIncrements[frequencyIndex] = increment;
+            }
+            else
+            {
+                this._fastSineIncrements[frequencyIndex] = frequency * IS_TWO_PI;
+            }
+        }
+    }
+
+    _normalizeSines(nWaves)
+    {
+        let normalizeRatio = 1 / nWaves;
+        let bufferLength = this._bufferShapeArray.length;
+
+        for(let sampleIndex = 0; sampleIndex < bufferLength; sampleIndex++)
+        {
+            this._bufferShapeArray[sampleIndex] *= normalizeRatio;
+        }
     }
 
     /**

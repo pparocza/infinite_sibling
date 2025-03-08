@@ -8,6 +8,17 @@ import { BufferPrint } from "../../utilities/BufferPrint.js";
 import { Utilities } from "../../utilities/Utilities.js";
 import { IS_BufferPresets } from "../../presets/IS_BufferPresets.js";
 
+// TODO: Operation Queue - operation methods return asynchronous queue objects that get handled sequentially by an asynchronous operator
+// TODO: BufferOperator -> holds an operation array - doesn't need a suspended operations array, instead a suspended operation creates a parallel BufferOperator
+// TODO: BufferOperation(Operation = IS_BufferOperation.Add, Shape = IS_BufferShape.Sine) -> Queued in BufferOperator, which holds the buffer being operated on
+/*
+    ^^ enums are entirely internal for the purpose of formatting messages to the buffer operator -> so IS_Buffer
+    just creates operations, and BufferOperator references the actual generation algorithms
+    - REMEMBER: shapes will have to have arguments (should be fine)
+*/
+
+// TODO: SmoothClip
+
 export class IS_Buffer extends IS_Object
 {
     constructor(siblingContext, numberOfChannels = 1, duration = 1, sampleRate = null)

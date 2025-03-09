@@ -8,12 +8,25 @@ import { BufferPrint } from "../../utilities/BufferPrint.js";
 import { Utilities } from "../../utilities/Utilities.js";
 import { IS_BufferPresets } from "../../presets/IS_BufferPresets.js";
 
+import { IS_BufferOperationManager } from "./operation/IS_BufferOperationManager.js";
+// TODO: some of these can probably be consolidated into the files that reference them
+/*
+ EX:
+    -> IS_BufferOperationData.function.Sine(440) creates that function data in the operation
+    -> IS_BufferOperationData.operation.Add
+ */
+import { IS_BufferOperationData } from "./operation/IS_BufferOperationData.js";
+import { IS_BufferFunctionData } from "./operation/function/IS_BufferFunctionData.js";
+import { IS_BufferFunctionType } from "./operation/function/IS_BufferFunctionType.js";
+import { IS_BufferOperatorType } from "./operation/IS_BufferOperatorType.js"
+
+
 // TODO: Operation Queue - operation methods return asynchronous queue objects that get handled sequentially by an asynchronous operator
-// TODO: BufferOperator -> holds an operation array - doesn't need a suspended operations array, instead a suspended operation creates a parallel BufferOperator
+// TODO: BufferOperator -> holds an operation array - doesn't need a suspended operation array, instead a suspended operation creates a parallel BufferOperator
 // TODO: BufferOperation(Operation = IS_BufferOperation.Add, Shape = IS_BufferShape.Sine) -> Queued in BufferOperator, which holds the buffer being operated on
 /*
     ^^ enums are entirely internal for the purpose of formatting messages to the buffer operator -> so IS_Buffer
-    just creates operations, and BufferOperator references the actual generation algorithms
+    just creates operation, and BufferOperator references the actual generation algorithms
     - REMEMBER: shapes will have to have arguments (should be fine)
 */
 
@@ -47,9 +60,17 @@ export class IS_Buffer extends IS_Object
         this._suspendOperation = false;
         this._periodicShapeIncrements = null;
         this._timeIncrement = 1 / lengthSamples;
+
+        this._operationData = new IS_BufferOperationData();
+        this._operationData.sampleRate = this._sampleRate;
     }
 
     isBuffer = true;
+
+    _requestOperation()
+    {
+        IS_BufferOperationManager.requestOperation(this._operationData);
+    }
 
     /**
      *
@@ -215,6 +236,9 @@ export class IS_Buffer extends IS_Object
                 this.addChannel(channel);
             }
         }
+
+        this._operationData.operatorType = IS_BufferOperatorType.Add;
+        this._requestOperation();
     }
 
     addChannel(channel)
@@ -694,6 +718,9 @@ export class IS_Buffer extends IS_Object
 
             time += this._timeIncrement;
         }
+
+        // TODO: dealing with multiple frequencies
+        this._operationData.functionData = new IS_BufferFunctionData(IS_BufferFunctionType.Sine, 440);
 
         return this;
     }

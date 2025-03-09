@@ -1,9 +1,9 @@
-import {Utilities} from "../utilities/Utilities";
+import { Utilities } from "../utilities/Utilities.js";
 
 export class IS_Object
 {
-    // TODO: type hierarchy
     constructor(iSType)
+    // TODO: type hierarchy
     {
         this._iSType = iSType;
         this._uuid = Utilities._private.GenerateUUID();

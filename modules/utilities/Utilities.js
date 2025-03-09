@@ -48,14 +48,14 @@ export const Utilities =
     {
         _startTime: 0,
 
-        Start()
+        Start(tag = null)
         {
-            this._startTime = Date.now();
+            console.time();
         },
 
-        Print()
+        Print(tag = null)
         {
-            console.log(Date.now() - this._startTime);
+            console.timeEnd();
         }
     },
 

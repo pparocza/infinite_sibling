@@ -473,4 +473,9 @@ export class InfiniteSibling
     {
         return Utilities.DecibelsToAmplitude(decibelValue);
     }
+
+    get speedTest()
+    {
+        return Utilities.SpeedTest;
+    }
 }

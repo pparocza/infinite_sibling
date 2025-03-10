@@ -1,10 +1,13 @@
 export const IS_BufferOperationManager =
 {
 	_operationQueue: [],
+	_buffer: null,
 
-	requestOperation(isBufferOperationData)
+	requestOperation(iSBuffer)
 	{
-		this._enqueueBufferOperation(isBufferOperationData);
+		let buffer = iSBuffer;
+		this._buffer = buffer;
+		this._enqueueBufferOperation(buffer.operationRequestData);
 	},
 
 	_enqueueBufferOperation(iSBufferOperationData)
@@ -24,12 +27,19 @@ export const IS_BufferOperationManager =
 
 	_requestOperationWorker(iSBufferOperationData)
 	{
-		console.log("Request Operation Worker for: ", iSBufferOperationData);
+		// console.log("Request Operation Worker for: ", iSBufferOperationData);
 		BUFFER_WORKER_CONTEXT.postMessage
 		(
 			// TODO: this should be a data type
 			{ request: "operate", operationData: iSBufferOperationData }
 		);
+	},
+
+	ReturnBuffer(bufferArray)
+	{
+		this._buffer.buffer.copyToChannel(bufferArray, 0);
+		console.log("IS_BufferOperationManager.ReturnBuffer: ");
+		this._buffer.print();
 	}
 }
 
@@ -57,7 +67,7 @@ function bufferWorkerCallback(message)
 	{
 		// TODO: returning the buffer to IS_Buffer
 		let buffer = message.data.buffer;
-		console.log("Operation Manager got the buffer: ", message.data);
+		IS_BufferOperationManager.ReturnBuffer(buffer);
 	}
 }
 

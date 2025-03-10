@@ -3,49 +3,50 @@ import { IS_Random } from "../../../../utilities/IS_Random.js";
 
 const IS_TWO_PI = Math.PI * 2;
 
+// TODO: Anti-aliasing (sawooth, square)
+// TODO: Fast Sine
+
 export const IS_EvaluateBufferFunction =
 {
-	evaluate(currentIncrement, functionData)
+	evaluate(currentIncrement, functionType, functionArgs)
 	{
-		let args = functionData._args;
-
 		// TODO: args is a unique data type
-		switch (functionData._type)
+		switch (functionType)
 		{
 			case (IS_BufferFunctionType.AmplitudeModulatedSine):
-				return this.AmplitudeModulatedSine(currentIncrement, args);
+				return this.AmplitudeModulatedSine(currentIncrement, functionArgs);
 			case (IS_BufferFunctionType.Constant):
-				return this.Constant(currentIncrement, args);
-			case (IS_BufferFunctionType.FloatingCycleSquare):
-				return this.FloatingCycleSquare(currentIncrement, args);
+				return this.Constant(functionArgs);
+			case (IS_BufferFunctionType.Pulse):
+				return this.Pulse(currentIncrement, functionArgs);
 			case (IS_BufferFunctionType.FrequencyModulatedSine):
-				return this.FrequencyModulatedSine(currentIncrement, args);
+				return this.FrequencyModulatedSine(currentIncrement, functionArgs);
 			case (IS_BufferFunctionType.Impulse):
-				return this.Impulse(currentIncrement, args);
+				return this.Impulse(currentIncrement);
 			case (IS_BufferFunctionType.InverseSawtooth):
-				return this.InverseSawtooth(currentIncrement, args);
+				return this.InverseSawtooth(currentIncrement, functionArgs);
 			case (IS_BufferFunctionType.Noise):
-				return this.Noise(currentIncrement, args);
+				return this.Noise();
 			case (IS_BufferFunctionType.NoiseBand):
-				return this.NoiseBand(currentIncrement, args);
+				return this.NoiseBand(currentIncrement, functionArgs);
 			case (IS_BufferFunctionType.QuantizedArrayBuffer):
-				return this.QuantizedArrayBuffer(currentIncrement, args);
+				return this.QuantizedArrayBuffer(currentIncrement, functionArgs);
 			case (IS_BufferFunctionType.Ramp):
-				return this.Ramp(currentIncrement, args);
+				return this.Ramp(currentIncrement, functionArgs);
 			case (IS_BufferFunctionType.RampBand):
-				return this.RampBand(currentIncrement, args);
+				return this.RampBand(currentIncrement, functionArgs);
 			case (IS_BufferFunctionType.Sawtooth):
-				return this.Sawtooth(currentIncrement, args);
+				return this.Sawtooth(currentIncrement, functionArgs);
 			case (IS_BufferFunctionType.Sine):
-				return this.Sine(currentIncrement, args);
+				return this.Sine(currentIncrement, functionArgs);
 			case (IS_BufferFunctionType.Square):
-				return this.Square(currentIncrement, args);
+				return this.Square(currentIncrement, functionArgs);
 			case (IS_BufferFunctionType.Triangle):
-				return this.Triangle(currentIncrement, args);
+				return this.Triangle(currentIncrement, functionArgs);
 			case (IS_BufferFunctionType.UnipolarNoise):
-				return this.UnipolarNoise(currentIncrement, args);
+				return this.UnipolarNoise(currentIncrement, functionArgs);
 			case (IS_BufferFunctionType.UnipolarSine):
-				return this.UnipolarSine(currentIncrement, args);
+				return this.UnipolarSine(currentIncrement, functionArgs);
 			default:
 				break;
 		}
@@ -70,22 +71,16 @@ export const IS_EvaluateBufferFunction =
 		return args[0]
 	},
 
-	// TODO: needs to know position in buffer
-	FloatingCycleSquare(currentIncrement, args)
+	Pulse(currentIncrement, args)
 	{
-		/*
-			let cycleStart = this._bufferShapeArray.length * start;
-			let cycleEnd = this._bufferShapeArray.length * end;
-			let inCycleBounds = false;
+		// TODO: Values like this and frequencies are very cacheable - maybe the function worker should be an
+		//  instance so that you don't have to evaluate these static values for every sample
+		// --> IS_FunctionWorker fills an array, sends it back to the queue
+		let pulseStartPercent = args[0];
+		let pulseEndPercent = args[1];
+		let inCycleBounds = currentIncrement >= pulseStartPercent && currentIncrement <= pulseEndPercent;
 
-			for (let sample= 0; sample < this._bufferShapeArray.length; sample++)
-			{
-				inCycleBounds = sample >= cycleStart && sample <= cycleEnd;
-
-				this._bufferShapeArray[sample] = inCycleBounds ? 1 : 0;
-			}
-			return this;
-	 	*/
+		return inCycleBounds ? 1 : 0;
 	},
 
 	FrequencyModulatedSine(currentIncrement, args)
@@ -101,7 +96,7 @@ export const IS_EvaluateBufferFunction =
 		return Math.sin(modulatedFrequencyValue * IS_TWO_PI * time);
 	},
 
-	Impulse(currentIncrement, args)
+	Impulse(currentIncrement)
 	{
 		return currentIncrement === 0 ? 1 : 0;
 	},
@@ -113,29 +108,83 @@ export const IS_EvaluateBufferFunction =
 		return Math.pow(currentIncrement, exponent);
 	},
 
-	Noise(currentIncrement, args)
+	Noise()
 	{
 		return IS_Random.randomFloat(-1, 1);
 	},
 
 	NoiseBand(currentIncrement, args)
 	{
+		let frequencyData = args[0];
 
+		let frequencies = frequencyData[0];
+		let amplitudes = frequencyData[1];
+
+		let nFrequencies = frequencies.length;
+
+		let sampleValue = 0;
+
+		for(let frequencyIndex= 0; frequencyIndex < nFrequencies; frequencyIndex++)
+		{
+			let amplitude = amplitudes[frequencyIndex];
+			let frequency = frequencies[frequencyIndex];
+
+			sampleValue += amplitude * Math.sin(frequency * currentIncrement * IS_TWO_PI);
+		}
+
+		return sampleValue;
 	},
 
 	QuantizedArrayBuffer(currentIncrement, args)
 	{
+		let valueArray = args[0];
+		let quantizationValue = args[1];
 
+		let currentStep = Math.floor(currentIncrement * quantizationValue);
+		let index = currentStep % valueArray.length;
+
+		return valueArray[index];
 	},
 
 	Ramp(currentIncrement, args)
 	{
+		let rampStart = args[0];
+		let rampEnd = args[1];
+		let upEnd = args[2];
+		let upLength = args[3]
+		let downStart = args[4];
+		let downLength = args[5];
+		let upExponent = args[6];
+		let downExponent = args[7];
 
+		let value = 0;
+
+		switch(true)
+		{
+			case (currentIncrement < rampStart || currentIncrement >= rampEnd):
+				value = 0;
+				break;
+			case (currentIncrement >= rampStart && currentIncrement <= upEnd):
+				value = (currentIncrement - rampStart) / upLength;
+				value = Math.pow(value, upExponent);
+				break;
+			case (currentIncrement > upEnd && currentIncrement < downStart):
+				value = 1;
+				break;
+			case (currentIncrement >= downStart && currentIncrement < rampEnd):
+				value = 1 - ((currentIncrement - downStart) / downLength);
+				value = Math.pow(value, downExponent);
+				break;
+			default:
+				break;
+		}
+
+		return value;
 	},
 
 	RampBand(currentIncrement, args)
 	{
-
+		// TODO: determine what this even is and decide whether to port it
 	},
 
 	Sawtooth(currentIncrement, args)
@@ -155,46 +204,21 @@ export const IS_EvaluateBufferFunction =
 		return Math.sin(time * frequency * IS_TWO_PI);
 	},
 
-	// TODO: needs to know progress in buffer
 	Square(currentIncrement, args)
 	{
-		/*
-		let transitionSampleIndex = this._bufferShapeArray.length * dutyCycle;
+		let dutyCycle = args[0];
 
-		for (let sample= 0; sample < this._bufferShapeArray.length; sample++)
-		{
-			this._bufferShapeArray[sample] = sample < transitionSampleIndex ? 1 : 0;
-		}
-		return this;
-	 	*/
+		return currentIncrement < dutyCycle ? 1 : 0;
 	},
 
-	// TODO: needs to know progress in buffer
 	Triangle(currentIncrement, args)
 	{
-		/*
-		let value = 0;
-		let halfOperationsArrayLength = this._bufferShapeArray.length * 0.5;
-		let timeIncrement = 1 / halfOperationsArrayLength;
-		let ascending = true;
+		let exponent = args[0];
 
-		for (let sample= 0; sample < this._bufferShapeArray.length; sample++)
-		{
-			ascending = sample <= halfOperationsArrayLength;
+		let ascending = currentIncrement <= 0.5;
+		let value = Math.pow(currentIncrement, exponent);
 
-			this._bufferShapeArray[sample] = Math.pow(value, exponent);
-
-			if(ascending)
-			{
-				value += timeIncrement;
-			}
-			else
-			{
-				value -= timeIncrement;
-			}
-		}
-		return this;
-	 	*/
+		return ascending ? value : 1 - value;
 	},
 
 	UnipolarNoise(currentIncrement, args)

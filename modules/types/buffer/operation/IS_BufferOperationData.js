@@ -1,14 +1,14 @@
 export class IS_BufferOperationData
 {
-	constructor(iSOperatorType, iSFunctionData, sampleRate)
+	constructor(iSOperatorType, iSFunctionData, bufferLength)
 	{
 		this._operatorType = iSOperatorType;
 		this._functionData = iSFunctionData;
-		this._sampleRate = sampleRate;
+		this._bufferLength = bufferLength;
 	}
 
-	get sampleRate() { return this._sampleRate; };
-	set sampleRate(value) { this._sampleRate = value; };
+	get bufferLength() { return this._bufferLength; };
+	set bufferLength(value) { this._bufferLength = value; };
 
 	get operatorType() { return this._operatorType; };
 	set operatorType(iSOperatorType) { this._operatorType = iSOperatorType; }

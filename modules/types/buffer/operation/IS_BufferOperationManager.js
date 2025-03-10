@@ -38,6 +38,11 @@ export const IS_BufferOperationManager =
 	ReturnBuffer(bufferArray)
 	{
 		this._buffer.buffer.copyToChannel(bufferArray, 0);
+		// TODO: "Buffer Operations Complete" FLAG
+		/*
+			--> now that this is off the main thread, the "Start" button will likely be active before all the
+			buffers are completed
+		*/
 		console.log("IS_BufferOperationManager.ReturnBuffer: ");
 		this._buffer.print();
 	}

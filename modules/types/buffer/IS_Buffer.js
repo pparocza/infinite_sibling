@@ -1,7 +1,5 @@
 import { IS_Object } from "../IS_Object.js";
 import { IS_Type } from "../../enums/IS_Type.js";
-import { IS_TWO_PI } from "../../utilities/Constants.js";
-import { IS_SAMPLE_MIN_VALUE } from "../../utilities/Constants.js";
 import { IS_Random } from "../../utilities/IS_Random.js";
 import { IS_Array } from "../array/IS_Array.js";
 import { BufferPrint } from "../../utilities/BufferPrint.js";
@@ -62,7 +60,7 @@ export class IS_Buffer extends IS_Object
         this._timeIncrement = 1 / lengthSamples;
 
         this._operationRequestData = new IS_BufferOperationData();
-        this._operationRequestData.sampleRate = this._sampleRate;
+        this._operationRequestData.bufferLength = this._sampleRate;
     }
 
     isBuffer = true;
@@ -101,9 +99,7 @@ export class IS_Buffer extends IS_Object
         this._buffer.sampleRate = this._sampleRate;
     }
 
-    /*
-    Buffer Operations
-     */
+    // OPERATION DATA
     get operationRequestData() { return this._operationRequestData; }
 
     _requestOperation(operationData)
@@ -111,6 +107,20 @@ export class IS_Buffer extends IS_Object
         IS_BufferOperationManager.requestOperation(this);
     }
 
+    _setOperationRequestOperatorData(iSBufferOperatorType)
+    {
+        this._operationRequestData.operatorType = iSBufferOperatorType;
+    }
+
+    _setOperationRequestFunctionData(iSBufferFunctionType, ...args)
+    {
+        this._operationRequestData.functionData = new IS_BufferFunctionData
+        (
+            iSBufferFunctionType, ...args
+        );
+    }
+
+    // OPERATION SUSPENSION
     get suspendOperation()
     {
         return this._suspendOperation;
@@ -134,30 +144,32 @@ export class IS_Buffer extends IS_Object
         return this;
     }
 
-    _setOperationRequestOperatorData(iSBufferOperatorType)
+    //TODO: buffer = null argument, so that "addBuffer" etc can just be "add(buffer)"
+    // -> then an additional channel argument or .channel() call
+    // OPERATORS
+    _handleOperatorMethod(iSBufferOperatorType)
     {
-        this._operationRequestData.operatorType = iSBufferOperatorType;
+        this._setOperationRequestOperatorData(iSBufferOperatorType);
         this._requestOperation();
     }
-
     add()
     {
-        this._setOperationRequestOperatorData(IS_BufferOperatorType.Add);
+        this._handleOperatorMethod(IS_BufferOperatorType.Add);
     }
 
     multiply()
     {
-        this._setOperationRequestOperatorData(IS_BufferOperatorType.Multiply);
+        this._handleOperatorMethod(IS_BufferOperatorType.Multiply);
     }
 
     divide()
     {
-        this._setOperationRequestOperatorData(IS_BufferOperatorType.Divide);
+        this._handleOperatorMethod(IS_BufferOperatorType.Divide);
     }
 
     subtract()
     {
-        this._setOperationRequestOperatorData(IS_BufferOperatorType.Subtract);
+        this._handleOperatorMethod(IS_BufferOperatorType.Subtract);
     }
 
     insert(channel = 0, startPercent = 0, endPercent = 1, style = "add")
@@ -217,39 +229,8 @@ export class IS_Buffer extends IS_Object
         }
     }
 
-    amplitude(value)
-    {
-        for(let sample= 0; sample < this._bufferShapeArray.length; sample++)
-        {
-            this._bufferShapeArray[sample] *= value;
-        }
-        return this;
-    }
-
-    volume(value)
-    {
-        let amplitude = Utilities.DecibelsToAmplitude(value);
-
-        for(let sample= 0; sample < this._bufferShapeArray.length; sample++)
-        {
-            this._bufferShapeArray[sample] *= amplitude;
-        }
-        return this;
-    }
-
-    _setOperationRequestFunctionData(iSBufferFunctionType, ...args)
-    {
-        this._operationRequestData.functionData = new IS_BufferFunctionData
-        (
-            iSBufferFunctionType, args
-        );
-    }
-
-    /**
-     *
-     * @param value
-     * @returns {IS_Buffer}
-     */
+    // TODO: IS_FunctionWorker that caches arguments and carries out the sample calculation loop
+    // FUNCTIONS
     constant(value)
     {
         this._setOperationRequestFunctionData
@@ -260,10 +241,6 @@ export class IS_Buffer extends IS_Object
         return this;
     }
 
-    /**
-     *
-     * @returns {IS_Buffer}
-     */
     impulse()
     {
         this._setOperationRequestFunctionData
@@ -274,11 +251,6 @@ export class IS_Buffer extends IS_Object
         return this;
     }
 
-    /**
-     *
-     * @param exponent
-     * @returns {IS_Buffer}
-     */
     sawtooth(exponent = 1)
     {
         this._setOperationRequestFunctionData
@@ -289,11 +261,6 @@ export class IS_Buffer extends IS_Object
         return this;
     }
 
-    /**
-     *
-     * @param exponent
-     * @returns {IS_Buffer}
-     */
     inverseSawtooth(exponent = 1)
     {
         this._setOperationRequestFunctionData
@@ -304,25 +271,16 @@ export class IS_Buffer extends IS_Object
         return this;
     }
 
-    /**
-     *
-     * @param exponent
-     * @returns {IS_Buffer}
-     */
     triangle(exponent = 1)
     {
         this._setOperationRequestFunctionData
         (
-            IS_BufferFunctionType.InverseSawtooth, exponent
+            IS_BufferFunctionType.Triangle, exponent
         );
 
         return this;
     }
 
-    /**
-     *
-     * @returns {IS_Buffer}
-     */
     noise()
     {
         this._setOperationRequestFunctionData
@@ -333,10 +291,6 @@ export class IS_Buffer extends IS_Object
         return this;
     }
 
-    /**
-     *
-     * @returns {IS_Buffer}
-     */
     unipolarNoise()
     {
         this._setOperationRequestFunctionData
@@ -347,12 +301,7 @@ export class IS_Buffer extends IS_Object
         return this;
     }
 
-    /**
-     *
-     * @param dutyCycle
-     * @returns {IS_Buffer}
-     */
-    square(dutyCycle)
+    square(dutyCycle = 0.5)
     {
         this._setOperationRequestFunctionData
         (
@@ -362,27 +311,17 @@ export class IS_Buffer extends IS_Object
         return this;
     }
 
-    /**
-     *
-     * @param startPercent
-     * @param endPercent
-     * @returns {IS_Buffer}
-     */
-    floatingCycleSquare(startPercent, endPercent)
+    pulse(startPercent = 0.5, endPercent= 1.0)
     {
         this._setOperationRequestFunctionData
         (
-            IS_BufferFunctionType.FloatingCycleSquare, startPercent, endPercent
+            IS_BufferFunctionType.Pulse,
+            startPercent, endPercent
         );
 
         return this;
     }
 
-    /**
-     *
-     * @param frequency
-     * @returns {IS_Buffer}
-     */
     sine(frequency)
     {
         // TODO: dealing with multiple frequencies
@@ -394,11 +333,6 @@ export class IS_Buffer extends IS_Object
         return this;
     }
 
-    /**
-     *
-     * @param frequency
-     * @returns {IS_Buffer}
-     */
     unipolarSine(frequency)
     {
         this._setOperationRequestFunctionData
@@ -409,17 +343,7 @@ export class IS_Buffer extends IS_Object
         return this;
     }
 
-    /**
-     *
-     * @param carrierFrequency
-     * @param modulatorFrequency
-     * @param modulatorGain
-     * @returns {IS_Buffer}
-     */
-    frequencyModulatedSine
-    (
-        carrierFrequency, modulatorFrequency, modulatorGain
-    )
+    frequencyModulatedSine(carrierFrequency, modulatorFrequency, modulatorGain)
     {
         this._setOperationRequestFunctionData
         (
@@ -430,17 +354,7 @@ export class IS_Buffer extends IS_Object
         return this;
     }
 
-    /**
-     *
-     * @param carrierFrequency
-     * @param modulatorFrequency
-     * @param modulatorGain
-     * @returns {IS_Buffer}
-     */
-    amplitudeModulatedSine
-    (
-        carrierFrequency, modulatorFrequency, modulatorGain
-    )
+    amplitudeModulatedSine(carrierFrequency, modulatorFrequency, modulatorGain)
     {
         this._setOperationRequestFunctionData
         (
@@ -451,91 +365,83 @@ export class IS_Buffer extends IS_Object
         return this;
     }
 
-    /**
-     *
-     * @param quantizationValue
-     * @param valueArray
-     * @returns {IS_Buffer}
-     */
-    quantizedArrayBuffer(quantizationValue, valueArray)
+    quantizedArrayBuffer(valueArray, quantizationValue = null)
     {
+        let quantization = quantizationValue !== null ? quantizationValue : valueArray.length;
+
         this._setOperationRequestFunctionData
         (
-            IS_BufferFunctionType.QuantizedArrayBuffer, quantizationValue, valueArray
+            IS_BufferFunctionType.QuantizedArrayBuffer, valueArray, quantization
         );
 
         return this;
     }
 
-    /**
-     *
-     * @param startPercent
-     * @param endPercent
-     * @param upEnd
-     * @param downStart
-     * @param upExp
-     * @param downExp
-     * @returns {IS_Buffer}
-     */
     ramp
     (
         startPercent = 0, endPercent = 1,
-        upEnd = 0.5, downStart = 0.5,
-        upExp = 1, downExp = 1
+        upEndPercent = 0.5, downStartPercent = null,
+        upExponent = 1, downExponent = 1
     )
     {
+        let rampStart = startPercent;
+        let rampEnd = endPercent;
+
+        let rampLength = endPercent - startPercent;
+
+        let upLength = (rampLength * upEndPercent);
+        let upEnd = rampStart + upLength;
+
+        downStartPercent = downStartPercent !== null ? downStartPercent : upEndPercent;
+
+        let downLength = rampLength - (rampLength * downStartPercent);
+        let downStart = rampStart + (rampLength - downLength);
+
         this._setOperationRequestFunctionData
         (
             IS_BufferFunctionType.Ramp,
-            startPercent, endPercent, upEnd, downStart, upExp, downExp
+            rampStart, rampEnd,
+            upEnd, upLength,
+            downStart, downLength,
+            upExponent, downExponent
         );
 
         return this;
     }
 
-    /**
-     *
-     * @param carrierFrequency
-     * @param bandwidth
-     * @param tuningMin
-     * @param tuningMax
-     * @param amplitudeMin
-     * @param amplitudeMax
-     * @returns {IS_Buffer}
-     */
     noiseBand
     (
-        carrierFrequency, bandwidth, tuningMin, tuningMax, amplitudeMin, amplitudeMax
+        centerFrequency, bandwidth,
+        amplitudeMin = 0, amplitudeMax = 1,
+        tuningMin = 1, tuningMax = 1
     )
     {
+        let frequencies = [];
+        let amplitudes = [];
+
+        let halfBand = Math.round(bandwidth * 0.5);
+        let bottomFrequency = centerFrequency - halfBand;
+
+        for(let frequencyIndex = 0; frequencyIndex < bandwidth; frequencyIndex++)
+        {
+            let frequency = bottomFrequency + frequencyIndex;
+            let tuning = IS_Random.randomFloat(tuningMin, tuningMax);
+
+            frequencies.push(frequency * tuning);
+            amplitudes.push(IS_Random.randomFloat(amplitudeMin, amplitudeMax));
+        }
+
+        let frequencyData = [];
+        frequencyData.push(frequencies, amplitudes);
+
         this._setOperationRequestFunctionData
         (
-            IS_BufferFunctionType.NoiseBand,
-            carrierFrequency, bandwidth, tuningMin, tuningMax, amplitudeMin, amplitudeMax
+            IS_BufferFunctionType.NoiseBand, frequencyData
         );
 
         return this;
     }
 
-    /**
-     *
-     * @param centerFrequency
-     * @param bandwidth
-     * @param upHarmonics
-     * @param midHarmonics
-     * @param downHarmonics
-     * @param upTuningRange
-     * @param midTuningRange
-     * @param downTuningRange
-     * @param upEnd
-     * @param downStart
-     * @param upExponent
-     * @param downExponent
-     * @param upRange
-     * @param midRange
-     * @param downRange
-     * @returns {IS_Buffer}
-     */
     rampBand
     (
         centerFrequency, bandwidth, upHarmonics, midHarmonics, downHarmonics, upTuningRange, midTuningRange,
@@ -553,6 +459,7 @@ export class IS_Buffer extends IS_Object
         return this;
     }
 
+    // INTER-BUFFER OPERATIONS
     /**
      * Add contents of another buffer to this buffer
      * @param buffer
@@ -751,11 +658,10 @@ export class IS_Buffer extends IS_Object
         let nowBuffering = null;
         let otherNowBuffering = null;
 
-        if(buffer.iSType !== undefined && buffer.iSType === IS_Type.IS_Buffer)
+        if (buffer.iSType !== undefined && buffer.iSType === IS_Type.IS_Buffer)
         {
             otherBuffer = buffer.buffer;
-        }
-        else
+        } else
         {
             otherBuffer = buffer;
         }
@@ -769,7 +675,7 @@ export class IS_Buffer extends IS_Object
 
             for (let sample = 0; sample < otherNowBuffering.length; sample++)
             {
-                switch(writeMode)
+                switch (writeMode)
                 {
                     case 0:
                         nowBuffering[sample + insertSample] = otherNowBuffering[sample];
@@ -781,21 +687,6 @@ export class IS_Buffer extends IS_Object
                         nowBuffering[sample + insertSample] = otherNowBuffering[sample];
                         break;
                 }
-            }
-        }
-    }
-
-    attenuate(decibelValue = 0)
-    {
-        let amplitude = Utilities.DecibelsToAmplitude(decibelValue);
-
-        for(let channel = 0; channel < this.numberOfChannels; channel++)
-        {
-            let nowBuffering = this.buffer.getChannelData(channel);
-
-            for (let sample = 0; sample < this.buffer.length; sample++)
-            {
-                nowBuffering[sample] *= amplitude;
             }
         }
     }
@@ -971,6 +862,23 @@ export class IS_Buffer extends IS_Object
                 }
             }
         }
+    }
+
+    // UTILITY
+    amplitude(value)
+    {
+        this._setOperationRequestFunctionData(IS_BufferFunctionType.Constant, value);
+        this._setOperationRequestOperatorData(IS_BufferOperatorType.Multiply);
+        this._requestOperation();
+    }
+
+    volume(value)
+    {
+        let amplitude = Utilities.DecibelsToAmplitude(value);
+
+        this._setOperationRequestFunctionData(IS_BufferFunctionType.Constant, amplitude);
+        this._setOperationRequestOperatorData(IS_BufferOperatorType.Multiply);
+        this._requestOperation();
     }
 
     /**

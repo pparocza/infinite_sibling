@@ -33,24 +33,26 @@ let BUFFER_ARRAY;
 
 function DO_WORK(operationData)
 {
-	let sampleRate = operationData._sampleRate;
+	let nSamples = operationData._bufferLength;
 
-	BUFFER_ARRAY = new Float32Array(sampleRate);
+	BUFFER_ARRAY = new Float32Array(nSamples);
 
 	// console.log("Worker is " + operationData._operatorType + "-ing a " + operationData._functionData._type);
 
 	let operatorType = operationData._operatorType;
 	let functionData = operationData._functionData;
+	let functionArgs = functionData._args;
+	let functionType = functionData._type;
 
-	let sampleIncrement = 1 / sampleRate;
+	let sampleIncrement = 1 / nSamples;
 	let currentIncrement = 0;
 
-	for(let sampleIndex = 0; sampleIndex < sampleRate; sampleIndex++)
+	for(let sampleIndex = 0; sampleIndex < nSamples; sampleIndex++)
 	{
 		BUFFER_ARRAY[sampleIndex] = _evaluateOperation
 		(
 			operatorType,
-			IS_EvaluateBufferFunction.evaluate(currentIncrement, functionData),
+			IS_EvaluateBufferFunction.evaluate(currentIncrement, functionType, functionArgs),
 			0
 		);
 

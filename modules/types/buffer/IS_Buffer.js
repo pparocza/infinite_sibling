@@ -107,16 +107,6 @@ export class IS_Buffer extends IS_Object
     }
 
     // OPERATION SUSPENSION
-    get suspendOperation()
-    {
-        return this._suspendOperation;
-    }
-
-    set suspendOperation(value)
-    {
-        this._suspendOperation = value;
-    }
-
     suspendOperations()
     {
         this._suspendOperation = true;
@@ -130,32 +120,95 @@ export class IS_Buffer extends IS_Object
         return this;
     }
 
-    //TODO: buffer = null argument, so that "addBuffer" etc can just be "add(buffer)"
-    // -> then an additional channel argument or .channel() call
-    // OPERATORS
     _handleOperatorMethod(iSBufferOperatorType)
     {
         this._setOperationRequestOperatorData(iSBufferOperatorType);
         this._requestOperation();
     }
-    add()
+
+    add(buffer = null)
     {
-        this._handleOperatorMethod(IS_BufferOperatorType.Add);
+        if (buffer === null)
+        {
+            this._handleOperatorMethod(IS_BufferOperatorType.Add);
+        }
+        else
+        {
+            this._handleBufferMath(IS_BufferOperatorType.Add, buffer);
+        }
     }
 
-    multiply()
+    multiply(buffer = null)
     {
-        this._handleOperatorMethod(IS_BufferOperatorType.Multiply);
+        if (buffer === null)
+        {
+            this._handleOperatorMethod(IS_BufferOperatorType.Multiply);
+        }
+        else
+        {
+            this._handleBufferMath(IS_BufferOperatorType.Multiply, buffer);
+        }
     }
 
-    divide()
+    divide(buffer = null)
     {
-        this._handleOperatorMethod(IS_BufferOperatorType.Divide);
+        if (buffer === null)
+        {
+            this._handleOperatorMethod(IS_BufferOperatorType.Divide);
+        }
+        else
+        {
+            this._handleBufferMath(IS_BufferOperatorType.Divide, buffer);
+        }
     }
 
-    subtract()
+    subtract(buffer = null)
     {
-        this._handleOperatorMethod(IS_BufferOperatorType.Subtract);
+        if (buffer === null)
+        {
+            this._handleOperatorMethod(IS_BufferOperatorType.Subtract);
+        }
+        else
+        {
+            this._handleBufferMath(IS_BufferOperatorType.Subtract, buffer);
+        }
+    }
+
+    _handleBufferMath(iSBufferOperatorType, buffer)
+    {
+        let otherBuffer = buffer.isBuffer ? buffer.buffer : buffer;
+        let nowBuffering = null;
+        let otherNowBuffering = null;
+
+        for (let channel= 0; channel < this.numberOfChannels; channel++)
+        {
+            nowBuffering = this.buffer.getChannelData(channel);
+            otherNowBuffering = otherBuffer.getChannelData(channel);
+
+            let shorterBufferLength = nowBuffering < otherNowBuffering ?
+                nowBuffering.length : otherNowBuffering.length;
+
+            for (let sample= 0; sample < shorterBufferLength; sample++)
+            {
+                switch(iSBufferOperatorType)
+                {
+                    case (IS_BufferOperatorType.Add):
+                        nowBuffering[sample] += otherNowBuffering[sample];
+                        break;
+                    case (IS_BufferOperatorType.Multiply):
+                        nowBuffering[sample] -= otherNowBuffering[sample];
+                        break;
+                    case (IS_BufferOperatorType.Divide):
+                        nowBuffering[sample] /= otherNowBuffering[sample];
+                        break;
+                    case (IS_BufferOperatorType.Subtract):
+                        nowBuffering[sample] -= otherNowBuffering[sample];
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
     }
 
     insert(channel = 0, startPercent = 0, endPercent = 1, style = "add")
@@ -443,142 +496,6 @@ export class IS_Buffer extends IS_Object
         );
 
         return this;
-    }
-
-    // INTER-BUFFER OPERATIONS
-    /**
-     * Add contents of another buffer to this buffer
-     * @param buffer
-     */
-    addBuffer(buffer)
-    {
-        let otherBuffer = null;
-        let nowBuffering = null;
-        let otherNowBuffering = null;
-
-        if (buffer.iSType !== undefined && buffer.iSType === IS_Type.IS_Buffer)
-        {
-            otherBuffer = buffer.buffer;
-        }
-        else
-        {
-            otherBuffer = buffer;
-        }
-
-        for (let channel= 0; channel < this.numberOfChannels; channel++)
-        {
-            nowBuffering = this.buffer.getChannelData(channel);
-            otherNowBuffering = otherBuffer.getChannelData(channel);
-
-            let shorterBufferLength = nowBuffering < otherNowBuffering ?
-                nowBuffering.length : otherNowBuffering.length;
-
-            for (let sample= 0; sample < shorterBufferLength; sample++)
-            {
-                nowBuffering[sample] += otherNowBuffering[sample];
-            }
-        }
-    }
-
-    /**
-     * Multiply contents of this buffer by another buffer
-     * @param buffer
-     */
-    multiplyBuffer(buffer)
-    {
-        let otherBuffer = null;
-        let nowBuffering = null;
-        let otherNowBuffering = null;
-
-        if(buffer.iSType !== undefined && buffer.iSType === IS_Type.IS_Buffer)
-        {
-            otherBuffer = buffer.buffer;
-        }
-        else
-        {
-            otherBuffer = buffer;
-        }
-
-        for (let channel= 0; channel < this.numberOfChannels; channel++)
-        {
-            nowBuffering = this.buffer.getChannelData(channel);
-            otherNowBuffering = otherBuffer.getChannelData(channel);
-
-            let shorterBufferLength = nowBuffering < otherNowBuffering ?
-                nowBuffering.length : otherNowBuffering.length;
-
-            for (let sample= 0; sample < shorterBufferLength; sample++)
-            {
-                nowBuffering[sample] *= otherNowBuffering[sample];
-            }
-        }
-    }
-
-    /**
-     * Divide contents of this buffer by another buffer
-     * @param buffer
-     */
-    divideBuffer(buffer)
-    {
-        let otherBuffer = null;
-        let nowBuffering = null;
-        let otherNowBuffering = null;
-
-        if (buffer.iSType !== undefined && buffer.iSType === IS_Type.IS_Buffer)
-        {
-            otherBuffer = buffer.buffer;
-        }
-        else
-        {
-            otherBuffer = buffer;
-        }
-
-        for (let channel= 0; channel < this.numberOfChannels; channel++)
-        {
-            nowBuffering = this.buffer.getChannelData(channel);
-            otherNowBuffering = otherBuffer.getChannelData(channel);
-
-            let shorterBufferLength = nowBuffering < otherNowBuffering ? nowBuffering : otherNowBuffering;
-
-            for (let sample= 0; sample < shorterBufferLength; sample++)
-            {
-                nowBuffering[sample] /= otherNowBuffering[sample];
-            }
-        }
-    }
-
-    /**
-     * Subtract contents of a buffer from this buffer
-     * @param buffer
-     */
-    subtractBuffer(buffer)
-    {
-        let otherBuffer = null;
-        let nowBuffering = null;
-        let otherNowBuffering = null;
-
-        if(buffer.iSType !== undefined && buffer.iSType === IS_Type.IS_Buffer)
-        {
-            otherBuffer = buffer.buffer;
-        }
-        else
-        {
-            otherBuffer = buffer;
-        }
-
-        for (let channel= 0; channel < this.numberOfChannels; channel++)
-        {
-            nowBuffering = this.buffer.getChannelData(channel);
-            otherNowBuffering = otherBuffer.getChannelData(channel);
-
-            let shorterBufferLength = nowBuffering < otherNowBuffering ?
-                nowBuffering.length : otherNowBuffering.length;
-
-            for (let sample= 0; sample < shorterBufferLength; sample++)
-            {
-                nowBuffering[sample] -= otherNowBuffering[sample];
-            }
-        }
     }
 
     /**

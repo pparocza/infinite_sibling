@@ -105,7 +105,7 @@ export const IS_EvaluateBufferFunction =
 	{
 		let exponent = args[0];
 
-		return Math.pow(currentIncrement, exponent);
+		return Math.pow(1 - currentIncrement, exponent);
 	},
 
 	Noise()

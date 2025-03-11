@@ -5,28 +5,11 @@ import { IS_Array } from "../array/IS_Array.js";
 import { BufferPrint } from "../../utilities/BufferPrint.js";
 import { Utilities } from "../../utilities/Utilities.js";
 import { IS_BufferPresets } from "../../presets/IS_BufferPresets.js";
-
 import { IS_BufferOperationManager } from "./operation/IS_BufferOperationManager.js";
-// TODO: some of these can probably be consolidated into the files that reference them
-/*
- EX:
-    -> IS_BufferOperationData.function.Sine(440) creates that function data in the operation
-    -> IS_BufferOperationData.operation.Add
- */
 import { IS_BufferOperationRequestData } from "./operation/IS_BufferOperationRequestData.js";
 import { IS_BufferFunctionData } from "./operation/function/IS_BufferFunctionData.js";
 import { IS_BufferFunctionType } from "./operation/function/IS_BufferFunctionType.js";
 import { IS_BufferOperatorType } from "./operation/IS_BufferOperatorType.js"
-
-
-// TODO: Operation Queue - operation methods return asynchronous queue objects that get handled sequentially by an asynchronous operator
-// TODO: BufferOperator -> holds an operation array - doesn't need a suspended operation array, instead a suspended operation creates a parallel BufferOperator
-// TODO: BufferOperation(Operation = IS_BufferOperation.Add, Shape = IS_BufferShape.Sine) -> Queued in BufferOperator, which holds the buffer being operated on
-/*
-    ^^ enums are entirely internal for the purpose of formatting messages to the buffer operator -> so IS_Buffer
-    just creates operation, and BufferOperator references the actual generation algorithms
-    - REMEMBER: shapes will have to have arguments (should be fine)
-*/
 
 // TODO: SmoothClip
 
@@ -103,7 +86,6 @@ export class IS_Buffer extends IS_Object
         (
             this._operationRequestData.operatorType,
             this._operationRequestData.functionData,
-            this._buffer.length,
             this._buffer.getChannelData(0),
             this._uuid
         );

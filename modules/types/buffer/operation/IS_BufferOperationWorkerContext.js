@@ -24,13 +24,12 @@ function WORKER(incomingOperationData)
 	postMessage( { operationData: completedOperationData } );
 }
 
-let BUFFER_ARRAY;
-
 function DO_WORK(operationData)
 {
-	let nSamples = operationData._bufferLength;
 	let currentBufferArray = operationData._currentBufferArray;
 	let operationArray = operationData._operationArray;
+
+	let nSamples = operationArray.length;
 
 	let operatorType = operationData._operatorType;
 	let functionData = operationData._functionData;
@@ -54,7 +53,6 @@ function DO_WORK(operationData)
 		currentIncrement += sampleIncrement;
 	}
 
-	// TODO: operate on the request data directly, send the whole request data back
 	return operationData;
 }
 

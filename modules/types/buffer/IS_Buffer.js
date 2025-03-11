@@ -4,12 +4,13 @@ import { IS_Random } from "../../utilities/IS_Random.js";
 import { IS_Array } from "../array/IS_Array.js";
 import { BufferPrint } from "../../utilities/BufferPrint.js";
 import { Utilities } from "../../utilities/Utilities.js";
+
 import { IS_BufferPresets } from "../../presets/IS_BufferPresets.js";
-import { IS_BufferOperationManager } from "./operation/IS_BufferOperationManager.js";
 import { IS_BufferOperationRequestData } from "./operation/IS_BufferOperationRequestData.js";
 import { IS_BufferFunctionData } from "./operation/function/IS_BufferFunctionData.js";
 import { IS_BufferFunctionType } from "./operation/function/IS_BufferFunctionType.js";
 import { IS_BufferOperatorType } from "./operation/IS_BufferOperatorType.js"
+import { IS_BufferOperationQueue } from "./operation/IS_BufferOperationQueue.js";
 
 // TODO: SmoothClip
 
@@ -42,6 +43,11 @@ export class IS_Buffer extends IS_Object
 
         this._operationRequestData = new IS_BufferOperationRequestData();
         this._operationRequestData.bufferLength = this._sampleRate;
+
+        // TODO: Queue Pool
+        this._bufferOperationQueue = null;
+        this._awaitingOperation = false;
+        this._waitingOperations = [];
     }
 
     isBuffer = true;
@@ -80,8 +86,16 @@ export class IS_Buffer extends IS_Object
         this._buffer.sampleRate = this._sampleRate;
     }
 
+    get awaitingOperation() { return this._awaitingOperation; }
+    get operationQueue() { return this._bufferOperationQueue; }
+
+    // OPERATION REQUESTS
     _requestOperation()
     {
+        this._awaitingOperation = true;
+
+        this._initializeOperationQueue();
+
         let operationRequestData = new IS_BufferOperationRequestData
         (
             this._operationRequestData.operatorType,
@@ -90,7 +104,15 @@ export class IS_Buffer extends IS_Object
             this._uuid
         );
 
-        IS_BufferOperationManager.requestOperation(this, operationRequestData);
+        this._bufferOperationQueue.requestOperation(operationRequestData);
+    }
+
+    _initializeOperationQueue()
+    {
+        if(this._bufferOperationQueue === null)
+        {
+            this._bufferOperationQueue = new IS_BufferOperationQueue(this);
+        }
     }
 
     _setOperationRequestOperatorData(iSBufferOperatorType)
@@ -104,6 +126,12 @@ export class IS_Buffer extends IS_Object
         (
             iSBufferFunctionType, ...args
         );
+    }
+
+    operationQueueComplete()
+    {
+        this._awaitingOperation = false;
+        this._bufferOperationQueue = null;
     }
 
     // OPERATION SUSPENSION
@@ -120,12 +148,6 @@ export class IS_Buffer extends IS_Object
         return this;
     }
 
-    _handleOperatorMethod(iSBufferOperatorType)
-    {
-        this._setOperationRequestOperatorData(iSBufferOperatorType);
-        this._requestOperation();
-    }
-
     add(buffer = null)
     {
         if (buffer === null)
@@ -134,7 +156,7 @@ export class IS_Buffer extends IS_Object
         }
         else
         {
-            this._handleBufferMath(IS_BufferOperatorType.Add, buffer);
+            this._handleOtherBufferAsFunction(IS_BufferOperatorType.Add, buffer);
         }
     }
 
@@ -146,7 +168,7 @@ export class IS_Buffer extends IS_Object
         }
         else
         {
-            this._handleBufferMath(IS_BufferOperatorType.Multiply, buffer);
+            this._handleOtherBufferAsFunction(IS_BufferOperatorType.Multiply, buffer);
         }
     }
 
@@ -158,7 +180,7 @@ export class IS_Buffer extends IS_Object
         }
         else
         {
-            this._handleBufferMath(IS_BufferOperatorType.Divide, buffer);
+            this._handleOtherBufferAsFunction(IS_BufferOperatorType.Divide, buffer);
         }
     }
 
@@ -170,44 +192,63 @@ export class IS_Buffer extends IS_Object
         }
         else
         {
-            this._handleBufferMath(IS_BufferOperatorType.Subtract, buffer);
+            this._handleOtherBufferAsFunction(IS_BufferOperatorType.Subtract, buffer);
         }
     }
 
-    _handleBufferMath(iSBufferOperatorType, buffer)
+    _handleOperatorMethod(iSBufferOperatorType)
     {
-        let otherBuffer = buffer.isBuffer ? buffer.buffer : buffer;
-        let nowBuffering = null;
-        let otherNowBuffering = null;
+        this._setOperationRequestOperatorData(iSBufferOperatorType);
+        this._requestOperation();
+    }
 
-        for (let channel= 0; channel < this.numberOfChannels; channel++)
+    _handleOtherBufferAsFunction(iSBufferOperatorType, otherBuffer)
+    {
+        let functionType = IS_BufferFunctionType.Buffer;
+        this._setOperationRequestOperatorData(iSBufferOperatorType);
+
+        if(otherBuffer.awaitingOperation)
         {
-            nowBuffering = this.buffer.getChannelData(channel);
-            otherNowBuffering = otherBuffer.getChannelData(channel);
+            this._setOperationRequestFunctionData(functionType, null);
+            otherBuffer.operationQueue.addToWaitList(this);
+            this._waitingOperations.push(this._operationRequestData);
+        }
+        else
+        {
+            let functionBuffer = otherBuffer.isBuffer ? otherBuffer.buffer : otherBuffer;
+            let functionArray = new Float32Array(functionBuffer.length);
+            functionBuffer.copyFromChannel(functionArray, 0);
 
-            let shorterBufferLength = nowBuffering < otherNowBuffering ?
-                nowBuffering.length : otherNowBuffering.length;
+            this._requestOperation();
+        }
+    }
 
-            for (let sample= 0; sample < shorterBufferLength; sample++)
+    waitEnded(iSAudioBuffer)
+    {
+        while(this._waitingOperations.length > 0)
+        {
+            let waitingOperation = this._waitingOperations.shift();
+
+            if(waitingOperation.functionData.type === IS_BufferFunctionType.Buffer)
             {
-                switch(iSBufferOperatorType)
-                {
-                    case (IS_BufferOperatorType.Add):
-                        nowBuffering[sample] += otherNowBuffering[sample];
-                        break;
-                    case (IS_BufferOperatorType.Multiply):
-                        nowBuffering[sample] -= otherNowBuffering[sample];
-                        break;
-                    case (IS_BufferOperatorType.Divide):
-                        nowBuffering[sample] /= otherNowBuffering[sample];
-                        break;
-                    case (IS_BufferOperatorType.Subtract):
-                        nowBuffering[sample] -= otherNowBuffering[sample];
-                        break;
-                    default:
-                        break;
-                }
+                let functionBuffer = iSAudioBuffer.buffer;
+                let functionArray = new Float32Array(functionBuffer.length);
+                functionBuffer.copyFromChannel(functionArray, 0);
+
+                this._setOperationRequestFunctionData(IS_BufferFunctionType.Buffer, functionArray);
             }
+            else
+            {
+                this._setOperationRequestFunctionData
+                (
+                    waitingOperation.functionData.type,
+                    waitingOperation.functionData.args
+                );
+            }
+
+            this._setOperationRequestOperatorData(waitingOperation.operatorType);
+
+            this._requestOperation();
         }
     }
 

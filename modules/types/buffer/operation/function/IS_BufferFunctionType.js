@@ -1,6 +1,7 @@
 export const IS_BufferFunctionType =
 {
 	AmplitudeModulatedSine: "AmplitudeModulatedSine",
+	Buffer: "Buffer",
 	Constant: "Constant",
 	Impulse: "Impulse",
 	InverseSawtooth: "InverseSawtooth",

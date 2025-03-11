@@ -1,34 +1,31 @@
 export const IS_BufferOperationManager =
 {
-	// TODO: IS_OperationQueue - IS_Buffer-specific instance to handle all operation requests
-	_operationQueue: [],
-	_buffers: {},
+	_operationQueues: {},
 
-	requestOperation(iSAudioBuffer, bufferOperationData)
+	requestOperation(iSBufferOperationQueue, bufferOperationData)
 	{
-		let uuid = bufferOperationData._bufferUuid;
-
-		if(!this._buffers[uuid])
-		{
-			this._buffers[uuid] = iSAudioBuffer;
-		}
-
-		this._enqueueBufferOperation(bufferOperationData);
+		this._registerQueue(iSBufferOperationQueue);
+		this._requestOperationWorker(bufferOperationData);
 	},
 
-	_enqueueBufferOperation(iSBufferOperationData)
+	_registerQueue(iSBufferOperationQueue)
 	{
-		this._operationQueue.push(iSBufferOperationData);
+		let uuid = iSBufferOperationQueue.bufferUuid;
 
-		if(this._operationQueue.length === 1)
+		if(!this._operationQueues[uuid])
 		{
-			this._nextOperation();
+			this._operationQueues[uuid] = iSBufferOperationQueue;
 		}
 	},
 
-	_nextOperation()
+	removeQueue(iSBufferOperationQueue)
 	{
-		this._requestOperationWorker(this._operationQueue[0]);
+		let uuid = iSBufferOperationQueue.bufferUuid;
+
+		if(this._operationQueues[uuid])
+		{
+			delete this._operationQueues[uuid];
+		}
 	},
 
 	_requestOperationWorker(iSBufferOperationData)
@@ -41,32 +38,12 @@ export const IS_BufferOperationManager =
 		);
 	},
 
-	_handleOperationComplete()
+	UpdateQueue(completedOperationData)
 	{
-		this._operationQueue.shift();
+		let bufferUuid = completedOperationData._bufferUuid;
 
-		if(this._operationQueue.length > 0)
-		{
-			this._nextOperation();
-		}
-	},
-
-	// TODO: "Buffer Operations Complete" FLAG
-	/*
-		--> now that this is off the main thread, the "Start" button will likely be active before all the
-		buffers are completed
-	*/
-	ReturnBuffer(completedOperationData)
-	{
-		let bufferArray = completedOperationData._operationArray;
-		let bufferId = completedOperationData._bufferUuid;
-
-		let bufferToUpdate = this._buffers[bufferId];
-		bufferToUpdate.buffer.copyToChannel(bufferArray, 0);
-		console.log("IS_BufferOperationManager.ReturnBuffer: ");
-		bufferToUpdate.print();
-
-		this._handleOperationComplete();
+		let operationQueue = this._operationQueues[bufferUuid];
+		operationQueue.updateBuffer(completedOperationData);
 	}
 }
 
@@ -93,7 +70,7 @@ function bufferWorkerCallback(message)
 	if(message.data.operationData)
 	{
 		let completedOperationData = message.data.operationData;
-		IS_BufferOperationManager.ReturnBuffer(completedOperationData);
+		IS_BufferOperationManager.UpdateQueue(completedOperationData);
 	}
 }
 

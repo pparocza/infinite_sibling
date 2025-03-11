@@ -42,12 +42,14 @@ function DO_WORK(operationData)
 	for(let sampleIndex = 0; sampleIndex < nSamples; sampleIndex++)
 	{
 		let currentValue = currentBufferArray[sampleIndex];
+		let functionValue = IS_EvaluateBufferFunction.evaluate
+		(
+			functionType, functionArgs, currentIncrement, sampleIndex
+		);
 
 		operationArray[sampleIndex] = _evaluateOperation
 		(
-			operatorType,
-			IS_EvaluateBufferFunction.evaluate(currentIncrement, functionType, functionArgs),
-			currentValue
+			operatorType, functionValue, currentValue
 		);
 
 		currentIncrement += sampleIncrement;
@@ -58,6 +60,11 @@ function DO_WORK(operationData)
 
 function _evaluateOperation(iSOperatorType, functionValue, currentSampleValue)
 {
+	if(functionValue === null)
+	{
+		return currentSampleValue;
+	}
+
 	switch(iSOperatorType)
 	{
 		case(IS_BufferOperatorType.Add):

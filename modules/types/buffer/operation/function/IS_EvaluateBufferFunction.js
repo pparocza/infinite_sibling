@@ -8,13 +8,15 @@ const IS_TWO_PI = Math.PI * 2;
 
 export const IS_EvaluateBufferFunction =
 {
-	evaluate(currentIncrement, functionType, functionArgs)
+	evaluate(functionType, functionArgs, currentIncrement, currentSample)
 	{
 		// TODO: args is a unique data type
 		switch (functionType)
 		{
 			case (IS_BufferFunctionType.AmplitudeModulatedSine):
 				return this.AmplitudeModulatedSine(currentIncrement, functionArgs);
+			case(IS_BufferFunctionType.Buffer):
+				return this.Buffer(currentSample, functionArgs);
 			case (IS_BufferFunctionType.Constant):
 				return this.Constant(functionArgs);
 			case (IS_BufferFunctionType.Pulse):
@@ -64,6 +66,14 @@ export const IS_EvaluateBufferFunction =
 		let carrierAmplitude = Math.sin(carrierFrequency * time * IS_TWO_PI);
 
 		return modulatorAmplitude * carrierAmplitude;
+	},
+
+	// TODO: requires IS_BufferOperationQueue
+	Buffer(currentSample, args)
+	{
+		let otherBufferArray = args[0];
+
+		return currentSample <= otherBufferArray.length ? otherBufferArray[currentSample] : null;
 	},
 
 	Constant(args)

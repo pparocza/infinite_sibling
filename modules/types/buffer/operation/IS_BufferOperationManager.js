@@ -1,7 +1,7 @@
 export const IS_BufferOperationManager =
 {
+	// TODO: IS_OperationQueue - IS_Buffer-specific instance to handle all operation requests
 	_operationQueue: [],
-	// TODO: The queue needs to understand which buffer it's operating on
 	_buffers: {},
 
 	requestOperation(iSAudioBuffer, bufferOperationData)
@@ -11,7 +11,6 @@ export const IS_BufferOperationManager =
 		if(!this._buffers[uuid])
 		{
 			this._buffers[uuid] = iSAudioBuffer;
-
 		}
 
 		this._enqueueBufferOperation(bufferOperationData);
@@ -42,6 +41,16 @@ export const IS_BufferOperationManager =
 		);
 	},
 
+	_handleOperationComplete()
+	{
+		this._operationQueue.shift();
+
+		if(this._operationQueue.length > 0)
+		{
+			this._nextOperation();
+		}
+	},
+
 	// TODO: "Buffer Operations Complete" FLAG
 	/*
 		--> now that this is off the main thread, the "Start" button will likely be active before all the
@@ -57,12 +66,7 @@ export const IS_BufferOperationManager =
 		console.log("IS_BufferOperationManager.ReturnBuffer: ");
 		bufferToUpdate.print();
 
-		this._operationQueue.shift();
-
-		if(this._operationQueue.length > 0)
-		{
-			this._nextOperation();
-		}
+		this._handleOperationComplete();
 	}
 }
 

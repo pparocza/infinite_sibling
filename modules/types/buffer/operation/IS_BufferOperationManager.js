@@ -1,13 +1,20 @@
 export const IS_BufferOperationManager =
 {
 	_operationQueue: [],
-	_buffer: null,
+	// TODO: The queue needs to understand which buffer it's operating on
+	_buffers: {},
 
-	requestOperation(iSBuffer)
+	requestOperation(iSAudioBuffer, bufferOperationData)
 	{
-		let buffer = iSBuffer;
-		this._buffer = buffer;
-		this._enqueueBufferOperation(buffer.operationRequestData);
+		let uuid = bufferOperationData._bufferUuid;
+
+		if(!this._buffers[uuid])
+		{
+			this._buffers[uuid] = iSAudioBuffer;
+
+		}
+
+		this._enqueueBufferOperation(bufferOperationData);
 	},
 
 	_enqueueBufferOperation(iSBufferOperationData)
@@ -22,7 +29,7 @@ export const IS_BufferOperationManager =
 
 	_nextOperation()
 	{
-		this._requestOperationWorker(this._operationQueue.shift());
+		this._requestOperationWorker(this._operationQueue[0]);
 	},
 
 	_requestOperationWorker(iSBufferOperationData)
@@ -35,16 +42,27 @@ export const IS_BufferOperationManager =
 		);
 	},
 
-	ReturnBuffer(bufferArray)
+	// TODO: "Buffer Operations Complete" FLAG
+	/*
+		--> now that this is off the main thread, the "Start" button will likely be active before all the
+		buffers are completed
+	*/
+	ReturnBuffer(completedOperationData)
 	{
-		this._buffer.buffer.copyToChannel(bufferArray, 0);
-		// TODO: "Buffer Operations Complete" FLAG
-		/*
-			--> now that this is off the main thread, the "Start" button will likely be active before all the
-			buffers are completed
-		*/
+		let bufferArray = completedOperationData._operationArray;
+		let bufferId = completedOperationData._bufferUuid;
+
+		let bufferToUpdate = this._buffers[bufferId];
+		bufferToUpdate.buffer.copyToChannel(bufferArray, 0);
 		console.log("IS_BufferOperationManager.ReturnBuffer: ");
-		this._buffer.print();
+		bufferToUpdate.print();
+
+		this._operationQueue.shift();
+
+		if(this._operationQueue.length > 0)
+		{
+			this._nextOperation();
+		}
 	}
 }
 
@@ -68,11 +86,10 @@ function initializeBufferWorkerContext()
 
 function bufferWorkerCallback(message)
 {
-	if(message.data.buffer)
+	if(message.data.operationData)
 	{
-		// TODO: returning the buffer to IS_Buffer
-		let buffer = message.data.buffer;
-		IS_BufferOperationManager.ReturnBuffer(buffer);
+		let completedOperationData = message.data.operationData;
+		IS_BufferOperationManager.ReturnBuffer(completedOperationData);
 	}
 }
 

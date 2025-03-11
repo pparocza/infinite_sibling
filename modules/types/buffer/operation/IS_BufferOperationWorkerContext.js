@@ -3,7 +3,6 @@ import { IS_EvaluateBufferFunction } from "./function/IS_EvaluateBufferFunction.
 
 function INITIALIZE_LISTENER()
 {
-	// console.log("Listener Initialized!");
 	addEventListener("message", (message) => { LISTENER_CALLBACK(message); });
 }
 
@@ -11,33 +10,27 @@ INITIALIZE_LISTENER();
 
 function LISTENER_CALLBACK(message)
 {
-	// console.log("Worker Context heard: " + message + " with request: " + message.data.request);
 	if (message.data.request === "operate")
 	{
 		WORKER(message.data.operationData);
 	}
 }
 
-function WORKER(operationData)
+function WORKER(incomingOperationData)
 {
-	// console.log("Worker has received: ", operationData);
-
-	let buffer = DO_WORK(operationData);
+	let completedOperationData = DO_WORK(incomingOperationData);
 
 	// TODO: this should be a data type
-	postMessage( { buffer: buffer } );
+	postMessage( { operationData: completedOperationData } );
 }
 
-// TODO: should the operation manager just pass a buffer? (probably not if you want to have multiple parallel workers)
 let BUFFER_ARRAY;
 
 function DO_WORK(operationData)
 {
 	let nSamples = operationData._bufferLength;
-
-	BUFFER_ARRAY = new Float32Array(nSamples);
-
-	// console.log("Worker is " + operationData._operatorType + "-ing a " + operationData._functionData._type);
+	let currentBufferArray = operationData._currentBufferArray;
+	let operationArray = operationData._operationArray;
 
 	let operatorType = operationData._operatorType;
 	let functionData = operationData._functionData;
@@ -49,17 +42,20 @@ function DO_WORK(operationData)
 
 	for(let sampleIndex = 0; sampleIndex < nSamples; sampleIndex++)
 	{
-		BUFFER_ARRAY[sampleIndex] = _evaluateOperation
+		let currentValue = currentBufferArray[sampleIndex];
+
+		operationArray[sampleIndex] = _evaluateOperation
 		(
 			operatorType,
 			IS_EvaluateBufferFunction.evaluate(currentIncrement, functionType, functionArgs),
-			0
+			currentValue
 		);
 
 		currentIncrement += sampleIncrement;
 	}
 
-	return BUFFER_ARRAY;
+	// TODO: operate on the request data directly, send the whole request data back
+	return operationData;
 }
 
 function _evaluateOperation(iSOperatorType, functionValue, currentSampleValue)

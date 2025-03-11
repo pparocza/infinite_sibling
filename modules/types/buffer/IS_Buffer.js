@@ -13,7 +13,7 @@ import { IS_BufferOperationManager } from "./operation/IS_BufferOperationManager
     -> IS_BufferOperationData.function.Sine(440) creates that function data in the operation
     -> IS_BufferOperationData.operation.Add
  */
-import { IS_BufferOperationData } from "./operation/IS_BufferOperationData.js";
+import { IS_BufferOperationRequestData } from "./operation/IS_BufferOperationRequestData.js";
 import { IS_BufferFunctionData } from "./operation/function/IS_BufferFunctionData.js";
 import { IS_BufferFunctionType } from "./operation/function/IS_BufferFunctionType.js";
 import { IS_BufferOperatorType } from "./operation/IS_BufferOperatorType.js"
@@ -36,7 +36,7 @@ export class IS_Buffer extends IS_Object
     {
         super(IS_Type.IS_Data.IS_Buffer);
 
-        if(sampleRate === null)
+        if (sampleRate === null)
         {
             sampleRate = siblingContext.sampleRate;
         }
@@ -56,10 +56,8 @@ export class IS_Buffer extends IS_Object
         this._siblingContext = siblingContext;
 
         this._suspendOperation = false;
-        this._periodicShapeIncrements = null;
-        this._timeIncrement = 1 / lengthSamples;
 
-        this._operationRequestData = new IS_BufferOperationData();
+        this._operationRequestData = new IS_BufferOperationRequestData();
         this._operationRequestData.bufferLength = this._sampleRate;
     }
 
@@ -99,12 +97,18 @@ export class IS_Buffer extends IS_Object
         this._buffer.sampleRate = this._sampleRate;
     }
 
-    // OPERATION DATA
-    get operationRequestData() { return this._operationRequestData; }
-
-    _requestOperation(operationData)
+    _requestOperation()
     {
-        IS_BufferOperationManager.requestOperation(this);
+        let operationRequestData = new IS_BufferOperationRequestData
+        (
+            this._operationRequestData.operatorType,
+            this._operationRequestData.functionData,
+            this._buffer.length,
+            this._buffer.getChannelData(0),
+            this._uuid
+        );
+
+        IS_BufferOperationManager.requestOperation(this, operationRequestData);
     }
 
     _setOperationRequestOperatorData(iSBufferOperatorType)

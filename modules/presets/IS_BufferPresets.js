@@ -1,18 +1,18 @@
 import { IS_Object } from "../types/IS_Object.js";
 import { IS_Type } from "../enums/IS_Type.js";
 
-export class IS_BufferPresets extends IS_Object
+export const IS_BufferPresets =
 {
-    constructor(IS_Buffer)
-    {
-        super(IS_Type.IS_Data.IS_Presets.IS_BufferPresets);
+    _currentBuffer: null,
 
-        this.buffer = IS_Buffer;
-        this.siblingContext = this.buffer.siblingContext;
-    }
-
-    sineWave(frequency = 1)
+    _setBuffer(iSAudioBuffer)
     {
-        this.buffer.sine(1).fill();
+        this._currentBuffer = iSAudioBuffer;
+        return this;
+    },
+
+    sineWave()
+    {
+        this._currentBuffer.sine(1).add();
     }
 }

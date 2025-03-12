@@ -88,6 +88,10 @@ export class IS_Buffer extends IS_Object
 
     get awaitingOperation() { return this._awaitingOperation; }
     get operationQueue() { return this._bufferOperationQueue; }
+    get preset()
+    {
+        return IS_BufferPresets._setBuffer(this);
+    }
 
     // OPERATION REQUESTS
     _requestOperation()
@@ -865,8 +869,4 @@ export class IS_Buffer extends IS_Object
         BufferPrint.print(bufferData);
     }
 
-    get preset()
-    {
-        return this._preset;
-    }
 }

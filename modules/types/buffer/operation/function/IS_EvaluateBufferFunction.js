@@ -8,59 +8,73 @@ const IS_TWO_PI = Math.PI * 2;
 
 export const IS_EvaluateBufferFunction =
 {
+	// TODO: This probably needs to be done better
+	_args: null,
+
+	get args() { return this._args; },
+	setArgs(args) { this._args = args; },
+
 	evaluate(functionType, functionArgs, currentIncrement, currentSample)
 	{
+		if(currentSample === 0)
+		{
+			this.setArgs(functionArgs);
+		}
+
 		// TODO: args is a unique data type
 		switch (functionType)
 		{
 			case (IS_BufferFunctionType.AmplitudeModulatedSine):
-				return this.AmplitudeModulatedSine(currentIncrement, functionArgs);
+				return this.AmplitudeModulatedSine(currentIncrement);
 			case(IS_BufferFunctionType.Buffer):
-				return this.Buffer(currentSample, functionArgs);
+				return this.Buffer(currentSample);
 			case (IS_BufferFunctionType.Constant):
-				return this.Constant(functionArgs);
+				return this.Constant();
 			case (IS_BufferFunctionType.Pulse):
-				return this.Pulse(currentIncrement, functionArgs);
+				return this.Pulse(currentIncrement);
 			case (IS_BufferFunctionType.FrequencyModulatedSine):
-				return this.FrequencyModulatedSine(currentIncrement, functionArgs);
+				return this.FrequencyModulatedSine(currentIncrement);
 			case (IS_BufferFunctionType.Impulse):
 				return this.Impulse(currentIncrement);
 			case (IS_BufferFunctionType.InverseSawtooth):
-				return this.InverseSawtooth(currentIncrement, functionArgs);
+				return this.InverseSawtooth(currentIncrement);
 			case (IS_BufferFunctionType.Noise):
 				return this.Noise();
 			case (IS_BufferFunctionType.NoiseBand):
-				return this.NoiseBand(currentIncrement, functionArgs);
+				return this.NoiseBand(currentIncrement);
 			case (IS_BufferFunctionType.QuantizedArrayBuffer):
-				return this.QuantizedArrayBuffer(currentIncrement, functionArgs);
+				return this.QuantizedArrayBuffer(currentIncrement);
 			case (IS_BufferFunctionType.Ramp):
-				return this.Ramp(currentIncrement, functionArgs);
+				return this.Ramp(currentIncrement);
 			case (IS_BufferFunctionType.RampBand):
-				return this.RampBand(currentIncrement, functionArgs);
+				return this.RampBand(currentIncrement);
 			case (IS_BufferFunctionType.Sawtooth):
-				return this.Sawtooth(currentIncrement, functionArgs);
+				return this.Sawtooth(currentIncrement);
 			case (IS_BufferFunctionType.Sine):
-				return this.Sine(currentIncrement, functionArgs);
+				return this.Sine(currentIncrement);
 			case (IS_BufferFunctionType.Square):
-				return this.Square(currentIncrement, functionArgs);
+				return this.Square(currentIncrement);
+			case (IS_BufferFunctionType.SuspendedOperations):
+				return  this.SuspendedOperations(currentSample);
 			case (IS_BufferFunctionType.Triangle):
-				return this.Triangle(currentIncrement, functionArgs);
+				return this.Triangle(currentIncrement);
 			case (IS_BufferFunctionType.UnipolarNoise):
-				return this.UnipolarNoise(currentIncrement, functionArgs);
+				return this.UnipolarNoise();
 			case (IS_BufferFunctionType.UnipolarSine):
-				return this.UnipolarSine(currentIncrement, functionArgs);
+				return this.UnipolarSine(currentIncrement);
 			default:
 				break;
 		}
 	},
 
-	AmplitudeModulatedSine(currentIncrement, args)
+	// TODO: IS_FunctionWorker that caches arguments and carries out the sample calculation loop
+	AmplitudeModulatedSine(currentIncrement)
 	{
 		let time = currentIncrement;
 
-		let carrierFrequency = args[0];
-		let modulatorFrequency = args[1];
-		let modulatorGain = args[2]
+		let carrierFrequency = this.args[0];
+		let modulatorFrequency = this.args[1];
+		let modulatorGain = this.args[2]
 
 		let modulatorAmplitude = modulatorGain * Math.sin(modulatorFrequency * time * IS_TWO_PI);
 		let carrierAmplitude = Math.sin(carrierFrequency * time * IS_TWO_PI);
@@ -68,37 +82,36 @@ export const IS_EvaluateBufferFunction =
 		return modulatorAmplitude * carrierAmplitude;
 	},
 
-	// TODO: requires IS_BufferOperationQueue
-	Buffer(currentSample, args)
+	Buffer(currentSample)
 	{
-		let otherBufferArray = args[0];
+		let otherBufferArray = this.args[0];
 
 		return currentSample <= otherBufferArray.length ? otherBufferArray[currentSample] : null;
 	},
 
-	Constant(args)
+	Constant()
 	{
-		return args[0]
+		return this.args[0];
 	},
 
-	Pulse(currentIncrement, args)
+	Pulse(currentIncrement)
 	{
 		// TODO: Values like this and frequencies are very cacheable - maybe the function worker should be an
 		//  instance so that you don't have to evaluate these static values for every sample
 		// --> IS_FunctionWorker fills an array, sends it back to the queue
-		let pulseStartPercent = args[0];
-		let pulseEndPercent = args[1];
+		let pulseStartPercent = this.args[0];
+		let pulseEndPercent = this.args[1];
 		let inCycleBounds = currentIncrement >= pulseStartPercent && currentIncrement <= pulseEndPercent;
 
 		return inCycleBounds ? 1 : 0;
 	},
 
-	FrequencyModulatedSine(currentIncrement, args)
+	FrequencyModulatedSine(currentIncrement)
 	{
 		let time = currentIncrement;
-		let carrierFrequency = args[0];
-		let modulatorFrequency = args[1];
-		let modulatorGain = args[2];
+		let carrierFrequency = this.args[0];
+		let modulatorFrequency = this.args[1];
+		let modulatorGain = this.args[2];
 
 		let modulationValue = modulatorGain * Math.sin(modulatorFrequency * time * IS_TWO_PI);
 		let modulatedFrequencyValue = carrierFrequency + modulationValue;
@@ -111,9 +124,9 @@ export const IS_EvaluateBufferFunction =
 		return currentIncrement === 0 ? 1 : 0;
 	},
 
-	InverseSawtooth(currentIncrement, args)
+	InverseSawtooth(currentIncrement)
 	{
-		let exponent = args[0];
+		let exponent = this.args[0];
 
 		return Math.pow(1 - currentIncrement, exponent);
 	},
@@ -123,9 +136,9 @@ export const IS_EvaluateBufferFunction =
 		return IS_Random.randomFloat(-1, 1);
 	},
 
-	NoiseBand(currentIncrement, args)
+	NoiseBand(currentIncrement)
 	{
-		let frequencyData = args[0];
+		let frequencyData = this.args[0];
 
 		let frequencies = frequencyData[0];
 		let amplitudes = frequencyData[1];
@@ -145,10 +158,10 @@ export const IS_EvaluateBufferFunction =
 		return sampleValue;
 	},
 
-	QuantizedArrayBuffer(currentIncrement, args)
+	QuantizedArrayBuffer(currentIncrement)
 	{
-		let valueArray = args[0];
-		let quantizationValue = args[1];
+		let valueArray = this.args[0];
+		let quantizationValue = this.args[1];
 
 		let currentStep = Math.floor(currentIncrement * quantizationValue);
 		let index = currentStep % valueArray.length;
@@ -156,16 +169,16 @@ export const IS_EvaluateBufferFunction =
 		return valueArray[index];
 	},
 
-	Ramp(currentIncrement, args)
+	Ramp(currentIncrement)
 	{
-		let rampStart = args[0];
-		let rampEnd = args[1];
-		let upEnd = args[2];
-		let upLength = args[3]
-		let downStart = args[4];
-		let downLength = args[5];
-		let upExponent = args[6];
-		let downExponent = args[7];
+		let rampStart = this.args[0];
+		let rampEnd = this.args[1];
+		let upEnd = this.args[2];
+		let upLength = this.args[3]
+		let downStart = this.args[4];
+		let downLength = this.args[5];
+		let upExponent = this.args[6];
+		let downExponent = this.args[7];
 
 		let value = 0;
 
@@ -192,38 +205,45 @@ export const IS_EvaluateBufferFunction =
 		return value;
 	},
 
-	RampBand(currentIncrement, args)
+	RampBand(currentIncrement)
 	{
 		// TODO: determine what this even is and decide whether to port it
 	},
 
-	Sawtooth(currentIncrement, args)
+	Sawtooth(currentIncrement)
 	{
-		let exponent = args[0];
+		let exponent = this.args[0];
 
 		return Math.pow(currentIncrement, exponent);
 	},
 
 	// TODO: fast sine
 	// TODO: multiple frequencies
-	Sine(currentIncrement, args)
+	Sine(currentIncrement)
 	{
 		let time = currentIncrement;
-		let frequency = args[0];
+		let frequency = this.args[0];
 
 		return Math.sin(time * frequency * IS_TWO_PI);
 	},
 
-	Square(currentIncrement, args)
+	Square(currentIncrement)
 	{
-		let dutyCycle = args[0];
+		let dutyCycle = this.args[0];
 
 		return currentIncrement < dutyCycle ? 1 : 0;
 	},
 
-	Triangle(currentIncrement, args)
+	SuspendedOperations(currentSample)
 	{
-		let exponent = args[0];
+		let otherBufferArray = this.args[0];
+
+		return currentSample <= otherBufferArray.length ? otherBufferArray[currentSample] : null;
+	},
+
+	Triangle(currentIncrement)
+	{
+		let exponent = this.args[0];
 
 		let ascending = currentIncrement <= 0.5;
 		let value = Math.pow(currentIncrement, exponent);
@@ -231,15 +251,15 @@ export const IS_EvaluateBufferFunction =
 		return ascending ? value : 1 - value;
 	},
 
-	UnipolarNoise(currentIncrement, args)
+	UnipolarNoise()
 	{
 		return IS_Random.randomFloat(0, 1);
 	},
 
-	UnipolarSine(currentIncrement, args)
+	UnipolarSine(currentIncrement)
 	{
 		let time = currentIncrement;
-		let frequency = args[0];
+		let frequency = this.args[0];
 		let value = Math.sin(time * frequency * IS_TWO_PI);
 
 		return value * 0.5 + 0.5;

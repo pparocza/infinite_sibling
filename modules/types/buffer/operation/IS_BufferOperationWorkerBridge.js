@@ -1,6 +1,6 @@
 import { IS_BufferOperationQueue } from "./IS_BufferOperationQueue.js";
 
-export const IS_BufferOperationManager =
+export const IS_BufferOperationWorkerBridge =
 {
 	requestOperation(bufferOperationData)
 	{
@@ -16,9 +16,9 @@ export const IS_BufferOperationManager =
 		);
 	},
 
-	UpdateQueue(completedOperationData)
+	ReturnCompletedOperation(completedOperationData)
 	{
-		IS_BufferOperationQueue.completeOperation(completedOperationData);
+		IS_BufferOperationQueue.CompleteOperation(completedOperationData);
 	}
 }
 
@@ -45,7 +45,7 @@ function bufferWorkerCallback(message)
 	if(message.data.operationData)
 	{
 		let completedOperationData = message.data.operationData;
-		IS_BufferOperationManager.UpdateQueue(completedOperationData);
+		IS_BufferOperationWorkerBridge.ReturnCompletedOperation(completedOperationData);
 	}
 }
 

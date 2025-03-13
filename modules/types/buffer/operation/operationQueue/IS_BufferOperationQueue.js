@@ -18,6 +18,7 @@ export const IS_BufferOperationQueue =
 	_progress: 0,
 	_progressIncrement: 0,
 	_queueLength: 0,
+	_progressListeners: [],
 
 	get Progress() { return this._progress; },
 
@@ -147,12 +148,28 @@ export const IS_BufferOperationQueue =
 		}
 
 		this._progress = this._progressIncrement++ / this._queueLength;
+
+		this._updateProgressListeners();
 	},
 
 	_resetProgress()
 	{
 		this._progressIncrement = 0;
 		this._queueLength = 0;
+	},
+
+	addProgressListener(listener)
+	{
+		this._progressListeners.push(listener);
+	},
+
+	_updateProgressListeners()
+	{
+		for(let listenerIndex = 0; listenerIndex < this._progressListeners.length; listenerIndex++)
+		{
+			let listener = this._progressListeners[listenerIndex];
+			listener.getValue(this.Progress);
+		}
 	},
 
 	waitingContext(siblingContext)

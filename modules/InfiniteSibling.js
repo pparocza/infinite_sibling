@@ -103,6 +103,11 @@ export class InfiniteSibling
         }
     }
 
+    addBufferQueueProgressListener(listener)
+    {
+        IS_BufferOperationQueue.addProgressListener(listener);
+    }
+
     endWait(waitingOn)
     {
         if(waitingOn === IS_BufferOperationQueue)

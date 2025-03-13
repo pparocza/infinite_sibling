@@ -142,10 +142,11 @@ export class IS_Buffer extends IS_Object
         }
         else
         {
+            operationRequestData.isSuspendedOperation = false;
             operationRequestData.channelNumber = channel;
             operationRequestData.currentBufferArray = this.buffer.getChannelData(channel);
 
-            this._operationsSuspended = functionType === IS_BufferFunctionType.SuspendedOperations;
+            this._operationsSuspended = false;
         }
 
         return operationRequestData;

@@ -36,6 +36,8 @@ import { IS_Random } from "./utilities/IS_Random.js";
 import { Utilities } from "./utilities/Utilities.js";
 import { BufferPrint } from "./utilities/BufferPrint.js";
 
+import { IS_BufferOperationQueue } from "./types/buffer/operation/IS_BufferOperationQueue.js";
+
 export class InfiniteSibling
 {
     constructor()
@@ -85,7 +87,30 @@ export class InfiniteSibling
             this.loadCallbacks[loadCallbackIndex]();
         }
 
-        this.ready();
+        this.wait();
+    }
+
+    wait()
+    {
+        // TODO: loading bar
+        if(IS_BufferOperationQueue._isOperating)
+        {
+            console.log("Waiting on Buffer Operation Queue!");
+            IS_BufferOperationQueue.waitingContext(this);
+        }
+        else
+        {
+            this.ready();
+        }
+    }
+
+    endWait(waitingOn)
+    {
+        if(waitingOn === IS_BufferOperationQueue)
+        {
+            console.log("Operation Queue Finished!");
+            this.ready();
+        }
     }
 
     onLoad(callback)

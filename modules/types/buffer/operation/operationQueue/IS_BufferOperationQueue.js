@@ -15,6 +15,12 @@ export const IS_BufferOperationQueue =
 
 	_waitingContext: null,
 
+	_progress: 0,
+	_progressIncrement: 0,
+	_queueLength: 0,
+
+	get Progress() { return this._progress; },
+
 	requestOperation(iSAudioBuffer, bufferOperationRequestData)
 	{
 		this._isOperating = true;
@@ -109,6 +115,8 @@ export const IS_BufferOperationQueue =
 	{
 		this.operationRequestQueue.shift();
 
+		this._updateProgress();
+
 		if(this.operationRequestQueue.length > 0)
 		{
 			this._nextOperation();
@@ -127,6 +135,24 @@ export const IS_BufferOperationQueue =
 		{
 			this._waitingContext.endWait(this);
 		}
+
+		this._resetProgress();
+	},
+
+	_updateProgress()
+	{
+		if(this._queueLength === 0)
+		{
+			this._queueLength = this._operationRequestQueue.length;
+		}
+
+		this._progress = this._progressIncrement++ / this._queueLength;
+	},
+
+	_resetProgress()
+	{
+		this._progressIncrement = 0;
+		this._queueLength = 0;
 	},
 
 	waitingContext(siblingContext)

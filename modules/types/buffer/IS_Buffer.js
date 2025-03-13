@@ -30,6 +30,7 @@ export class IS_Buffer extends IS_Object
         this._length = lengthSamples;
         this._sampleRate = sampleRate;
 
+        // This is created in the suspendOperations method
         this._suspendedOperationsArray = null;
 
         this._buffer = siblingContext.audioContext.createBuffer
@@ -126,7 +127,7 @@ export class IS_Buffer extends IS_Object
 
     _createOperationRequestData(channel)
     {
-        let functionType = this._operationRequestData.functionData.type;
+        let functionType = this._operationRequestData.functionData.functionType;
 
         let operationRequestData = new IS_BufferOperationRequestData
         (

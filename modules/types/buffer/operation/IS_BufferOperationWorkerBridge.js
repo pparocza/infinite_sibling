@@ -1,49 +1,24 @@
+import { IS_BufferOperationQueue } from "./IS_BufferOperationQueue.js";
+
 export const IS_BufferOperationManager =
 {
-	_operationQueues: {},
-
-	requestOperation(iSBufferOperationQueue, bufferOperationData)
+	requestOperation(bufferOperationData)
 	{
-		this._registerQueue(iSBufferOperationQueue);
 		this._requestOperationWorker(bufferOperationData);
-	},
-
-	_registerQueue(iSBufferOperationQueue)
-	{
-		let uuid = iSBufferOperationQueue.bufferUuid;
-
-		if(!this._operationQueues[uuid])
-		{
-			this._operationQueues[uuid] = iSBufferOperationQueue;
-		}
-	},
-
-	removeQueue(iSBufferOperationQueue)
-	{
-		let uuid = iSBufferOperationQueue.bufferUuid;
-
-		if(this._operationQueues[uuid])
-		{
-			delete this._operationQueues[uuid];
-		}
 	},
 
 	_requestOperationWorker(iSBufferOperationData)
 	{
-		// console.log("Request Operation Worker for: ", iSBufferOperationData);
 		BUFFER_WORKER_CONTEXT.postMessage
 		(
-			// TODO: this should be a data type
+			// TODO: iSBufferOperation should be a data type
 			{ request: "operate", operationData: iSBufferOperationData }
 		);
 	},
 
 	UpdateQueue(completedOperationData)
 	{
-		let bufferUuid = completedOperationData._bufferUuid;
-
-		let operationQueue = this._operationQueues[bufferUuid];
-		operationQueue.updateBuffer(completedOperationData);
+		IS_BufferOperationQueue.completeOperation(completedOperationData);
 	}
 }
 

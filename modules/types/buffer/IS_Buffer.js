@@ -48,6 +48,8 @@ export class IS_Buffer extends IS_Object
         this._printOperations = false;
         this._printOnOperationsComplete = false;
 
+        this._operationChannel = null;
+
         this._awaitingBuffer = [];
     }
 
@@ -106,6 +108,9 @@ export class IS_Buffer extends IS_Object
         return IS_BufferPresets._setBuffer(this);
     }
 
+    set operationChannel(value) { this._operationChannel = value; }
+    operateOnAllChannels() { this._operationChannel = null; }
+
     get printOperations() { return this._printOperations; }
     set printOperations(value) { this._printOperations = value; }
 
@@ -118,6 +123,24 @@ export class IS_Buffer extends IS_Object
     {
         this._bufferIsReady = false;
 
+        if(this._operationChannel !== null)
+        {
+            this._requestOperationForChannel(this._operationChannel);
+        }
+        else
+        {
+            this._requestOperationForAllChannels();
+        }
+    }
+
+    _requestOperationForChannel(channel)
+    {
+        let operationData = this._createOperationRequestData(channel);
+        IS_BufferOperationQueue.requestOperation(this, operationData);
+    }
+
+    _requestOperationForAllChannels()
+    {
         for(let channelIndex = 0; channelIndex < this.numberOfChannels; channelIndex++)
         {
             let operationData = this._createOperationRequestData(channelIndex);
@@ -513,12 +536,27 @@ export class IS_Buffer extends IS_Object
         this._requestOperation();
     }
 
+    print(channel = null)
+    {
+        if(channel === null)
+        {
+            for(let channelIndex = 0; channelIndex < this.numberOfChannels; channelIndex++)
+            {
+                this.printChannel(channelIndex);
+            }
+        }
+        else
+        {
+            this.printChannel(channel);
+        }
+    }
+
     /**
      * print the contents of a buffer as a graph in the browser console
      * @param channel
      * @param tag
      */
-    print(channel = 0, tag)
+    printChannel(channel = null, tag)
     {
         if (tag)
         {

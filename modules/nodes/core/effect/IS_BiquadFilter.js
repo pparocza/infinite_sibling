@@ -44,54 +44,22 @@ export class IS_BiquadFilter extends IS_Effect
 
     isBiquadFilter = true;
 
-    get type()
-    {
-        return this._type;
-    }
-
+    get type() { return this._type; }
     set type(value)
     {
         this._type = value;
         this._filterNode.type = this._type;
     }
 
-    get frequency()
-    {
-        return this._frequency;
-    }
+    get frequency() { return this._frequency; }
+    set frequency(value) { this._frequency.value = value }
 
-    set frequency(value)
-    {
-        this._frequency.value = value;
-    }
+    get Q() { return this._Q; }
+    set Q(value) { this._Q.value = value; }
 
-    get Q()
-    {
-        return this._Q;
-    }
+    get gain() { return this._gain.value; }
+    set gain(value) { this._gain.value = value; }
 
-    set Q(value)
-    {
-        this._Q.value = value;
-    }
-
-    get gain()
-    {
-        return this._gain.value;
-    }
-
-    set gain(value)
-    {
-        this._gain.value = value;
-    }
-
-    get detune()
-    {
-        return this._detune;
-    }
-
-    set detune(value)
-    {
-        this._detune.value = value;
-    }
+    get detune() { return this._detune; }
+    set detune(value) { this._detune.value = value; }
 }

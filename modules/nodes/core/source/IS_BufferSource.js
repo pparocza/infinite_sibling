@@ -24,7 +24,7 @@ export class IS_BufferSource extends IS_StartableNode
     {
         super(siblingContext, IS_Type.IS_SourceType.IS_BufferSource);
 
-        this.initializeBuffer(buffer);
+        this.buffer = buffer;
 
         this._loop = loop;
         this._loopStart = loopStart;
@@ -58,16 +58,6 @@ export class IS_BufferSource extends IS_StartableNode
         this.isInitialized = true;
     }
 
-    initializeBuffer(buffer)
-    {
-        if (buffer === null)
-        {
-            return;
-        }
-
-        this.buffer = buffer;
-    }
-
     get buffer()
     {
         return this._buffer;
@@ -75,9 +65,9 @@ export class IS_BufferSource extends IS_StartableNode
 
     set buffer(buffer)
     {
-        if(buffer.iSType !== undefined && buffer.iSType === IS_Type.IS_Data.IS_Buffer)
+        if(buffer.isBuffer)
         {
-            this._buffer = buffer.buffer;
+            this._buffer = buffer.requestBuffer(this);
         }
         else
         {

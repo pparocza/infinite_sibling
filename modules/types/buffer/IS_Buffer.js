@@ -58,6 +58,17 @@ export class IS_Buffer extends IS_Object
         this._buffer = buffer.isBuffer ? buffer.buffer : buffer;
     }
 
+    requestBuffer(iSAudioNode)
+    {
+        if(this.bufferIsReady)
+        {
+            return this._buffer;
+        }
+        else
+        {
+            this._awaitingBuffer.push(iSAudioNode);
+        }
+    }
     get duration() { return this._duration; }
     set duration(value)
     {

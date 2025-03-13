@@ -9,16 +9,16 @@ const IS_TWO_PI = Math.PI * 2;
 export const IS_EvaluateBufferFunction =
 {
 	// TODO: This probably needs to be done better
-	_args: null,
+	_requestArgumentValues: null,
 
-	get args() { return this._args; },
-	setArgs(args) { this._args = args; },
+	get cachedRequestArgumentValues() { return this._requestArgumentValues; },
+	cacheRequestArgumentValues(args) { this._requestArgumentValues = args; },
 
 	evaluate(functionType, functionArgs, currentIncrement, currentSample)
 	{
 		if(currentSample === 0)
 		{
-			this.setArgs(functionArgs);
+			this.cacheRequestArgumentValues(functionArgs);
 		}
 
 		// TODO: args is a unique data type
@@ -72,9 +72,9 @@ export const IS_EvaluateBufferFunction =
 	{
 		let time = currentIncrement;
 
-		let carrierFrequency = this.args[0];
-		let modulatorFrequency = this.args[1];
-		let modulatorGain = this.args[2]
+		let carrierFrequency = this.cachedRequestArgumentValues[0];
+		let modulatorFrequency = this.cachedRequestArgumentValues[1];
+		let modulatorGain = this.cachedRequestArgumentValues[2]
 
 		let modulatorAmplitude = modulatorGain * Math.sin(modulatorFrequency * time * IS_TWO_PI);
 		let carrierAmplitude = Math.sin(carrierFrequency * time * IS_TWO_PI);
@@ -84,14 +84,14 @@ export const IS_EvaluateBufferFunction =
 
 	Buffer(currentSample)
 	{
-		let otherBufferArray = this.args[0];
+		let otherBufferArray = this.cachedRequestArgumentValues[0];
 
 		return currentSample <= otherBufferArray.length ? otherBufferArray[currentSample] : null;
 	},
 
 	Constant()
 	{
-		return this.args[0];
+		return this.cachedRequestArgumentValues[0];
 	},
 
 	Pulse(currentIncrement)
@@ -99,8 +99,8 @@ export const IS_EvaluateBufferFunction =
 		// TODO: Values like this and frequencies are very cacheable - maybe the function worker should be an
 		//  instance so that you don't have to evaluate these static values for every sample
 		// --> IS_FunctionWorker fills an array, sends it back to the queue
-		let pulseStartPercent = this.args[0];
-		let pulseEndPercent = this.args[1];
+		let pulseStartPercent = this.cachedRequestArgumentValues[0];
+		let pulseEndPercent = this.cachedRequestArgumentValues[1];
 		let inCycleBounds = currentIncrement >= pulseStartPercent && currentIncrement <= pulseEndPercent;
 
 		return inCycleBounds ? 1 : 0;
@@ -109,9 +109,9 @@ export const IS_EvaluateBufferFunction =
 	FrequencyModulatedSine(currentIncrement)
 	{
 		let time = currentIncrement;
-		let carrierFrequency = this.args[0];
-		let modulatorFrequency = this.args[1];
-		let modulatorGain = this.args[2];
+		let carrierFrequency = this.cachedRequestArgumentValues[0];
+		let modulatorFrequency = this.cachedRequestArgumentValues[1];
+		let modulatorGain = this.cachedRequestArgumentValues[2];
 
 		let modulationValue = modulatorGain * Math.sin(modulatorFrequency * time * IS_TWO_PI);
 		let modulatedFrequencyValue = carrierFrequency + modulationValue;
@@ -126,7 +126,7 @@ export const IS_EvaluateBufferFunction =
 
 	InverseSawtooth(currentIncrement)
 	{
-		let exponent = this.args[0];
+		let exponent = this.cachedRequestArgumentValues[0];
 
 		return Math.pow(1 - currentIncrement, exponent);
 	},
@@ -138,7 +138,7 @@ export const IS_EvaluateBufferFunction =
 
 	NoiseBand(currentIncrement)
 	{
-		let frequencyData = this.args[0];
+		let frequencyData = this.cachedRequestArgumentValues[0];
 
 		let frequencies = frequencyData[0];
 		let amplitudes = frequencyData[1];
@@ -160,8 +160,8 @@ export const IS_EvaluateBufferFunction =
 
 	QuantizedArrayBuffer(currentIncrement)
 	{
-		let valueArray = this.args[0];
-		let quantizationValue = this.args[1];
+		let valueArray = this.cachedRequestArgumentValues[0];
+		let quantizationValue = this.cachedRequestArgumentValues[1];
 
 		let currentStep = Math.floor(currentIncrement * quantizationValue);
 		let index = currentStep % valueArray.length;
@@ -171,14 +171,14 @@ export const IS_EvaluateBufferFunction =
 
 	Ramp(currentIncrement)
 	{
-		let rampStart = this.args[0];
-		let rampEnd = this.args[1];
-		let upEnd = this.args[2];
-		let upLength = this.args[3]
-		let downStart = this.args[4];
-		let downLength = this.args[5];
-		let upExponent = this.args[6];
-		let downExponent = this.args[7];
+		let rampStart = this.cachedRequestArgumentValues[0];
+		let rampEnd = this.cachedRequestArgumentValues[1];
+		let upEnd = this.cachedRequestArgumentValues[2];
+		let upLength = this.cachedRequestArgumentValues[3]
+		let downStart = this.cachedRequestArgumentValues[4];
+		let downLength = this.cachedRequestArgumentValues[5];
+		let upExponent = this.cachedRequestArgumentValues[6];
+		let downExponent = this.cachedRequestArgumentValues[7];
 
 		let value = 0;
 
@@ -212,7 +212,7 @@ export const IS_EvaluateBufferFunction =
 
 	Sawtooth(currentIncrement)
 	{
-		let exponent = this.args[0];
+		let exponent = this.cachedRequestArgumentValues[0];
 
 		return Math.pow(currentIncrement, exponent);
 	},
@@ -222,33 +222,32 @@ export const IS_EvaluateBufferFunction =
 	Sine(currentIncrement)
 	{
 		let time = currentIncrement;
-		let frequency = this.args[0];
+		let frequency = this.cachedRequestArgumentValues[0];
 
 		return Math.sin(time * frequency * IS_TWO_PI);
 	},
 
 	Square(currentIncrement)
 	{
-		let dutyCycle = this.args[0];
+		let dutyCycle = this.cachedRequestArgumentValues[0];
 
 		return currentIncrement < dutyCycle ? 1 : 0;
 	},
 
 	SuspendedOperations(currentSample)
 	{
-		let otherBufferArray = this.args[0];
+		let otherBufferArray = this.cachedRequestArgumentValues[0];
 
 		return currentSample <= otherBufferArray.length ? otherBufferArray[currentSample] : null;
 	},
 
 	Triangle(currentIncrement)
 	{
-		let exponent = this.args[0];
+		let exponent = this.cachedRequestArgumentValues[0];
 
 		let ascending = currentIncrement <= 0.5;
-		let value = Math.pow(currentIncrement, exponent);
-
-		return ascending ? value : 1 - value;
+		currentIncrement = ascending ? currentIncrement : 1 - currentIncrement;
+		return Math.pow(currentIncrement, exponent);
 	},
 
 	UnipolarNoise()
@@ -259,7 +258,7 @@ export const IS_EvaluateBufferFunction =
 	UnipolarSine(currentIncrement)
 	{
 		let time = currentIncrement;
-		let frequency = this.args[0];
+		let frequency = this.cachedRequestArgumentValues[0];
 		let value = Math.sin(time * frequency * IS_TWO_PI);
 
 		return value * 0.5 + 0.5;

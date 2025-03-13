@@ -1,10 +1,8 @@
 import { IS_Object } from "../IS_Object.js";
 import { IS_Type } from "../../enums/IS_Type.js";
 import { IS_Random } from "../../utilities/IS_Random.js";
-import { IS_Array } from "../array/IS_Array.js";
 import { BufferPrint } from "../../utilities/BufferPrint.js";
 import { Utilities } from "../../utilities/Utilities.js";
-
 import { IS_BufferPresets } from "../../presets/IS_BufferPresets.js";
 import { IS_BufferOperationRequestData } from "./operation/IS_BufferOperationRequestData.js";
 import { IS_BufferFunctionData } from "./operation/function/IS_BufferFunctionData.js";
@@ -32,25 +30,29 @@ export class IS_Buffer extends IS_Object
         this._length = lengthSamples;
         this._sampleRate = sampleRate;
 
-        this._bufferShapeArray = new Float32Array(this._length);
-        this._suspendedOperationsArray = new Float32Array(this._length);
-        this._buffer = siblingContext.audioContext.createBuffer(numberOfChannels, lengthSamples, this._sampleRate);
+        this._suspendedOperationsArray = null;
 
-        this._preset = new IS_BufferPresets(this);
+        this._buffer = siblingContext.audioContext.createBuffer
+        (
+            numberOfChannels, lengthSamples, this._sampleRate
+        );
+
         this._siblingContext = siblingContext;
-
-        this._suspendOperation = false;
 
         this._operationRequestData = new IS_BufferOperationRequestData();
         this._operationRequestData.bufferLength = this._sampleRate;
+        this._operationsSuspended = false;
 
-        // TODO: Queue Pool
-        this._bufferOperationQueue = null;
-        this._awaitingOperation = false;
-        this._waitingOperations = [];
+        this._bufferIsReady = true;
+        this._printOperations = false;
+        this._printOnOperationsComplete = false;
+
+        this._awaitingBuffer = [];
     }
 
-    isBuffer = true;
+    get isBuffer() { return true; }
+
+    get bufferIsReady() { return this._bufferIsReady; }
 
     get buffer() { return this._buffer; }
     set buffer(buffer)
@@ -69,6 +71,7 @@ export class IS_Buffer extends IS_Object
             this._awaitingBuffer.push(iSAudioNode);
         }
     }
+
     get duration() { return this._duration; }
     set duration(value)
     {
@@ -97,36 +100,93 @@ export class IS_Buffer extends IS_Object
         this._buffer.sampleRate = this._sampleRate;
     }
 
-    get awaitingOperation() { return this._awaitingOperation; }
-    get operationQueue() { return this._bufferOperationQueue; }
     get preset()
     {
         return IS_BufferPresets._setBuffer(this);
     }
 
+    set printOperations(value) { this._printOperations = value; }
+    set printOnOperationsComplete(value) { this._printOnOperationsComplete = value; }
+
+    // TODO: How much of "OPERATION REQUESTS" can you extract to an IS_BufferOperation const?
     // OPERATION REQUESTS
     _requestOperation()
     {
-        this._awaitingOperation = true;
+        this._bufferIsReady = false;
 
-        this._initializeOperationQueue();
+        for(let channelIndex = 0; channelIndex < this._numberOfChannels; channelIndex++)
+        {
+            let operationData = this._createOperationRequestData(channelIndex);
+            IS_BufferOperationQueue.requestOperation(this, operationData);
+        }
+    }
+
+    _createOperationRequestData(channel)
+    {
+        let functionType = this._operationRequestData.functionData.type;
 
         let operationRequestData = new IS_BufferOperationRequestData
         (
             this._operationRequestData.operatorType,
             this._operationRequestData.functionData,
-            this._buffer.getChannelData(0),
             this._uuid
         );
 
-        this._bufferOperationQueue.requestOperation(operationRequestData);
+        if (this._operationsSuspended && functionType !== IS_BufferFunctionType.SuspendedOperations)
+        {
+            operationRequestData.isSuspendedOperation = true;
+        }
+        else
+        {
+            operationRequestData._channelNumber = channel;
+            operationRequestData.currentBufferArray = this._buffer.getChannelData(channel);
+
+            this._operationsSuspended = functionType === IS_BufferFunctionType.SuspendedOperations;
+        }
+
+        return operationRequestData;
     }
 
-    _initializeOperationQueue()
+    completeOperation(completedOperationData)
     {
-        if(this._bufferOperationQueue === null)
+        let bufferArray = completedOperationData._operationArray;
+
+        if(completedOperationData._functionData._type === IS_BufferFunctionType.SuspendedOperations)
         {
-            this._bufferOperationQueue = new IS_BufferOperationQueue(this);
+            this._suspendedOperationsArray = new Float32Array(this._length);
+        }
+
+        if(completedOperationData._isSuspendedOperation)
+        {
+            this._suspendedOperationsArray = bufferArray;
+        }
+        else
+        {
+            this._buffer.copyToChannel(bufferArray, completedOperationData._channelNumber);
+        }
+
+        if(this._printOperations)
+        {
+            this.print();
+        }
+    }
+
+    operationsComplete()
+    {
+        this._bufferIsReady = true;
+        this._fulfillBufferRequests();
+
+        if(this._printOnOperationsComplete)
+        {
+            this.print();
+        }
+    }
+
+    _fulfillBufferRequests()
+    {
+        while(this._awaitingBuffer.length > 0)
+        {
+            this._awaitingBuffer.shift().buffer = this.buffer;
         }
     }
 
@@ -143,23 +203,16 @@ export class IS_Buffer extends IS_Object
         );
     }
 
-    operationQueueComplete()
-    {
-        this._awaitingOperation = false;
-        this._bufferOperationQueue = null;
-    }
-
     // OPERATION SUSPENSION
     suspendOperations()
     {
-        this._suspendOperation = true;
+        this._suspendedOperationsArray = new Float32Array(this._length);
+        this._operationsSuspended = true;
     }
 
     applySuspendedOperations()
     {
-        this._bufferShapeArray = [...this._suspendedOperationsArray];
-        this._suspendedOperationsArray = new Float32Array(this._length);
-        this._suspendOperation = false;
+        this._setOperationRequestFunctionData(IS_BufferFunctionType.SuspendedOperations);
         return this;
     }
 
@@ -214,117 +267,20 @@ export class IS_Buffer extends IS_Object
     _handleOperatorMethod(iSBufferOperatorType)
     {
         this._setOperationRequestOperatorData(iSBufferOperatorType);
+
         this._requestOperation();
     }
 
+    // TODO: This needs to check whether the other buffer is awaiting operations -> at this point the array of the
+    //  other buffer will possibly (likely) be empty
     _handleOtherBufferAsFunction(iSBufferOperatorType, otherBuffer)
     {
-        let functionType = IS_BufferFunctionType.Buffer;
+        this._setOperationRequestFunctionData(IS_BufferFunctionType.Buffer, otherBuffer);
         this._setOperationRequestOperatorData(iSBufferOperatorType);
 
-        if(otherBuffer.awaitingOperation)
-        {
-            this._setOperationRequestFunctionData(functionType, null);
-            otherBuffer.operationQueue.addToWaitList(this);
-            this._waitingOperations.push(this._operationRequestData);
-        }
-        else
-        {
-            let functionBuffer = otherBuffer.isBuffer ? otherBuffer.buffer : otherBuffer;
-            let functionArray = new Float32Array(functionBuffer.length);
-            functionBuffer.copyFromChannel(functionArray, 0);
-
-            this._requestOperation();
-        }
+        this._requestOperation();
     }
 
-    waitEnded(iSAudioBuffer)
-    {
-        while(this._waitingOperations.length > 0)
-        {
-            let waitingOperation = this._waitingOperations.shift();
-
-            if(waitingOperation.functionData.type === IS_BufferFunctionType.Buffer)
-            {
-                let functionBuffer = iSAudioBuffer.buffer;
-                let functionArray = new Float32Array(functionBuffer.length);
-                functionBuffer.copyFromChannel(functionArray, 0);
-
-                this._setOperationRequestFunctionData(IS_BufferFunctionType.Buffer, functionArray);
-            }
-            else
-            {
-                this._setOperationRequestFunctionData
-                (
-                    waitingOperation.functionData.type,
-                    waitingOperation.functionData.args
-                );
-            }
-
-            this._setOperationRequestOperatorData(waitingOperation.operatorType);
-
-            this._requestOperation();
-        }
-    }
-
-    insert(channel = 0, startPercent = 0, endPercent = 1, style = "add")
-    {
-        // TODO: all methods have default range arguments?
-        let startSample = Math.round(this.length * startPercent);
-        let endSample = Math.round(this.length * endPercent);
-
-        let nowBuffering = this.buffer.getChannelData(channel);
-
-        switch(style)
-        {
-            case "add":
-            case 0:
-                this.insertAdd(nowBuffering, startSample, endSample);
-                break;
-            case "replace":
-            case 1:
-                this.insertReplace(nowBuffering, startSample, endSample);
-                break;
-            default:
-                break;
-        }
-    }
-
-    /**
-     *
-     * @param buffer
-     * @param startSample
-     * @param endSample
-     */
-    insertAdd(buffer, startSample, endSample)
-    {
-        for (let sample= 0; sample < this.buffer.length; sample++)
-        {
-            if(sample > startSample && sample < endSample)
-            {
-                buffer[sample] += this._bufferShapeArray[sample];
-            }
-        }
-    }
-
-    /**
-     *
-     * @param buffer
-     * @param startSample
-     * @param endSample
-     */
-    insertReplace(buffer, startSample, endSample)
-    {
-        for (let sample= 0; sample < this.buffer.length; sample++)
-        {
-            if(sample > startSample && sample < endSample)
-            {
-                buffer[sample] = this._bufferShapeArray[sample - startSample];
-            }
-        }
-    }
-
-    // TODO: IS_FunctionWorker that caches arguments and carries out the sample calculation loop
     // FUNCTIONS
     constant(value)
     {
@@ -537,6 +493,126 @@ export class IS_Buffer extends IS_Object
         return this;
     }
 
+    // UTILITY
+    amplitude(value)
+    {
+        this._setOperationRequestFunctionData(IS_BufferFunctionType.Constant, value);
+        this._setOperationRequestOperatorData(IS_BufferOperatorType.Multiply);
+        this._requestOperation();
+    }
+
+    volume(value)
+    {
+        let amplitude = Utilities.DecibelsToAmplitude(value);
+
+        this._setOperationRequestFunctionData(IS_BufferFunctionType.Constant, amplitude);
+        this._setOperationRequestOperatorData(IS_BufferOperatorType.Multiply);
+        this._requestOperation();
+    }
+
+    /**
+     * print the contents of a buffer as a graph in the browser console
+     * @param channel
+     * @param tag
+     */
+    print(channel = 0, tag)
+    {
+        if (tag)
+        {
+            console.log(tag)
+        }
+
+        let bufferData = new Float32Array(this.length);
+        this.buffer.copyFromChannel(bufferData, channel, 0);
+
+        for(let sample= 0; sample < bufferData.length; sample++)
+        {
+            bufferData[sample] = (0.5 * (100 + (Math.floor(bufferData[sample] * 100))));
+        }
+
+        BufferPrint.print(bufferData);
+    }
+
+    printSuspendedOperations(channel = 0, tag)
+    {
+        if (tag)
+        {
+            console.log(tag)
+        }
+
+        let bufferData = [...this._suspendedOperationsArray];
+
+        for(let sample= 0; sample < bufferData.length; sample++)
+        {
+            bufferData[sample] = (0.5 * (100 + (Math.floor(bufferData[sample] * 100))));
+        }
+
+        BufferPrint.print(bufferData);
+    }
+}
+
+// TODO: All of these need to be dealt with
+/*
+    insert(channel = 0, startPercent = 0, endPercent = 1, style = "add")
+    {
+        // TODO: all methods have default range arguments?
+        let startSample = Math.round(this.length * startPercent);
+        let endSample = Math.round(this.length * endPercent);
+
+        let nowBuffering = this.buffer.getChannelData(channel);
+
+        switch(style)
+        {
+            case "add":
+            case 0:
+                this.insertAdd(nowBuffering, startSample, endSample);
+                break;
+            case "replace":
+            case 1:
+                this.insertReplace(nowBuffering, startSample, endSample);
+                break;
+            default:
+                break;
+        }
+    }
+
+    /!**
+     *
+     * @param buffer
+     * @param startSample
+     * @param endSample
+     *!/
+    insertAdd(buffer, startSample, endSample)
+    {
+        for (let sample= 0; sample < this.buffer.length; sample++)
+        {
+            if(sample > startSample && sample < endSample)
+            {
+                buffer[sample] += this._bufferShapeArray[sample];
+            }
+        }
+    }
+
+    /!**
+     *
+     * @param buffer
+     * @param startSample
+     * @param endSample
+     *!/
+    insertReplace(buffer, startSample, endSample)
+    {
+        for (let sample= 0; sample < this.buffer.length; sample++)
+        {
+            if(sample > startSample && sample < endSample)
+            {
+                buffer[sample] = this._bufferShapeArray[sample - startSample];
+            }
+        }
+    }
+*/
+
+/*
+
     rampBand
     (
         centerFrequency, bandwidth, upHarmonics, midHarmonics, downHarmonics, upTuningRange, midTuningRange,
@@ -554,13 +630,13 @@ export class IS_Buffer extends IS_Object
         return this;
     }
 
-    /**
+    /!**
      * place portion of one buffer in another buffer
      * @param buffer
      * @param cropStartPercent
      * @param cropEndPercent
      * @param insertPercent
-     */
+     *!/
     spliceBuffer(buffer, cropStartPercent, cropEndPercent, insertPercent)
     {
         let otherBuffer = null;
@@ -605,12 +681,12 @@ export class IS_Buffer extends IS_Object
         }
     }
 
-    /**
+    /!**
      *
      * @param buffer
      * @param insertPercent
      * @param writeMode
-     */
+     *!/
     insertBuffer(buffer, insertPercent, writeMode = 0)
     {
         let otherBuffer = null;
@@ -650,11 +726,11 @@ export class IS_Buffer extends IS_Object
         }
     }
 
-    /**
+    /!**
      * Normalize buffer contents to specified range
      * @param min
      * @param max
-     */
+     *!/
     normalize(min = 0, max = 1)
     {
         let range = min - max;
@@ -678,10 +754,10 @@ export class IS_Buffer extends IS_Object
         }
     }
 
-    /**
+    /!**
      *
      * @param windowSize
-     */
+     *!/
     movingAverage(windowSize)
     {
         let newBuffers = [];
@@ -716,9 +792,9 @@ export class IS_Buffer extends IS_Object
         }
     }
 
-    /**
+    /!**
      * Reverse contents of buffer
-     */
+     *!/
     reverse()
     {
         for(let channel= 0; channel < this.buffer.numberOfChannels; channel++)
@@ -728,22 +804,22 @@ export class IS_Buffer extends IS_Object
         }
     }
 
-    /**
+    /!**
      * Reverse contents of a single channel
      * @param channel
-     */
+     *!/
     reverseChannel(channel)
     {
         let nowBuffering = this.buffer.getChannelData(channel);
         nowBuffering.reverse();
     }
 
-    /**
+    /!**
      * Move portion of buffer to another location
      * @param cropStartPercent
      * @param cropEndPercent
      * @param insertPercent
-     */
+     *!/
     edit(cropStartPercent, cropEndPercent, insertPercent)
     {
         let cropStartSample = Math.round(this.buffer.length * cropStartPercent);
@@ -811,7 +887,7 @@ export class IS_Buffer extends IS_Object
 
                 let mergedValue = nowBufferingScaledAmplitude + otherChannelScaledAmplitude;
 
-                if(!this._suspendOperation)
+                if(!this._operationsSuspended)
                 {
                     nowBuffering[sample] = mergedValue;
                 }
@@ -822,62 +898,6 @@ export class IS_Buffer extends IS_Object
             }
         }
     }
+*/
 
-    // UTILITY
-    amplitude(value)
-    {
-        this._setOperationRequestFunctionData(IS_BufferFunctionType.Constant, value);
-        this._setOperationRequestOperatorData(IS_BufferOperatorType.Multiply);
-        this._requestOperation();
-    }
 
-    volume(value)
-    {
-        let amplitude = Utilities.DecibelsToAmplitude(value);
-
-        this._setOperationRequestFunctionData(IS_BufferFunctionType.Constant, amplitude);
-        this._setOperationRequestOperatorData(IS_BufferOperatorType.Multiply);
-        this._requestOperation();
-    }
-
-    /**
-     * print the contents of a buffer as a graph in the browser console
-     * @param channel
-     * @param tag
-     */
-    print(channel = 0, tag)
-    {
-        if (tag)
-        {
-            console.log(tag)
-        }
-
-        let bufferData = new Float32Array(this.length);
-        this.buffer.copyFromChannel(bufferData, channel, 0);
-
-        for(let sample= 0; sample < bufferData.length; sample++)
-        {
-            bufferData[sample] = (0.5 * (100 + (Math.floor(bufferData[sample] * 100))));
-        }
-
-        BufferPrint.print(bufferData);
-    }
-
-    printSuspendedOperations(channel = 0, tag)
-    {
-        if (tag)
-        {
-            console.log(tag)
-        }
-
-        let bufferData = [...this._suspendedOperationsArray];
-
-        for(let sample= 0; sample < bufferData.length; sample++)
-        {
-            bufferData[sample] = (0.5 * (100 + (Math.floor(bufferData[sample] * 100))));
-        }
-
-        BufferPrint.print(bufferData);
-    }
-
-}

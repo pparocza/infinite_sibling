@@ -50,14 +50,14 @@ export class IS_Buffer extends IS_Object
         this._awaitingBuffer = [];
     }
 
-    get isBuffer() { return true; }
+    isISBuffer = true;
 
     get bufferIsReady() { return this._bufferIsReady; }
 
     get buffer() { return this._buffer; }
     set buffer(buffer)
     {
-        this._buffer = buffer.isBuffer ? buffer.buffer : buffer;
+        this._buffer = buffer.isISBuffer ? buffer.buffer : buffer;
     }
 
     requestBuffer(iSAudioNode)
@@ -271,8 +271,6 @@ export class IS_Buffer extends IS_Object
         this._requestOperation();
     }
 
-    // TODO: This needs to check whether the other buffer is awaiting operations -> at this point the array of the
-    //  other buffer will possibly (likely) be empty
     _handleOtherBufferAsFunction(iSBufferOperatorType, otherBuffer)
     {
         this._setOperationRequestFunctionData(IS_BufferFunctionType.Buffer, otherBuffer);
@@ -373,9 +371,9 @@ export class IS_Buffer extends IS_Object
         return this;
     }
 
+    // TODO: dealing with multiple frequencies
     sine(frequency)
     {
-        // TODO: dealing with multiple frequencies
         this._setOperationRequestFunctionData
         (
             IS_BufferFunctionType.Sine, frequency

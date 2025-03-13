@@ -1,4 +1,4 @@
-import { IS_BufferFunctionType } from "./IS_BufferFunctionType.js";
+import { IS_BufferFunctionType } from "../function/IS_BufferFunctionType.js";
 import { IS_Random } from "../../../../utilities/IS_Random.js";
 
 const IS_TWO_PI = Math.PI * 2;

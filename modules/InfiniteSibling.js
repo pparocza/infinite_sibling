@@ -36,7 +36,7 @@ import { IS_Random } from "./utilities/IS_Random.js";
 import { Utilities } from "./utilities/Utilities.js";
 import { BufferPrint } from "./utilities/BufferPrint.js";
 
-import { IS_BufferOperationQueue } from "./types/buffer/operation/IS_BufferOperationQueue.js";
+import { IS_BufferOperationQueue } from "./types/buffer/operation/operationQueue/IS_BufferOperationQueue.js";
 
 export class InfiniteSibling
 {

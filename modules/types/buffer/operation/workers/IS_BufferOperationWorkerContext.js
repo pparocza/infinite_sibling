@@ -1,5 +1,5 @@
-import { IS_BufferOperatorType } from "./IS_BufferOperatorType.js";
-import { IS_EvaluateBufferFunction } from "./function/IS_EvaluateBufferFunction.js";
+import { IS_BufferOperatorType } from "../IS_BufferOperatorType.js";
+import { IS_EvaluateBufferFunction } from "./IS_EvaluateBufferFunction.js";
 
 function INITIALIZE_LISTENER()
 {
@@ -26,15 +26,15 @@ function WORKER(incomingOperationData)
 
 function DO_WORK(operationData)
 {
-	let currentBufferArray = operationData._currentBufferArray;
-	let operationArray = operationData._operationArray;
+	let currentBufferArray = operationData.currentBufferArray;
+	let operationArray = new Float32Array(currentBufferArray.length);
 
 	let nSamples = operationArray.length;
 
-	let operatorType = operationData._operatorType;
-	let functionData = operationData._functionData;
-	let functionArgs = functionData._args;
-	let functionType = functionData._type;
+	let operatorType = operationData.operatorType;
+	let functionData = operationData.functionData;
+	let functionArgs = functionData.functionArgs;
+	let functionType = functionData.functionType;
 
 	let sampleIncrement = 1 / nSamples;
 	let currentIncrement = 0;
@@ -54,6 +54,8 @@ function DO_WORK(operationData)
 
 		currentIncrement += sampleIncrement;
 	}
+
+	operationData.completedOperationArray = operationArray;
 
 	return operationData;
 }

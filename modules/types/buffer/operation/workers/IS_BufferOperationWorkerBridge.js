@@ -1,4 +1,4 @@
-import { IS_BufferOperationQueue } from "./IS_BufferOperationQueue.js";
+import { IS_BufferOperationQueue } from "../operationQueue/IS_BufferOperationQueue.js";
 
 export const IS_BufferOperationWorkerBridge =
 {

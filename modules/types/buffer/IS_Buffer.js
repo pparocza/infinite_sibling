@@ -8,7 +8,7 @@ import { IS_BufferOperationRequestData } from "./operation/IS_BufferOperationReq
 import { IS_BufferFunctionData } from "./operation/function/IS_BufferFunctionData.js";
 import { IS_BufferFunctionType } from "./operation/function/IS_BufferFunctionType.js";
 import { IS_BufferOperatorType } from "./operation/IS_BufferOperatorType.js"
-import { IS_BufferOperationQueue } from "./operation/IS_BufferOperationQueue.js";
+import { IS_BufferOperationQueue } from "./operation/operationQueue/IS_BufferOperationQueue.js";
 
 // TODO: SmoothClip
 
@@ -105,7 +105,10 @@ export class IS_Buffer extends IS_Object
         return IS_BufferPresets._setBuffer(this);
     }
 
+    get printOperations() { return this._printOperations; }
     set printOperations(value) { this._printOperations = value; }
+
+    get printOnOperationsComplete() { return this._printOnOperationsComplete; }
     set printOnOperationsComplete(value) { this._printOnOperationsComplete = value; }
 
     // TODO: How much of "OPERATION REQUESTS" can you extract to an IS_BufferOperation const?
@@ -114,7 +117,7 @@ export class IS_Buffer extends IS_Object
     {
         this._bufferIsReady = false;
 
-        for(let channelIndex = 0; channelIndex < this._numberOfChannels; channelIndex++)
+        for(let channelIndex = 0; channelIndex < this.numberOfChannels; channelIndex++)
         {
             let operationData = this._createOperationRequestData(channelIndex);
             IS_BufferOperationQueue.requestOperation(this, operationData);
@@ -138,8 +141,8 @@ export class IS_Buffer extends IS_Object
         }
         else
         {
-            operationRequestData._channelNumber = channel;
-            operationRequestData.currentBufferArray = this._buffer.getChannelData(channel);
+            operationRequestData.channelNumber = channel;
+            operationRequestData.currentBufferArray = this.buffer.getChannelData(channel);
 
             this._operationsSuspended = functionType === IS_BufferFunctionType.SuspendedOperations;
         }
@@ -149,23 +152,23 @@ export class IS_Buffer extends IS_Object
 
     completeOperation(completedOperationData)
     {
-        let bufferArray = completedOperationData._operationArray;
+        let bufferArray = completedOperationData.completedOperationArray;
 
-        if(completedOperationData._functionData._type === IS_BufferFunctionType.SuspendedOperations)
+        if(completedOperationData.functionData.type === IS_BufferFunctionType.SuspendedOperations)
         {
-            this._suspendedOperationsArray = new Float32Array(this._length);
+            this._suspendedOperationsArray = new Float32Array(this.length);
         }
 
-        if(completedOperationData._isSuspendedOperation)
+        if(completedOperationData.isSuspendedOperation)
         {
             this._suspendedOperationsArray = bufferArray;
         }
         else
         {
-            this._buffer.copyToChannel(bufferArray, completedOperationData._channelNumber);
+            this._buffer.copyToChannel(bufferArray, completedOperationData.channelNumber);
         }
 
-        if(this._printOperations)
+        if(this.printOperations)
         {
             this.print();
         }
@@ -176,7 +179,7 @@ export class IS_Buffer extends IS_Object
         this._bufferIsReady = true;
         this._fulfillBufferRequests();
 
-        if(this._printOnOperationsComplete)
+        if(this.printOnOperationsComplete)
         {
             this.print();
         }

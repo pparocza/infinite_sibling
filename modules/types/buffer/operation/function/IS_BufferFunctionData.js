@@ -1,11 +1,8 @@
 export class IS_BufferFunctionData
 {
-	constructor(type, ...args)
+	constructor(iSBufferFunctionType, ...functionArgs)
 	{
-		this._type = type;
-		this._args = args;
+		this.functionType = iSBufferFunctionType;
+		this.functionArgs = functionArgs;
 	}
-
-	get type() { return this._type; };
-	get args() { return this._args; }
 }

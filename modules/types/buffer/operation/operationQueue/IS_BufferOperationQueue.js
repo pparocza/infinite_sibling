@@ -1,14 +1,14 @@
-import { IS_BufferOperationWorkerBridge } from "./IS_BufferOperationWorkerBridge.js";
-import { IS_BufferFunctionType } from "./function/IS_BufferFunctionType.js";
-import { IS_BufferFunctionData } from "./function/IS_BufferFunctionData.js";
+import { IS_BufferOperationWorkerBridge } from "../workers/IS_BufferOperationWorkerBridge.js";
+import { IS_BufferFunctionType } from "../function/IS_BufferFunctionType.js";
+import { IS_BufferFunctionData } from "../function/IS_BufferFunctionData.js";
+import { IS_BufferOperationQueueBufferRegistry } from "./IS_BufferOperationQueueBufferRegistry.js";
+
+const BufferRegistry = IS_BufferOperationQueueBufferRegistry;
 
 export const IS_BufferOperationQueue =
 {
 	_operationRequestQueue: [],
 	get operationRequestQueue() { return this._operationRequestQueue; },
-
-	_bufferRegistry: {},
-	get bufferRegistry() { return this._bufferRegistry; },
 
 	_isOperating: false,
 	get isOperating() { return this._isOperating; },
@@ -18,36 +18,8 @@ export const IS_BufferOperationQueue =
 	requestOperation(iSAudioBuffer, bufferOperationRequestData)
 	{
 		this._isOperating = true;
-		this._addOperationRequestToRegistry(iSAudioBuffer);
+		BufferRegistry.addOperationRequest(iSAudioBuffer);
 		this._enqueueBufferOperation(bufferOperationRequestData);
-	},
-
-	_registerBuffer(iSAudioBuffer)
-	{
-		this._bufferRegistry[iSAudioBuffer.uuid] = new BufferRegistryData(iSAudioBuffer);
-	},
-
-	_addOperationRequestToRegistry(iSAudioBuffer)
-	{
-		let uuid = iSAudioBuffer.uuid;
-
-		if(!this._bufferRegistry[uuid])
-		{
-			this._registerBuffer(iSAudioBuffer);
-		}
-
-		let registryData = this._bufferRegistry[uuid];
-		registryData.addOperationRequest();
-	},
-
-	_removeFinishedBuffersFromRegistry(uuid)
-	{
-		let registryData = this._bufferRegistry[uuid];
-
-		if(registryData.isDone)
-		{
-			delete this._bufferRegistry[uuid];
-		}
 	},
 
 	_enqueueBufferOperation(bufferOperationRequestData)
@@ -86,7 +58,7 @@ export const IS_BufferOperationQueue =
 		{
 			// TODO: investigate the fact that buffer.getChannelData() returns a reference,
 			//  so you don't have to update currentBuffer when you aren't suspending
-			requestData.setCurrentBufferArray(this._getCurrentSuspendedOperationsArray(requestData.bufferUuid));
+			requestData.currentBufferArray = BufferRegistry.getCurrentSuspendedOperationsArray(requestData.bufferUuid);
 		}
 
 		return requestData;
@@ -111,7 +83,7 @@ export const IS_BufferOperationQueue =
 
 	_handleSuspendedOperationsFunctionType(bufferOperationRequestData)
 	{
-		let currentSuspendedOperationsArray = this._getCurrentSuspendedOperationsArray
+		let currentSuspendedOperationsArray = BufferRegistry.getCurrentSuspendedOperationsArray
 		(
 			bufferOperationRequestData.bufferUuid
 		);
@@ -124,26 +96,17 @@ export const IS_BufferOperationQueue =
 		return bufferOperationRequestData;
 	},
 
-	_getCurrentSuspendedOperationsArray(bufferUuid)
-	{
-		let bufferData = this.bufferRegistry[bufferUuid];
-		return bufferData.buffer._suspendedOperationsArray;
-	},
-
 	CompleteOperation(completedOperationData)
 	{
 		let bufferUuid = completedOperationData.bufferUuid;
-		let registryData = this.bufferRegistry[bufferUuid];
 
-		registryData.completeOperation(completedOperationData);
+		BufferRegistry.completeOperationRequest(completedOperationData);
 
 		this._handleOperationComplete(bufferUuid);
 	},
 
 	_handleOperationComplete(uuid)
 	{
-		this._removeFinishedBuffersFromRegistry(uuid);
-
 		this.operationRequestQueue.shift();
 
 		if(this.operationRequestQueue.length > 0)
@@ -169,41 +132,5 @@ export const IS_BufferOperationQueue =
 	waitingContext(siblingContext)
 	{
 		this._waitingContext = siblingContext;
-	}
-}
-
-class BufferRegistryData
-{
-	constructor(buffer)
-	{
-		this._buffer = buffer;
-		this._operationRequestCount = 0;
-		this._isDone = null;
-	}
-
-	get buffer() { return this._buffer; }
-	get isDone() { return this._isDone; }
-
-	completeOperation(completedOperationData)
-	{
-		this._buffer.completeOperation(completedOperationData);
-		this.removeOperationRequest();
-	}
-
-	addOperationRequest()
-	{
-		this._operationRequestCount++;
-		this._isDone = false;
-	}
-
-	removeOperationRequest()
-	{
-		this._operationRequestCount--;
-		this._isDone = this._operationRequestCount === 0;
-
-		if(this._isDone)
-		{
-			this._buffer.operationsComplete();
-		}
 	}
 }

@@ -5,8 +5,14 @@ import { IS_BufferFunctionData } from "./function/IS_BufferFunctionData.js";
 export const IS_BufferOperationQueue =
 {
 	_operationRequestQueue: [],
+	get operationRequestQueue() { return this._operationRequestQueue; },
+
 	_bufferRegistry: {},
+	get bufferRegistry() { return this._bufferRegistry; },
+
 	_isOperating: false,
+	get isOperating() { return this._isOperating; },
+
 	_waitingContext: null,
 
 	requestOperation(iSAudioBuffer, bufferOperationRequestData)
@@ -46,9 +52,9 @@ export const IS_BufferOperationQueue =
 
 	_enqueueBufferOperation(bufferOperationRequestData)
 	{
-		this._operationRequestQueue.push(bufferOperationRequestData);
+		this.operationRequestQueue.push(bufferOperationRequestData);
 
-		if(this._operationRequestQueue.length === 1)
+		if(this.operationRequestQueue.length === 1)
 		{
 			this._nextOperation();
 		}
@@ -56,7 +62,7 @@ export const IS_BufferOperationQueue =
 
 	_nextOperation()
 	{
-		let currentRequest = this._operationRequestQueue[0];
+		let currentRequest = this.operationRequestQueue[0];
 		let requestData = this._ensureCurrentData(currentRequest);
 
 		IS_BufferOperationWorkerBridge.requestOperation(requestData);
@@ -64,7 +70,7 @@ export const IS_BufferOperationQueue =
 
 	_ensureCurrentData(requestData)
 	{
-		let functionType = requestData._functionData._type;
+		let functionType = requestData.functionData.functionType;
 
 		switch(functionType)
 		{
@@ -76,11 +82,11 @@ export const IS_BufferOperationQueue =
 				break;
 		}
 
-		if (requestData._isSuspendedOperation)
+		if (requestData.isSuspendedOperation)
 		{
 			// TODO: investigate the fact that buffer.getChannelData() returns a reference,
 			//  so you don't have to update currentBuffer when you aren't suspending
-			requestData.currentBufferArray = this._getCurrentSuspendedOperationsArray(requestData.bufferUuid);
+			requestData.setCurrentBufferArray(this._getCurrentSuspendedOperationsArray(requestData.bufferUuid));
 		}
 
 		return requestData;
@@ -89,7 +95,7 @@ export const IS_BufferOperationQueue =
 	_handleBufferFunctionType(bufferOperationRequestData)
 	{
 		// TODO: another reason why each "args" should be its own data type
-		let otherBuffer = bufferOperationRequestData.functionData.args[0];
+		let otherBuffer = bufferOperationRequestData.functionData.functionArgs[0];
 
 		let functionBuffer = otherBuffer.isISBuffer ? otherBuffer.buffer : otherBuffer;
 		let functionArray = new Float32Array(functionBuffer.length);
@@ -120,14 +126,14 @@ export const IS_BufferOperationQueue =
 
 	_getCurrentSuspendedOperationsArray(bufferUuid)
 	{
-		let bufferData = this._bufferRegistry[bufferUuid];
+		let bufferData = this.bufferRegistry[bufferUuid];
 		return bufferData.buffer._suspendedOperationsArray;
 	},
 
 	CompleteOperation(completedOperationData)
 	{
-		let bufferUuid = completedOperationData._bufferUuid;
-		let registryData = this._bufferRegistry[bufferUuid];
+		let bufferUuid = completedOperationData.bufferUuid;
+		let registryData = this.bufferRegistry[bufferUuid];
 
 		registryData.completeOperation(completedOperationData);
 
@@ -138,9 +144,9 @@ export const IS_BufferOperationQueue =
 	{
 		this._removeFinishedBuffersFromRegistry(uuid);
 
-		this._operationRequestQueue.shift();
+		this.operationRequestQueue.shift();
 
-		if(this._operationRequestQueue.length > 0)
+		if(this.operationRequestQueue.length > 0)
 		{
 			this._nextOperation();
 		}

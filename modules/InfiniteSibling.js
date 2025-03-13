@@ -93,7 +93,7 @@ export class InfiniteSibling
     wait()
     {
         // TODO: loading bar
-        if(IS_BufferOperationQueue._isOperating)
+        if(IS_BufferOperationQueue.isOperating)
         {
             console.log("Waiting on Buffer Operation Queue!");
             IS_BufferOperationQueue.waitingContext(this);

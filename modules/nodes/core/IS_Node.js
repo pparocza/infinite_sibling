@@ -24,7 +24,7 @@ export class IS_Node extends IS_Object
         this._registryData = registryData;
     }
 
-    isNode = true;
+    isISNode = true;
 
     get registryData() { return this._registryData; };
 

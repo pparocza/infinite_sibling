@@ -6,13 +6,11 @@ export class IS_Convolver extends IS_MixEffect
 {
     constructor(siblingContext, buffer = null, normalize = true)
     {
-        super(siblingContext, IS_Type.IS_EffectType.IS_Convolver);
+        super(siblingContext, IS_Type.IS_EffectType.IS_MixEffect.IS_Convolver);
 
         this._convolver = new ConvolverNode(siblingContext.audioContext);
 
-        this._preset = new IS_ConvolverPresets(this);
-
-        this.initializeBuffer(buffer);
+        this.buffer = buffer;
 
         this._normalize = normalize;
         this.normalize = this._normalize;
@@ -20,18 +18,7 @@ export class IS_Convolver extends IS_MixEffect
         this.configureMixIO(this._convolver, this._convolver);
     }
 
-    isConvolver = true;
-
-    initializeBuffer(buffer)
-    {
-        if (buffer === null)
-        {
-            this.preset.stereoNoiseReverb();
-            return;
-        }
-
-        this.buffer = buffer;
-    }
+    isISConvolver = true;
 
     get buffer()
     {
@@ -40,9 +27,9 @@ export class IS_Convolver extends IS_MixEffect
 
     set buffer(buffer)
     {
-        if(buffer.iSType !== undefined && buffer.iSType === IS_Type.IS_Data.IS_Buffer)
+        if(buffer.isISBuffer)
         {
-            this._buffer = buffer.buffer;
+            this._buffer = buffer.requestBuffer(this);
         }
         else
         {

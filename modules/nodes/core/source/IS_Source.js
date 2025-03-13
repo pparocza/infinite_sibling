@@ -13,7 +13,7 @@ export class IS_Source extends IS_Node
 		this._isStartable = false;
 	}
 
-	isSource = true;
+	isISSource = true;
 
 	get sourceType() { return this._sourceType; };
 	get isStartable() { return this._isStartable; };

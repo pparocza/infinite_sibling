@@ -16,7 +16,7 @@ export class IS_Oscillator extends IS_StartableNode
         this.initializeCallback = this.initialize;
     }
 
-    isOscillator = true;
+    isISOscillator = true;
 
     initialize()
     {

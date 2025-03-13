@@ -26,13 +26,13 @@ export class IS_MixEffect extends IS_Effect
         this.configureOutput(this._mixEffectOutputNode);
     }
 
-    isMixEffect = true;
+    isISMixEffect = true;
 
     configureMixIO(input, output)
     {
         this._mixEffectInputNode.connect(input);
 
-        if(output.iSType !== undefined)
+        if(output.isISNode)
         {
             output.connect(this._mixEffectOutputNode);
         }

@@ -14,7 +14,7 @@ export class IS_Effect extends IS_Node
         this._effectInputNode = new GainNode(siblingContext.audioContext);
     }
 
-    isEffect = true;
+    isISEffect = true;
 
     get input() { return this._effectInputNode; };
     get effectType() { return this._effectType; };

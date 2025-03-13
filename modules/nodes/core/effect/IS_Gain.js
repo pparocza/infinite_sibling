@@ -16,7 +16,7 @@ export class IS_Gain extends IS_Effect
         this.configureOutput(this._gainNode);
     }
 
-    isGain = true;
+    isISGain = true;
 
     get gain()
     {

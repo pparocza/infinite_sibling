@@ -25,7 +25,7 @@ export class IS_Delay extends IS_MixEffect
         this.configureMixIO(this._delayNode, this._delayNode);
     }
 
-    isDelay = true;
+    isISDelay = true;
 
     get delayTime()
     {

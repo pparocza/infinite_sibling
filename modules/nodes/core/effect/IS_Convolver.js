@@ -18,7 +18,7 @@ export class IS_Convolver extends IS_MixEffect
         this.configureMixIO(this._convolver, this._convolver);
     }
 
-    isConvolver = true;
+    isISConvolver = true;
 
     get buffer()
     {
@@ -27,7 +27,7 @@ export class IS_Convolver extends IS_MixEffect
 
     set buffer(buffer)
     {
-        if(buffer.isBuffer)
+        if(buffer.isISBuffer)
         {
             this._buffer = buffer.requestBuffer(this);
         }

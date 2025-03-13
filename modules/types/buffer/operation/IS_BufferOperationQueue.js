@@ -91,7 +91,7 @@ export const IS_BufferOperationQueue =
 		// TODO: another reason why each "args" should be its own data type
 		let otherBuffer = bufferOperationRequestData.functionData.args[0];
 
-		let functionBuffer = otherBuffer.isBuffer ? otherBuffer.buffer : otherBuffer;
+		let functionBuffer = otherBuffer.isISBuffer ? otherBuffer.buffer : otherBuffer;
 		let functionArray = new Float32Array(functionBuffer.length);
 		functionBuffer.copyFromChannel(functionArray, 0);
 

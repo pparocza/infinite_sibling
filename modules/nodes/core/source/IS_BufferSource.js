@@ -36,7 +36,7 @@ export class IS_BufferSource extends IS_StartableNode
         this.initializeCallback = this.initialize;
     }
 
-    isBufferSource = true;
+    isISBufferSource = true;
 
     initialize()
     {
@@ -65,7 +65,7 @@ export class IS_BufferSource extends IS_StartableNode
 
     set buffer(buffer)
     {
-        if(buffer.isBuffer)
+        if(buffer.isISBuffer)
         {
             this._buffer = buffer.requestBuffer(this);
         }

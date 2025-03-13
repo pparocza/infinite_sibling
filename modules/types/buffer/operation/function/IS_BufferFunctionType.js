@@ -14,6 +14,7 @@ export const IS_BufferFunctionType =
 	Sawtooth: "Sawtooth",
 	Sine: "Sine",
 	Square: "Square",
+	SuspendedOperations: "SuspendedOperations",
 	Triangle: "Triangle",
 	UnipolarNoise: "UnipolarNoise",
 	UnipolarSine: "UnipolarSine",

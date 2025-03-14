@@ -111,7 +111,7 @@ export class IS_Node extends IS_Object
 
         while(this._readyCallbacks.length > 0)
         {
-            this._readyCallbacks.shift()();
+            this._readyCallbacks.shift()(this._uuid);
         }
     }
 

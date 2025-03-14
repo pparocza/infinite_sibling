@@ -1,0 +1,11 @@
+[package]
+name = "infinite_sibling"
+version = "0.1.0"
+authors = ["Paul Paroczai <paulparoczai@gmail.com>"]
+edition = "2024"
+
+[dependencies]
+crate-type = ["cdylib"]
+
+[dependencies]
+wasm-bindgen="0.2"

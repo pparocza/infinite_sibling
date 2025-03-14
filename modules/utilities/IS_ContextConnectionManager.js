@@ -1,5 +1,3 @@
-import { IS_Type } from "../enums/IS_Type.js";
-
 export const IS_ContextConnectionManager =
 {
 	series(...audioNodes)

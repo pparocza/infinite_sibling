@@ -8,7 +8,7 @@ export class IS_StartableNode extends IS_Node
 
         this._startableNode = null;
 
-        this._scheduler = siblingContext.Scheduler();
+        this._scheduler = siblingContext.Scheduler;
 
         this.isInitialized = false;
         this.initializeCallback = null;

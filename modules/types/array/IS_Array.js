@@ -161,14 +161,14 @@ export class IS_Array extends IS_Object
      */
     random()
     {
-        return this.value[IS_Random.randomInt(0, this.value.length)];
+        return this.value[IS_Random.Int(0, this.value.length)];
     }
 
     randomIntegers(length, min, max)
     {
         for(let i = 0; i < length; i++)
         {
-            this.value.push(IS_Random.randomInt(min, max));
+            this.value.push(IS_Random.Int(min, max));
         }
     }
 
@@ -176,7 +176,7 @@ export class IS_Array extends IS_Object
     {
         for(let i = 0; i < length; i++)
         {
-            this.value.push(IS_Random.randomFloat(min, max));
+            this.value.push(IS_Random.Float(min, max));
         }
     }
 
@@ -301,7 +301,7 @@ export class IS_Array extends IS_Object
             }
         }
 
-        let randomIndex = IS_Random.randomInt(0, this.urnValueCopy.length);
+        let randomIndex = IS_Random.Int(0, this.urnValueCopy.length);
         let randomValue = this.urnValueCopy[randomIndex];
         this.urnArray.push(randomValue);
         this.urnValueCopy.splice(randomIndex, 1);

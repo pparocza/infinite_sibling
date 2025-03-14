@@ -40,8 +40,6 @@ export class IS_BiquadFilter extends IS_Effect
 
         this.configureInput(this._filterNode);
         this._configureOutput(this._filterNode);
-
-        console.log("Local IsReady");
     }
 
     isISBiquadFilter = true;

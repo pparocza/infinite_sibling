@@ -133,7 +133,7 @@ export const IS_EvaluateBufferFunction =
 
 	Noise()
 	{
-		return IS_Random.randomFloat(-1, 1);
+		return IS_Random.Float(-1, 1);
 	},
 
 	NoiseBand(currentIncrement)
@@ -252,7 +252,7 @@ export const IS_EvaluateBufferFunction =
 
 	UnipolarNoise()
 	{
-		return IS_Random.randomFloat(0, 1);
+		return IS_Random.Float(0, 1);
 	},
 
 	UnipolarSine(currentIncrement)

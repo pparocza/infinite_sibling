@@ -2,13 +2,16 @@ import { IS_BufferOperationQueue } from "../types/buffer/operation/operationQueu
 
 export const IS_MessageBus =
 {
-	addListener()
+	get addListener()
 	{
-
+		return this.Broadcasters;
 	},
 
-	addBufferQueueProgressListener(listener)
+	Broadcasters:
 	{
-		IS_BufferOperationQueue.addProgressListener(listener);
-	}
+		BufferOperationQueue:
+			{
+				set Progress(listener) { IS_BufferOperationQueue.progressListener = listener; }
+			}
+	},
 }

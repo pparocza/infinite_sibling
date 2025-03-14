@@ -93,7 +93,7 @@ export class InfiniteSibling
     /*
         SCHEDULING
     */
-    Scheduler()
+    get Scheduler()
     {
         return IS_Scheduler;
     }
@@ -123,7 +123,7 @@ export class InfiniteSibling
     /*
         CONNECTION
     */
-    connect()
+    get connect()
     {
         return IS_ContextConnectionManager;
     }
@@ -234,7 +234,7 @@ export class InfiniteSibling
         for (let i = 0; i < midiScale.length; i++)
         {
             let midiNote = midiScale[i];
-            scaleArray[i] = this.midiToFrequency(midiNote);
+            scaleArray[i] = this.Utility.MidiToFrequency(midiNote);
         }
 
         return new IS_Array(scaleArray);

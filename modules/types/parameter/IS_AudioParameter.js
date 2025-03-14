@@ -8,6 +8,7 @@ export class IS_AudioParameter extends IS_Object
         super(IS_Type.IS_AudioParameter);
 
         this.siblingContext = siblingContext;
+        this._scheduler = siblingContext.Scheduler;
 
         if (audioParameter !== null)
         {
@@ -44,7 +45,7 @@ export class IS_AudioParameter extends IS_Object
 
     scheduleValue(value, time = 0, transitionTime = null)
     {
-        this.siblingContext.scheduleValue(this, value, time, transitionTime);
+        this._scheduler.scheduleValue(this, value, time, transitionTime);
     }
 
     scheduleValueSequence(valueSequence, timeSequence)

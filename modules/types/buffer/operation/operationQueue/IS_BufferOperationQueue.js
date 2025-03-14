@@ -154,7 +154,7 @@ export const IS_BufferOperationQueue =
 		this._queueLength = 0;
 	},
 
-	addProgressListener(listener)
+	set progressListener(listener)
 	{
 		this._progressListeners.push(listener);
 	},

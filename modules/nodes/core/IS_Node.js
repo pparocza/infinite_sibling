@@ -99,6 +99,16 @@ export class IS_Node extends IS_Object
 
     _ready()
     {
+        this._doReadyCallbacks();
+    }
+
+    _doReadyCallbacks()
+    {
+        if(!this._readyCallbacks)
+        {
+            return;
+        }
+
         while(this._readyCallbacks.length > 0)
         {
             this._readyCallbacks.shift()();

@@ -2,81 +2,81 @@ const _lut = [ '00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '0a',
 
 export const Utilities =
 {
-    /**
-     * convert a MIDI pitch number to a frequency in Hertz
-     * @param midiPitchNumber
-     * @returns {number}
-     */
-    MidiToFrequency(midiPitchNumber)
-    {
-        return 440 * Math.pow(2, (midiPitchNumber - 69) / 12);
-    },
+	/**
+	 * convert a MIDI pitch number to a frequency in Hertz
+	 * @param midiPitchNumber
+	 * @returns {number}
+	 */
+	MidiToFrequency(midiPitchNumber)
+	{
+		return 440 * Math.pow(2, (midiPitchNumber - 69) / 12);
+	},
 
-    /**
-     * Convert a number of seconds to a number of samples based on the current sample rate
-     * @param nSeconds
-     * @param sampleRate
-     * @constructor
-     */
-    SecondsToSamples(nSeconds, sampleRate)
-    {
-        return nSeconds * sampleRate;
-    },
+	/**
+	 * Convert a number of seconds to a number of samples based on the current sample rate
+	 * @param nSeconds
+	 * @param sampleRate
+	 * @constructor
+	 */
+	SecondsToSamples(nSeconds, sampleRate)
+	{
+		return nSeconds * sampleRate;
+	},
 
-    /**
-     * Convert an amplitude value to a dB value
-     * @param amplitudeValue
-     * @constructor
-     */
-    AmplitudeToDecibels(amplitudeValue)
-    {
-        return 20.0 * Math.log10(amplitudeValue);
-    },
+	/**
+	 * Convert an amplitude value to a dB value
+	 * @param amplitudeValue
+	 * @constructor
+	 */
+	AmplitudeToDecibels(amplitudeValue)
+	{
+		return 20.0 * Math.log10(amplitudeValue);
+	},
 
-    /**
-     * Convert a dB value to an amplitude value
-     * @param decibelValue
-     * @constructor
-     */
-    DecibelsToAmplitude(decibelValue)
-    {
-        return Math.pow(10.0, decibelValue / 20.0)
-    },
+	/**
+	 * Convert a dB value to an amplitude value
+	 * @param decibelValue
+	 * @constructor
+	 */
+	DecibelsToAmplitude(decibelValue)
+	{
+		return Math.pow(10.0, decibelValue / 20.0)
+	},
 
 
-    SpeedTest:
-    {
-        _startTime: 0,
+	SpeedTest:
+		{
+			_startTime: 0,
 
-        Start(tag = null)
-        {
-            console.time();
-        },
+			Start(tag = null)
+			{
+				console.time();
+			},
 
-        Print(tag = null)
-        {
-            console.timeEnd();
-        }
-    },
+			Print(tag = null)
+			{
+				console.timeEnd();
+			}
+		},
 
-    _private:
-    {
-        GenerateUUID()
-        {
-            // http://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid-in-javascript/21963136#21963136
+	_private:
+		{
+			GenerateUUID()
+			{
+				// http://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid-in-javascript/21963136#21963136
 
-            const d0 = Math.random() * 0xffffffff | 0;
-            const d1 = Math.random() * 0xffffffff | 0;
-            const d2 = Math.random() * 0xffffffff | 0;
-            const d3 = Math.random() * 0xffffffff | 0;
-            const uuid = _lut[ d0 & 0xff ] + _lut[ d0 >> 8 & 0xff ] + _lut[ d0 >> 16 & 0xff ] + _lut[ d0 >> 24 & 0xff ] + '-' +
-                _lut[ d1 & 0xff ] + _lut[ d1 >> 8 & 0xff ] + '-' + _lut[ d1 >> 16 & 0x0f | 0x40 ] + _lut[ d1 >> 24 & 0xff ] + '-' +
-                _lut[ d2 & 0x3f | 0x80 ] + _lut[ d2 >> 8 & 0xff ] + '-' + _lut[ d2 >> 16 & 0xff ] + _lut[ d2 >> 24 & 0xff ] +
-                _lut[ d3 & 0xff ] + _lut[ d3 >> 8 & 0xff ] + _lut[ d3 >> 16 & 0xff ] + _lut[ d3 >> 24 & 0xff ];
+				const d0 = Math.random() * 0xffffffff | 0;
+				const d1 = Math.random() * 0xffffffff | 0;
+				const d2 = Math.random() * 0xffffffff | 0;
+				const d3 = Math.random() * 0xffffffff | 0;
+				const uuid = _lut[ d0 & 0xff ] + _lut[ d0 >> 8 & 0xff ] + _lut[ d0 >> 16 & 0xff ] + _lut[ d0 >> 24 & 0xff ] + '-' +
+					_lut[ d1 & 0xff ] + _lut[ d1 >> 8 & 0xff ] + '-' + _lut[ d1 >> 16 & 0x0f | 0x40 ] + _lut[ d1 >> 24 & 0xff ] + '-' +
+					_lut[ d2 & 0x3f | 0x80 ] + _lut[ d2 >> 8 & 0xff ] + '-' + _lut[ d2 >> 16 & 0xff ] + _lut[ d2 >> 24 & 0xff ] +
+					_lut[ d3 & 0xff ] + _lut[ d3 >> 8 & 0xff ] + _lut[ d3 >> 16 & 0xff ] + _lut[ d3 >> 24 & 0xff ];
 
-            // .toLowerCase() here flattens concatenated strings to save heap memory space.
-            return uuid.toLowerCase();
-        },
-    }
+				// .toLowerCase() here flattens concatenated strings to save heap memory space.
+				return uuid.toLowerCase();
+			},
+		}
 }
 

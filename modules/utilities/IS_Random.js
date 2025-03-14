@@ -6,7 +6,7 @@ export const IS_Random =
      * @param max
      * @returns {number}
      */
-    randomInt: function(min, max)
+    int: function(min, max)
     {
         let roundedMin = Math.ceil(min);
         let roundedMax = Math.floor(max);
@@ -19,12 +19,12 @@ export const IS_Random =
      * @param max
      * @returns {*}
      */
-    randomFloat: function(min, max)
+    float: function(min, max)
     {
         return Math.random() * (max-min) + min;
     },
 
-    randomValue: function(...values)
+    select: function(...values)
     {
         return values[this.randomInt(0, values.length)];
     },
@@ -39,20 +39,11 @@ export const IS_Random =
         return Math.random() > (1 - probabilityOfTrue);
     },
 
-    /*
-    create a breakpoint function with a specified number of points
-    based on the arguments provided
-     */
-    /**
-     * create a breakpoint function with a specified number of points based on the arguments provided
-     * @param nPoints
-     * @param gainRange
-     * @param durationRange
-     * @param divRange
-     * @returns {*[]}
-     */
-    randomEnvelope: function(nPoints = 3, gainRange = [0, 1],
-                             durationRange = [1, 1], divRange = [0.25, 0.25])
+    envelope: function
+    (
+        nPoints = 3,
+        gainRange = [0, 1], durationRange = [1, 1], divRange = [0.25, 0.25]
+    )
     {
         let envelopeArray = [];
 

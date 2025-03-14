@@ -20,7 +20,7 @@ export class IS_Oscillator extends IS_StartableNode
 
     initialize()
     {
-        this._startableNode = new OscillatorNode(this._siblingContext.audioContext);
+        this._startableNode = new OscillatorNode(this._siblingContext.AudioContext);
 
         this._startableNode.frequency.value = 0;
         this._startableNode.detune.value = 0;
@@ -30,7 +30,7 @@ export class IS_Oscillator extends IS_StartableNode
         this._frequency.connect(this._startableNode.frequency);
         this._detune.connect(this._startableNode.detune);
 
-        this.configureOutput(this._startableNode);
+        this._configureOutput(this._startableNode);
 
         this.isInitialized = true;
     }

@@ -1,7 +1,12 @@
-const iSAudioContext = new AudioContext();
+import {IS_MessageBus} from "./utilities/IS_MessageBus";
+
+const INFINITE_SIBLING_AUDIO_CONTEXT = new AudioContext();
 
 // core
-import { IS_NodeRegistry } from "./nodes/core/IS_NodeRegistry.js";
+import { IS_NodeRegistry } from "./nodes/registry/IS_NodeRegistry.js";
+import { IS_LifeCycle } from "./utilities/IS_LifeCycle.js";
+import { IS_Scheduler } from "./types/schedule/IS_Scheduler.js";
+import { IS_ContextConnectionManager } from "./utilities/IS_ContextConnectionManager.js";
 
 // audio nodes
 import { IS_Gain } from "./nodes/core/effect/IS_Gain.js";
@@ -27,13 +32,11 @@ import { IS_Type } from "./enums/IS_Type.js";
 // types
 import { IS_Array } from "./types/array/IS_Array.js";
 import { IS_Scale } from "./types/array/IS_Scale.js";
-import { IS_Schedule } from "./types/schedule/IS_Schedule.js";
-import { IS_Sequence } from "./types/sequence/IS_Sequence.js";
 import { IS_SequenceArray } from "./types/array/IS_SequenceArray.js";
 
 // utilities
 import { IS_Random } from "./utilities/IS_Random.js";
-import { Utilities } from "./utilities/Utilities.js";
+import { IS_Utilities } from "./utilities/IS_Utilities.js";
 import { BufferPrint } from "./utilities/BufferPrint.js";
 
 import { IS_BufferOperationQueue } from "./types/buffer/operation/operationQueue/IS_BufferOperationQueue.js";
@@ -42,136 +45,65 @@ export class InfiniteSibling
 {
     constructor()
     {
-        this.audioContext = iSAudioContext;
-        this.destination = this.audioContext.destination;
+        this._audioContext = INFINITE_SIBLING_AUDIO_CONTEXT;
+        this.destination = this.AudioContext.destination;
 
-        this.output = this.audioContext.createGain();
+        this.output = this.AudioContext.createGain();
         this.output.connect(this.destination);
 
+        this.Utility.siblingContext = this;
+
         BufferPrint.configure();
-
-        this.schedule = new IS_Schedule();
-        this.schedules = [];
-        this.sequences = [];
-
-        this.loadCallbacks = [];
-        this.readyCallbacks = [];
-        this.startCallbacks = [];
-        this.stopCallbacks = [];
-
-        this._nodeRegistry = new IS_NodeRegistry();
-    }
-
-    get NodeType()
-    {
-        return IS_Type.IS_NodeType;
-    }
-
-    get nodeRegistry()
-    {
-        return this._nodeRegistry;
-    }
-
-    registerNode(nodeData)
-    {
-        this._nodeRegistry.registerNode(nodeData);
     }
 
     /*
-    Audio Status
-     */
+        AUDIO CONTEXT
+    */
+    get AudioContext () { return this._audioContext; }
+
+    /*
+        NODE REGISTRY
+    */
+    get NodeRegistry()  { return IS_NodeRegistry; }
+
+    /*
+        LIFE CYCLE
+    */
     load()
     {
-        for(let loadCallbackIndex = 0; loadCallbackIndex < this.loadCallbacks.length; loadCallbackIndex++)
-        {
-            this.loadCallbacks[loadCallbackIndex]();
-        }
-
-        this.wait();
-    }
-
-    wait()
-    {
-        if(IS_BufferOperationQueue.isOperating)
-        {
-            console.log("Waiting on Buffer Operation Queue!");
-            IS_BufferOperationQueue.waitingContext(this);
-        }
-        else
-        {
-            this.ready();
-        }
-    }
-
-    addBufferQueueProgressListener(listener)
-    {
-        IS_BufferOperationQueue.addProgressListener(listener);
-    }
-
-    endWait(waitingOn)
-    {
-        if(waitingOn === IS_BufferOperationQueue)
-        {
-            console.log("Operation Queue Finished!");
-            this.ready();
-        }
-    }
-
-    onLoad(callback)
-    {
-        this.loadCallbacks.push(callback);
-    }
-
-    ready()
-    {
-        for(let readyCallbackIndex = 0; readyCallbackIndex < this.readyCallbacks.length; readyCallbackIndex++)
-        {
-            this.readyCallbacks[readyCallbackIndex]();
-        }
-    }
-
-    onReady(callback)
-    {
-        this.readyCallbacks.push(callback);
+        IS_LifeCycle.load();
     }
 
     start()
     {
-        this.audioContext.resume();
-
-        for(let startCallbackIndex = 0; startCallbackIndex < this.startCallbacks.length; startCallbackIndex++)
-        {
-            this.startCallbacks[startCallbackIndex]();
-        }
-
-        this.scheduleSequences();
-        this.startSchedules();
-    }
-
-    onStart(callback)
-    {
-        this.startCallbacks.push(callback);
+        this.AudioContext.resume();
+        IS_LifeCycle.start();
+        IS_Scheduler.start();
     }
 
     stop()
     {
-        for(let stopCallbackIndex = 0; stopCallbackIndex < this.stopCallbacks.length; stopCallbackIndex++)
-        {
-            this.stopCallbacks[stopCallbackIndex]();
-        }
-
-        this.stopSchedules();
-        this.audioContext.close();
+        this.AudioContext.close();
+        IS_LifeCycle.stop();
+        IS_Scheduler.stop();
     }
 
-    onStop(callback)
+    onLoad(callback) { IS_LifeCycle.onLoad(callback); }
+    onReady(callback) { IS_LifeCycle.onReady(callback); }
+    onStart(callback) { IS_LifeCycle.onStart(callback); }
+    onStop(callback) { IS_LifeCycle.onStop(callback); }
+
+    /*
+        SCHEDULING
+    */
+    Scheduler()
     {
-        this.stopCallbacks.push(callback);
+        return IS_Scheduler;
     }
 
     /*
-    Audio Settings
-     */
+        OUTPUT SETTINGS
+    */
     set outputGain(value)
     {
         this.output.gain.value = value;
@@ -179,93 +111,40 @@ export class InfiniteSibling
 
     set outputVolume(value)
     {
-        this.output.gain.value = this.decibelsToAmplitude(value);
+        this.output.gain.value = this.Utility.DecibelsToAmplitude(value);
     }
 
     outputMono()
     {
-        let channelMerger = this.audioContext.createChannelMerger(1);
+        let channelMerger = this.AudioContext.createChannelMerger(1);
 
         this.output.disconnect();
         this.output.connect(channelMerger);
         channelMerger.connect(this.destination);
     }
 
-    connectSeries(...audioNodes)
+    /*
+        CONNECTION
+    */
+    connect()
     {
-        for (let audioNodeIndex = 1; audioNodeIndex < audioNodes.length; audioNodeIndex++)
-        {
-            let previousNode = audioNodes[audioNodeIndex - 1];
-            let audioNode = audioNodes[audioNodeIndex];
-
-            if (audioNode.iSType !== undefined && audioNode.iSType === IS_Type.IS_Effect)
-            {
-                previousNode.connect(audioNode);
-            } else
-            {
-                previousNode.connect(audioNode);
-            }
-        }
-    }
-
-    connectMatrix(...matrix)
-    {
-        for(let matrixRow = 1; matrixRow < matrix.length; matrixRow++)
-        {
-            let outputRow = matrix[matrixRow - 1];
-            let inputRow = matrix[matrixRow];
-
-            for(let outputNodeIndex = 0; outputNodeIndex < outputRow.length; outputNodeIndex++)
-            {
-                let outputNode = outputRow[outputNodeIndex];
-
-                for(let inputNodeIndex = 0; inputNodeIndex < inputRow.length; inputNodeIndex++)
-                {
-                    outputNode.connect(inputRow[inputNodeIndex])
-                }
-            }
-        }
-    }
-
-    connectToMainOutput(...audioNodes)
-    {
-        for (let audioNodeIndex = 0; audioNodeIndex < audioNodes.length; audioNodeIndex++)
-        {
-            let audioNode = audioNodes[audioNodeIndex];
-
-            if (audioNode.iSType !== undefined && audioNode.iSType === IS_Type.IS_Effect)
-            {
-                audioNode.connect(this.output);
-            } else
-            {
-                audioNode.connect(this.output);
-            }
-        }
+        return IS_ContextConnectionManager;
     }
 
     /*
-    Global Values
-     */
-    get now()
-    {
-        return this.audioContext.currentTime;
-    }
+        GLOBAL VALUES
+    */
+    get now() { return this.AudioContext.currentTime; }
+    get sampleRate() { return this.AudioContext.sampleRate; }
 
-    get sampleRate()
-    {
-        return this.audioContext.sampleRate;
-    }
-
-    // TODO: replace with NodeFactory class?
     /*
-    Nodes
-     */
+        NODE CREATION
+    */
     createOscillator(type = "sine", frequency = 440, detune = 0)
     {
         return new IS_Oscillator(this, type, frequency, detune);
     }
 
-    // TODO: replace these arguments with objects like IS_BiquadFilterArgs
     createFilter(type = "lowpass", frequency = 220, Q = 1, gain = 1, detune = 0)
     {
         return new IS_BiquadFilter(this, type, frequency, Q, gain, detune);
@@ -276,12 +155,6 @@ export class InfiniteSibling
         return new IS_Gain(this, gainValue);
     }
 
-    /**
-     * Create an IS_Buffer
-     * @param numberOfChannels
-     * @param duration length of the buffer in seconds
-     * @returns {IS_Buffer}
-     */
     createBuffer(numberOfChannels = 1, duration = 1)
     {
         return new IS_Buffer(this, numberOfChannels, duration, this.sampleRate);
@@ -316,6 +189,7 @@ export class InfiniteSibling
         return new IS_Convolver(this, buffer, normalize);
     }
 
+    // TODO: This is a preset
     createAmplitudeModulator(buffer = null, modulatorPlaybackRate = 1, loop = true)
     {
         return new IS_AmplitudeModulator(this, buffer, modulatorPlaybackRate, loop);
@@ -336,72 +210,10 @@ export class InfiniteSibling
         return new IS_NodeMatrix(this);
     }
 
+    // TODO: Consolidate to a factory
     /*
-    schedule
-     */
-    /**
-     * Create an IS_Schedule and add it to the schedule Registry
-     * @returns {IS_Schedule}
-     */
-    createSchedule()
-    {
-        return new IS_Schedule();
-    }
-
-    scheduleStart(schedulable, time = 0, duration = null)
-    {
-        this.schedule.scheduleStart(schedulable, time, duration);
-    }
-
-    scheduleStop(schedulable, time)
-    {
-        this.schedule.scheduleStop(schedulable, time);
-    }
-
-    scheduleValue(schedulable, value, time, transitionTime = null)
-    {
-        this.schedule.scheduleValue(schedulable, value, time, transitionTime);
-    }
-
-    startSchedules()
-    {
-        this.schedule.schedule();
-    }
-
-    stopSchedules()
-    {
-        this.schedule.stop();
-    }
-
-    schedule(schedule)
-    {
-        this.schedules.push(schedule);
-    }
-
-    /*
-    sequence
-     */
-    createSequence()
-    {
-        return new IS_Sequence();
-    }
-
-    sequence(sequence)
-    {
-        this.sequences.push(sequence);
-    }
-
-    scheduleSequences()
-    {
-        for(let sequenceIndex = 0; sequenceIndex < this.sequences.length; sequenceIndex++)
-        {
-            this.sequences[sequenceIndex].schedule();
-        }
-    }
-
-    /*
-    Utilities
-     */
+        ARRAYS
+    */
     array(...values)
     {
         return new IS_Array(values);
@@ -410,35 +222,6 @@ export class InfiniteSibling
     sequenceArray(...values)
     {
         return new IS_SequenceArray(values);
-    }
-
-    MidiToFrequency(midiNoteNumber)
-    {
-        return Utilities.MidiToFrequency(midiNoteNumber);
-    }
-
-    SecondsToSamples(nSeconds)
-    {
-        return Utilities.SecondsToSamples(nSeconds, this.audioContext.sampleRate);
-    }
-
-    randomInt(min, max)
-    {
-        return IS_Random.randomInt(min, max);
-    }
-    randomFloat(min, max)
-    {
-        return IS_Random.randomFloat(min, max);
-    }
-
-    coinToss(probabilityOfTrue = 0.5)
-    {
-        return IS_Random.coinToss(probabilityOfTrue);
-    }
-
-    randomValue(...values)
-    {
-        return IS_Random.randomValue(...values);
     }
 
     scale(tonic = IS_KeyboardNote.C, mode = IS_Mode.Major)
@@ -454,7 +237,7 @@ export class InfiniteSibling
         for (let i = 0; i < midiScale.length; i++)
         {
             let midiNote = midiScale[i];
-            scaleArray[i] = this.MidiToFrequency(midiNote);
+            scaleArray[i] = this.midiToFrequency(midiNote);
         }
 
         return new IS_Array(scaleArray);
@@ -468,43 +251,27 @@ export class InfiniteSibling
         return frequencyScale;
     }
 
-    get Mode()
+    /*
+        RANDOM
+    */
+    get Random()
     {
-        return IS_Mode;
+        return IS_Random;
     }
 
-    get KeyboardNote()
+    /*
+	    UTILITY
+    */
+    get Utility()
     {
-        return IS_KeyboardNote;
+        return IS_Utilities;
     }
 
-    intervalRatio(intervalString)
+    /*
+        MESSAGE BUS
+    */
+    get MessageBus()
     {
-        return IS_Interval[intervalString];
-    }
-
-    /**
-     * Convert an amplitude value to a dB value
-     * @param amplitudeValue
-     * @constructor
-     */
-    amplitudeToDecibels(amplitudeValue)
-    {
-        return Utilities.AmplitudeToDecibels(amplitudeValue);
-    }
-
-    /**
-     * Convert a dB value to an amplitude value
-     * @param decibelValue
-     * @constructor
-     */
-    decibelsToAmplitude(decibelValue)
-    {
-        return Utilities.DecibelsToAmplitude(decibelValue);
-    }
-
-    get speedTest()
-    {
-        return Utilities.SpeedTest;
+        return IS_MessageBus;
     }
 }

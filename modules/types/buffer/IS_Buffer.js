@@ -23,7 +23,7 @@ export class IS_Buffer extends IS_Object
             sampleRate = siblingContext.sampleRate;
         }
 
-        let lengthSamples = siblingContext.SecondsToSamples(duration, sampleRate);
+        let lengthSamples = siblingContext.Utility.SecondsToSamples(duration, sampleRate);
 
         this._numberOfChannels = numberOfChannels;
         this._duration = duration;
@@ -33,7 +33,7 @@ export class IS_Buffer extends IS_Object
         // This is created in the suspendOperations method
         this._suspendedOperationsArray = null;
 
-        this._buffer = siblingContext.audioContext.createBuffer
+        this._buffer = siblingContext.AudioContext.createBuffer
         (
             numberOfChannels, lengthSamples, this._sampleRate
         );
@@ -897,7 +897,7 @@ export class IS_Buffer extends IS_Object
     {
         let nChannels = this._numberOfChannels;
 
-        let tempBuffer = this._siblingContext.audioContext.createBuffer
+        let tempBuffer = this._siblingContext.AudioContext.createBuffer
         (
             nChannels, this._length, this._sampleRate
         );

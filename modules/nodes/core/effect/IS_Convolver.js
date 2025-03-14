@@ -8,7 +8,7 @@ export class IS_Convolver extends IS_MixEffect
     {
         super(siblingContext, IS_Type.IS_EffectType.IS_MixEffect.IS_Convolver);
 
-        this._convolver = new ConvolverNode(siblingContext.audioContext);
+        this._convolver = new ConvolverNode(siblingContext.AudioContext);
 
         this.buffer = buffer;
 
@@ -36,7 +36,11 @@ export class IS_Convolver extends IS_MixEffect
             this._buffer = buffer;
         }
 
-        this._convolver.buffer = this._buffer;
+        if(this._buffer)
+        {
+            this._convolver.buffer = this._buffer;
+            this._ready();
+        }
     }
 
     get normalize()

@@ -13,12 +13,12 @@ export const IS_BufferOperationQueue =
 	_isOperating: false,
 	get isOperating() { return this._isOperating; },
 
-	_waitingContext: null,
-
 	_progress: 0,
 	_progressIncrement: 0,
 	_queueLength: 0,
 	_progressListeners: [],
+
+	_waiters : [],
 
 	get Progress() { return this._progress; },
 
@@ -132,11 +132,7 @@ export const IS_BufferOperationQueue =
 	{
 		this._isOperating = false;
 
-		if(this._waitingContext !== null)
-		{
-			this._waitingContext.endWait(this);
-		}
-
+		this._endWaits();
 		this._resetProgress();
 	},
 
@@ -172,8 +168,16 @@ export const IS_BufferOperationQueue =
 		}
 	},
 
-	waitingContext(siblingContext)
+	registerWaiter(waiter)
 	{
-		this._waitingContext = siblingContext;
+		this._waiters.push(waiter);
+	},
+
+	_endWaits()
+	{
+		while(this._waiters.length > 0)
+		{
+			this._waiters.shift().endWait(this);
+		}
 	}
 }

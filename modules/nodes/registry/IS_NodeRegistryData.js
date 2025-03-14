@@ -1,4 +1,4 @@
-export class IS_NodeData
+export class IS_NodeRegistryData
 {
 	constructor(audioNode)
 	{

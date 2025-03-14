@@ -12,9 +12,9 @@ export class IS_Delay extends IS_MixEffect
     {
         super(siblingContext, IS_Type.IS_EffectType.IS_Delay);
 
-        this._delayNode = siblingContext.audioContext.createDelay(maxDelayTime);
+        this._delayNode = siblingContext.AudioContext.createDelay(maxDelayTime);
 
-        this._feedbackGainNode = new GainNode(siblingContext.audioContext);
+        this._feedbackGainNode = new GainNode(siblingContext.AudioContext);
 
         this._delayTime = new IS_AudioParameter(this._siblingContext, this._delayNode.delayTime, delayTime);
         this._feedbackPercent = new IS_AudioParameter(this._siblingContext, this._feedbackGainNode.gain, feedbackPercent);

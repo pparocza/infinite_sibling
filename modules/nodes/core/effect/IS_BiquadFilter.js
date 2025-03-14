@@ -26,7 +26,7 @@ export class IS_BiquadFilter extends IS_Effect
     {
         super(siblingContext, IS_Type.IS_EffectType.IS_BiquadFilter)
 
-        this._filterNode = new BiquadFilterNode(siblingContext.audioContext);
+        this._filterNode = new BiquadFilterNode(siblingContext.AudioContext);
 
         this._parameterValues = new IS_BiquadFilterArgs(filterArgs);
 
@@ -39,7 +39,9 @@ export class IS_BiquadFilter extends IS_Effect
         this._filterNode.type = this._type;
 
         this.configureInput(this._filterNode);
-        this.configureOutput(this._filterNode);
+        this._configureOutput(this._filterNode);
+
+        console.log("Local IsReady");
     }
 
     isISBiquadFilter = true;

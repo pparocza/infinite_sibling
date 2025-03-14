@@ -3,9 +3,6 @@ import { IS_Type } from "../../../enums/IS_Type.js";
 import { BufferPrint } from "../../../utilities/BufferPrint.js";
 import { IS_StartableNodeAudioParameter } from "../../../types/parameter/IS_StartableNodeAudioParameter.js";
 
-/**
- * Play IS_Buffers
- */
 export class IS_BufferSource extends IS_StartableNode
 {
     /**
@@ -40,7 +37,7 @@ export class IS_BufferSource extends IS_StartableNode
 
     initialize()
     {
-        this._startableNode = new AudioBufferSourceNode(this._siblingContext.audioContext);
+        this._startableNode = new AudioBufferSourceNode(this._siblingContext.AudioContext);
 
         this._startableNode.buffer = this.buffer;
         this._startableNode.detune.value = 0;
@@ -53,7 +50,7 @@ export class IS_BufferSource extends IS_StartableNode
         this._detune.connect(this._startableNode.detune);
         this._playbackRate.connect(this._startableNode.playbackRate);
 
-        this.configureOutput(this._startableNode);
+        this._configureOutput(this._startableNode);
 
         this.isInitialized = true;
     }
@@ -72,6 +69,11 @@ export class IS_BufferSource extends IS_StartableNode
         else
         {
             this._buffer = buffer;
+        }
+
+        if(this._buffer)
+        {
+            this._ready();
         }
     }
 

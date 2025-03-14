@@ -23,7 +23,7 @@ export class IS_MixEffect extends IS_Effect
         this.dryGainNode.connect(this._mixEffectOutputNode);
 
         this.configureInput(this._mixEffectInputNode);
-        this.configureOutput(this._mixEffectOutputNode);
+        this._configureOutput(this._mixEffectOutputNode);
     }
 
     isISMixEffect = true;

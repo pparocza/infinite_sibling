@@ -69,7 +69,7 @@ export class IS_NodeMatrix extends IS_Effect
 			this.configureInput(audioNodes[0]);
 		}
 
-		this.configureOutput(audioNodes[audioNodes.length - 1]);
+		this._configureOutput(audioNodes[audioNodes.length - 1]);
 
 		if(audioNodes.length === 1)
 		{

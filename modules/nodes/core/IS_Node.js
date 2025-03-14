@@ -2,7 +2,6 @@ import { IS_Object } from "../../types/IS_Object.js";
 import { IS_Type } from "../../enums/IS_Type.js";
 import { Utilities } from "../../utilities/Utilities.js";
 import { IS_AudioParameter } from "../../types/parameter/IS_AudioParameter.js";
-import { IS_NodeData } from "../../types/IS_NodeData.js";
 
 export class IS_Node extends IS_Object
 {
@@ -10,28 +9,45 @@ export class IS_Node extends IS_Object
     {
         super(iSType);
 
-        // TODO: change to this._siblingContext
         this._siblingContext = siblingContext;
 
-        this._output = new GainNode(siblingContext.audioContext);
+        // TODO: Context wrapper so that IS_Nodes use IS_Nodes?
+        this._output = new GainNode(siblingContext.AudioContext);
         this._gain = new IS_AudioParameter(this._siblingContext, this._output.gain);
 
-        let registryData = new IS_NodeData(this);
+        this._registryData = this._siblingContext.NodeRegistry.registerNode(this);
 
-        this._siblingContext.registerNode(registryData);
-
+        this._readyCallbacks = null;
         this._analyser = null;
-        this._registryData = registryData;
     }
 
     isISNode = true;
 
     get registryData() { return this._registryData; };
 
-    /**
-     *
-     * @param audioNodes
-     */
+    get gain() { return this._gain; }
+    set gain(value) { this._gain.value = value; }
+
+    get volume() { return Utilities.AmplitudeToDecibels(this._gain.value); }
+    set volume(value) { this._gain.value = Utilities.DecibelsToAmplitude(value); }
+
+    get analyser()
+    {
+        this._initializeAnalyser();
+
+        return this._analyser;
+    }
+
+    // TODO: Something that isn't just the first value of the analysis buffer
+    get outputValue()
+    {
+        this.analyser.getFloatTimeDomainData(this._analyserData);
+        return this._analyserData[0];
+    }
+
+    /*
+        CONNECTION
+    */
     connect(...audioNodes)
     {
         for(let nodeIndex = 0; nodeIndex < audioNodes.length; nodeIndex++)
@@ -61,90 +77,53 @@ export class IS_Node extends IS_Object
         }
     }
 
-    configureOutput(audioNode)
-    {
-        audioNode.connect(this._output);
-    }
-
-    /**
-     *
-     */
     connectToMainOutput()
     {
         this._output.connect(this._siblingContext.output);
     }
 
-    /**
-     *
-     */
     connectToAudioDestination()
     {
         this._output.connect(this._siblingContext.destination);
     }
 
-    /**
-     *
-     * @returns
-     */
-    get gain()
+    onReady(callback)
     {
-        return this._gain;
+        if(this._readyCallbacks === null)
+        {
+            this._readyCallbacks = [];
+        }
+
+        this._readyCallbacks.push(callback);
     }
 
-    /**
-     *
-     * @param value
-     */
-    set gain(value)
+    _ready()
     {
-        this._gain.value = value;
+        while(this._readyCallbacks.length > 0)
+        {
+            this._readyCallbacks.shift()();
+        }
     }
 
-    /**
-     * Set the volume of a node in Decibels
-     * @param value = decibel value
-     */
-    set volume(value)
+    _configureOutput(audioNode)
     {
-        this._gain.value = Utilities.DecibelsToAmplitude(value);
+        audioNode.connect(this._output);
     }
 
-    /**
-     * Return the current gain level in Decibels
-     * @returns {*}
-     */
-    get volume()
-    {
-        return Utilities.AmplitudeToDecibels(this._gain.value);
-    }
-
-    initializeAnalyser(fftSize = 2048)
+    _initializeAnalyser(fftSize = 2048)
     {
         if(this._analyser !== null)
         {
             return;
         }
 
-        let analayser = this._siblingContext.audioContext.createAnalyser();
-        analayser.fftSize = fftSize;
+        let analyser = this._siblingContext.AudioContext.createAnalyser();
+        analyser.fftSize = fftSize;
 
-        this._analyser = analayser;
+        this._analyser = analyser;
         this._analyserData = new Float32Array(this._analyser.fftSize);
         this._analyser.getFloatTimeDomainData(this._analyserData);
 
         this._output.connect(this._analyser);
-    }
-
-    get analyser()
-    {
-        this.initializeAnalyser();
-
-        return this._analyser;
-    }
-
-    get outputValue()
-    {
-        this.analyser.getFloatTimeDomainData(this._analyserData);
-        return this._analyserData[0];
     }
 }

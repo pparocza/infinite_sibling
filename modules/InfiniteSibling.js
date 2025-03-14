@@ -1,5 +1,3 @@
-import {IS_MessageBus} from "./utilities/IS_MessageBus";
-
 const INFINITE_SIBLING_AUDIO_CONTEXT = new AudioContext();
 
 // core
@@ -38,8 +36,7 @@ import { IS_SequenceArray } from "./types/array/IS_SequenceArray.js";
 import { IS_Random } from "./utilities/IS_Random.js";
 import { IS_Utilities } from "./utilities/IS_Utilities.js";
 import { BufferPrint } from "./utilities/BufferPrint.js";
-
-import { IS_BufferOperationQueue } from "./types/buffer/operation/operationQueue/IS_BufferOperationQueue.js";
+import { IS_MessageBus } from "./utilities/IS_MessageBus.js";
 
 export class InfiniteSibling
 {

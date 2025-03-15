@@ -93,23 +93,13 @@ export class InfiniteSibling
     /*
         SCHEDULING
     */
-    get Scheduler()
-    {
-        return IS_Scheduler;
-    }
+    get Scheduler() { return IS_Scheduler; }
 
     /*
         OUTPUT SETTINGS
     */
-    set outputGain(value)
-    {
-        this.output.gain.value = value;
-    }
-
-    set outputVolume(value)
-    {
-        this.output.gain.value = this.Utility.DecibelsToAmplitude(value);
-    }
+    set outputGain(value) { this.output.gain.value = value; }
+    set outputVolume(value) { this.output.gain.value = this.Utility.DecibelsToAmplitude(value); }
 
     outputMono()
     {
@@ -123,10 +113,7 @@ export class InfiniteSibling
     /*
         CONNECTION
     */
-    get connect()
-    {
-        return IS_ContextConnectionManager;
-    }
+    get connect() { return IS_ContextConnectionManager; }
 
     /*
         GLOBAL VALUES

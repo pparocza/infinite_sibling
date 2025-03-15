@@ -1,6 +1,5 @@
 import { IS_BufferFunctionType } from "../function/IS_BufferFunctionType.js";
 import { IS_Random } from "../../../../utilities/IS_Random.js";
-
 const IS_TWO_PI = Math.PI * 2;
 
 // TODO: Anti-aliasing (sawooth, square)
@@ -113,10 +112,10 @@ export const IS_EvaluateBufferFunction =
 		let modulatorFrequency = this.cachedRequestArgumentValues[1];
 		let modulatorGain = this.cachedRequestArgumentValues[2];
 
-		let modulationValue = modulatorGain * Math.sin(modulatorFrequency * time * IS_TWO_PI);
+		let modulationValue = modulatorGain * Math.sin(time * modulatorFrequency * IS_TWO_PI);
 		let modulatedFrequencyValue = carrierFrequency + modulationValue;
 
-		return Math.sin(modulatedFrequencyValue * IS_TWO_PI * time);
+		return Math.sin(time * modulatedFrequencyValue * IS_TWO_PI);
 	},
 
 	Impulse(currentIncrement)

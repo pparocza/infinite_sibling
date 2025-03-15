@@ -1,10 +1,10 @@
 [package]
-name = "infinite_sibling"
+name = "wasm_sibling"
 version = "0.1.0"
 authors = ["Paul Paroczai <paulparoczai@gmail.com>"]
 edition = "2024"
 
-[dependencies]
+[lib]
 crate-type = ["cdylib"]
 
 [dependencies]

@@ -21,7 +21,10 @@ export class IS_BufferSource extends IS_StartableNode
     {
         super(siblingContext, IS_Type.IS_SourceType.IS_BufferSource);
 
-        this.buffer = buffer;
+        if(buffer !== null)
+        {
+            this.buffer = buffer;
+        }
 
         this._loop = loop;
         this._loopStart = loopStart;

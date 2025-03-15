@@ -1,6 +1,5 @@
 import { IS_MixEffect } from "./IS_MixEffect.js";
 import { IS_Type } from "../../../enums/IS_Type.js";
-import { IS_ConvolverPresets } from "../../../presets/IS_ConvolverPresets.js";
 
 export class IS_Convolver extends IS_MixEffect
 {
@@ -10,7 +9,10 @@ export class IS_Convolver extends IS_MixEffect
 
         this._convolver = new ConvolverNode(siblingContext.AudioContext);
 
-        this.buffer = buffer;
+        if(buffer !== null)
+        {
+            this.buffer = buffer;
+        }
 
         this._normalize = normalize;
         this.normalize = this._normalize;

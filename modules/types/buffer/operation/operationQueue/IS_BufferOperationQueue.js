@@ -140,7 +140,8 @@ export const IS_BufferOperationQueue =
 	{
 		if(this._queueLength === 0)
 		{
-			this._queueLength = this._operationRequestQueue.length;
+			let currentOperationRequestQueueLength = this._operationRequestQueue.length;
+			this._queueLength = Math.max(1, currentOperationRequestQueueLength);
 		}
 
 		this._progress = this._progressIncrement++ / this._queueLength;

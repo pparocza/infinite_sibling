@@ -29,18 +29,18 @@ export const IS_EvaluateBufferFunction =
 				return this.Buffer(currentSample);
 			case (IS_BufferFunctionType.Constant):
 				return this.Constant();
-			case (IS_BufferFunctionType.Pulse):
-				return this.Pulse(currentIncrement);
 			case (IS_BufferFunctionType.FrequencyModulatedSine):
 				return this.FrequencyModulatedSine(currentIncrement);
 			case (IS_BufferFunctionType.Impulse):
-				return this.Impulse(currentIncrement);
+				return this.Impulse();
 			case (IS_BufferFunctionType.InverseSawtooth):
 				return this.InverseSawtooth(currentIncrement);
 			case (IS_BufferFunctionType.Noise):
 				return this.Noise();
 			case (IS_BufferFunctionType.NoiseBand):
 				return this.NoiseBand(currentIncrement);
+			case (IS_BufferFunctionType.Pulse):
+				return this.Pulse(currentIncrement);
 			case (IS_BufferFunctionType.QuantizedArrayBuffer):
 				return this.QuantizedArrayBuffer(currentIncrement);
 			case (IS_BufferFunctionType.Ramp):
@@ -118,7 +118,7 @@ export const IS_EvaluateBufferFunction =
 		return Math.sin(time * modulatedFrequencyValue * IS_TWO_PI);
 	},
 
-	Impulse(currentIncrement)
+	Impulse()
 	{
 		return currentIncrement === 0 ? 1 : 0;
 	},

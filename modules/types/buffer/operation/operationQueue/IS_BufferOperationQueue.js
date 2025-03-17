@@ -82,8 +82,14 @@ export const IS_BufferOperationQueue =
 
 		bufferOperationRequestData.functionData = new IS_BufferFunctionData
 		(
-			IS_BufferFunctionType.Buffer, functionArray
+			IS_BufferFunctionType.Buffer, null
 		);
+
+		/*
+		 Right now, WASM needs to receive this array DIRECTLY, not this array as the first
+		 member of an ...args array
+		 */
+		bufferOperationRequestData.functionData.functionArgs = functionArray;
 
 		return bufferOperationRequestData;
 	},
@@ -101,7 +107,10 @@ export const IS_BufferOperationQueue =
 			IS_BufferFunctionType.SuspendedOperations, null
 		);
 
-		// Right now, WASM needs to receive this array DIRECTLY, not this array as the first member of an ...args array
+		/*
+		 Right now, WASM needs to receive this array DIRECTLY, not this array as the first
+		 member of an ...args array
+		 */
 		bufferOperationRequestData.functionData.functionArgs = currentSuspendedOperationsArray;
 
 		return bufferOperationRequestData;

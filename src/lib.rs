@@ -159,8 +159,17 @@ pub fn is_wasm_amplitude_modulated_sine(current_increment: f32, function_argumen
     modulator_amplitude * carrier_amplitude
 }
 
-// TODO: Figure this out
-pub fn is_wasm_buffer(current_sample: i32, function_arguments: &[f32]) -> f32 { 1.0 + 0.0 }
+pub fn is_wasm_buffer(current_sample: i32, function_arguments: &[f32]) -> f32
+{
+    if(current_sample <= function_arguments.len() as i32)
+    {
+        function_arguments[current_sample as usize] as f32
+    }
+    else
+    {
+        0.0
+    }
+}
 
 pub fn is_wasm_constant(function_arguments: &[f32]) -> f32
 {

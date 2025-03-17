@@ -37,10 +37,10 @@ function DO_WORK(operationData)
 
 	let functionData = operationData.functionData;
 
-	let operatorType = operationData.operatorType;
+	let operatorType = operationData.operatorType.toLowerCase();
 
 	let functionArgs = functionData.functionArgs;
-	let functionType = functionData.functionType;
+	let functionType = functionData.functionType.toLowerCase();
 
 	operationData.completedOperationArray = is_wasm_buffer_operation
 	(

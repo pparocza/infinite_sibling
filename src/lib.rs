@@ -36,31 +36,36 @@ extern "C"
 #[wasm_bindgen]
 pub fn is_wasm_buffer_operation
 (
-    buffer_length: i32, function_type: &str, operator_type: &str, function_arguments: &[f32]
+    current_buffer_array: &[f32], function_type: &str, operator_type: &str, function_arguments: &[f32]
 ) -> Vec<f32>
 {
-    let mut function_buffer: Vec<f32> = vec![0.0; buffer_length as usize];
+    let buffer_length = current_buffer_array.len() as i32;
+    let mut function_buffer: Vec<f32> = Vec::new();
 
     let time_increment: f32 = 1.0 / buffer_length as f32;
     let mut sample_index: i32 = 0;
     let mut time: f32 = 0.0;
-    let mut value: f32 = 0.0;
+    let mut function_value: f32 = 0.0;
+    let mut sample_value: f32 = 0.0;
+    let mut current_array_value: f32 = 0.0;
     let function_type_enum: ISBufferFunctionType = function_type_string_to_enum(function_type);
     let operator_type_enum: ISBufferOperatorType = operator_type_string_to_enum(operator_type);
 
     while sample_index < buffer_length
     {
-        value = is_wasm_buffer_function
+        function_value = is_wasm_buffer_function
         (
             &function_type_enum, time, sample_index, function_arguments
         );
 
-        value = is_wasm_buffer_operator
+        current_array_value = current_buffer_array[sample_index as usize];
+
+        sample_value = is_wasm_buffer_operator
         (
-            &operator_type_enum, value, function_buffer[sample_index as usize]
+            &operator_type_enum, current_array_value, function_value
         );
 
-        function_buffer[sample_index as usize] = value;
+        function_buffer.push(sample_value);
         time = time + time_increment;
         sample_index = sample_index + 1;
     }
@@ -126,7 +131,7 @@ pub fn is_wasm_buffer_function
         Square =>
             value = is_wasm_square(current_increment, function_arguments),
         SuspendedOperations =>
-            value = is_wasm_suspended_operations(current_sample),
+            value = is_wasm_suspended_operations(current_sample, function_arguments),
         Triangle =>
             value = is_wasm_triangle(current_increment, function_arguments),
         UnipolarNoise =>
@@ -220,6 +225,7 @@ pub fn is_wasm_pulse(current_increment: f32, function_arguments: &[f32]) -> f32
 }
 
 // TODO: function_arguments currently can hold only f32's, and this requires arbitrary arguments
+//  but actually you could have the last argument to quantized array buffer be a ...args for now
 pub fn is_wasm_quantized_array_buffer(current_increment: f32, function_arguments: &[f32]) -> f32
 {
     /*
@@ -272,8 +278,17 @@ pub fn is_wasm_square(current_increment: f32, function_arguments: &[f32]) -> f32
     }
 }
 
-// TODO: figure this out
-pub fn is_wasm_suspended_operations(current_sample: i32) -> f32 { 1.0 + 0.0 }
+pub fn is_wasm_suspended_operations(current_sample: i32, function_arguments: &[f32]) -> f32
+{
+    if(current_sample <= function_arguments.len() as i32)
+    {
+        function_arguments[current_sample as usize] as f32
+    }
+    else
+    {
+        0.0
+    }
+}
 
 pub fn is_wasm_triangle(current_increment: f32, function_arguments: &[f32]) -> f32
 {
@@ -294,7 +309,10 @@ pub fn is_wasm_triangle(current_increment: f32, function_arguments: &[f32]) -> f
 }
 
 // TODO: figure out rng
-pub fn is_wasm_unipolar_noise() -> f32 { 1.0 + 0.0 }
+pub fn is_wasm_unipolar_noise() -> f32
+{
+    1.0 + 0.0
+}
 
 pub fn is_wasm_unipolar_sine(current_increment: f32, function_arguments: &[f32]) -> f32
 {

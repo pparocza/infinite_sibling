@@ -33,7 +33,6 @@ function WORKER(incomingOperationData)
 function DO_WORK(operationData)
 {
 	let currentBufferArray = operationData.currentBufferArray;
-	let nSamples = currentBufferArray.length;
 
 	let functionData = operationData.functionData;
 
@@ -44,7 +43,7 @@ function DO_WORK(operationData)
 
 	operationData.completedOperationArray = is_wasm_buffer_operation
 	(
-		nSamples, functionType, operatorType, functionArgs
+		currentBufferArray, functionType, operatorType, functionArgs
 	);
 
 	return operationData;

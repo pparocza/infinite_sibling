@@ -1,4 +1,3 @@
-use wasm_bindgen::function_table;
 use wasm_bindgen::prelude::*;
 use crate::ISBufferFunctionType::
 {
@@ -161,7 +160,7 @@ pub fn is_wasm_amplitude_modulated_sine(current_increment: f32, function_argumen
 
 pub fn is_wasm_buffer(current_sample: i32, function_arguments: &[f32]) -> f32
 {
-    if(current_sample <= function_arguments.len() as i32)
+    if current_sample <= function_arguments.len() as i32
     {
         function_arguments[current_sample as usize] as f32
     }
@@ -212,8 +211,12 @@ pub fn is_wasm_inverse_sawtooth(current_increment: f32, function_arguments: &[f3
     f32::powf(1.0 - current_increment, exponent)
 }
 
-// TODO: figure out random number generation
-pub fn is_wasm_noise() -> f32 { 1.0 + 0.0 }
+pub fn is_wasm_noise() -> f32
+{
+    let mut value = js_sys::Math::random() as f32;
+    (value * 2.0) + 1.0
+}
+
 pub fn is_wasm_noise_band(current_increment: f32) -> f32 { 1.0 + 0.0 }
 
 pub fn is_wasm_pulse(current_increment: f32, function_arguments: &[f32]) -> f32
@@ -233,26 +236,56 @@ pub fn is_wasm_pulse(current_increment: f32, function_arguments: &[f32]) -> f32
     }
 }
 
-// TODO: function_arguments currently can hold only f32's, and this requires arbitrary arguments
-//  but actually you could have the last argument to quantized array buffer be a ...args for now
+// TODO: make this a bit less hacky (currently relies on the order of the arguments which
+//  leads to a kinda clunky)
 pub fn is_wasm_quantized_array_buffer(current_increment: f32, function_arguments: &[f32]) -> f32
 {
-    /*
-    let value_array = function_arguments[0];
-    let quantization_value = function_arguments[1];
+    let quantization_value = function_arguments[0];
+    let n_values = (function_arguments.len() - 1) as i32;
 
-    let current_step = Math.floor(currentIncrement * quantizationValue);
-    let index = current_step % value_array.length;
+    let current_step = js_sys::Math::floor
+    (
+        current_increment as f64 * quantization_value as f64
+    ) as i32;
 
-    valueArray[index]
-     */
+    let index = 1 + (current_step % n_values);
 
-    1.0 + 0.0
+    function_arguments[index as usize]
 }
 
 pub fn is_wasm_ramp(current_increment: f32, function_arguments: &[f32]) -> f32
 {
-    1.0 + 0.0
+    let ramp_start = function_arguments[0];
+    let ramp_end = function_arguments[1];
+    let up_end = function_arguments[2];
+    let up_length = function_arguments[3];
+    let down_start = function_arguments[4];
+    let down_length = function_arguments[5];
+    let up_exponent = function_arguments[6];
+    let down_exponent = function_arguments[7];
+
+    let mut value: f32 = 0.0;
+
+    if (current_increment < ramp_start || current_increment >= ramp_end)
+    {
+        value = 0.0;
+    }
+    else if (current_increment >= ramp_start && current_increment <= up_end)
+    {
+        value = (current_increment - ramp_start) / up_length;
+        value = f32::powf(value, up_exponent);
+    }
+    else if (current_increment > up_end && current_increment < down_start)
+    {
+        value = 1.0;
+    }
+    else
+    {
+        value = 1.0 - ((current_increment - down_start) / down_length);
+        value = f32::powf(value, down_exponent);
+    }
+
+    return value;
 }
 
 // TODO: figure out what this even is
@@ -277,7 +310,7 @@ pub fn is_wasm_square(current_increment: f32, function_arguments: &[f32]) -> f32
 {
     let duty_cycle = function_arguments[0];
 
-    if (current_increment < duty_cycle)
+    if current_increment < duty_cycle
     {
         1.0
     }
@@ -289,7 +322,7 @@ pub fn is_wasm_square(current_increment: f32, function_arguments: &[f32]) -> f32
 
 pub fn is_wasm_suspended_operations(current_sample: i32, function_arguments: &[f32]) -> f32
 {
-    if(current_sample <= function_arguments.len() as i32)
+    if current_sample <= function_arguments.len() as i32
     {
         function_arguments[current_sample as usize] as f32
     }
@@ -317,10 +350,9 @@ pub fn is_wasm_triangle(current_increment: f32, function_arguments: &[f32]) -> f
     f32::powf(current_increment, exponent)
 }
 
-// TODO: figure out rng
 pub fn is_wasm_unipolar_noise() -> f32
 {
-    1.0 + 0.0
+    js_sys::Math::random() as f32
 }
 
 pub fn is_wasm_unipolar_sine(current_increment: f32, function_arguments: &[f32]) -> f32

@@ -502,10 +502,10 @@ export class IS_Buffer extends IS_Object
         for(let frequencyIndex = 0; frequencyIndex < bandwidth; frequencyIndex++)
         {
             let frequency = bottomFrequency + frequencyIndex;
-            let tuning = IS_Random.randomFloat(tuningMin, tuningMax);
+            let tuning = IS_Random.Float(tuningMin, tuningMax);
 
             frequencies.push(frequency * tuning);
-            amplitudes.push(IS_Random.randomFloat(amplitudeMin, amplitudeMax));
+            amplitudes.push(IS_Random.Float(amplitudeMin, amplitudeMax));
         }
 
         let frequencyData = [];

@@ -2,12 +2,8 @@ import { IS_BufferFunctionType } from "../function/IS_BufferFunctionType.js";
 import { IS_Random } from "../../../../utilities/IS_Random.js";
 const IS_TWO_PI = Math.PI * 2;
 
-// TODO: Anti-aliasing (sawooth, square)
-// TODO: Fast Sine
-
 export const IS_EvaluateBufferFunction =
 {
-	// TODO: This probably needs to be done better
 	_requestArgumentValues: null,
 
 	get cachedRequestArgumentValues() { return this._requestArgumentValues; },

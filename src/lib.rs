@@ -32,6 +32,9 @@ extern "C"
     fn log(s: &str);
 }
 
+// TODO: Anti-aliasing (sawooth, square)
+// TODO: Fast Sine
+
 #[wasm_bindgen]
 pub fn is_wasm_buffer_operation
 (

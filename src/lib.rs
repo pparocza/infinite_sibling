@@ -94,52 +94,52 @@ pub fn is_wasm_buffer_function
     function_arguments: &[f32]
 ) -> f32
 {
-    let mut value: f32 = 0.0;
+    let mut sample_value: f32 = 0.0;
 
     match function_type
     {
         AmplitudeModulatedSine =>
-            value = is_wasm_amplitude_modulated_sine(current_increment, function_arguments),
+            sample_value = is_wasm_amplitude_modulated_sine(current_increment, function_arguments),
         Buffer =>
-            value = is_wasm_buffer(current_sample, function_arguments),
+            sample_value = is_wasm_buffer(current_sample, function_arguments),
         Constant =>
-            value = is_wasm_constant(function_arguments),
+            sample_value = is_wasm_constant(function_arguments),
         FrequencyModulatedSine =>
-            value = is_wasm_frequency_modulated_sine
+            sample_value = is_wasm_frequency_modulated_sine
                 (current_increment, function_arguments),
         Impulse =>
-            value = is_wasm_impulse(current_sample),
+            sample_value = is_wasm_impulse(current_sample),
         InverseSawtooth =>
-            value = is_wasm_inverse_sawtooth(current_increment, function_arguments),
+            sample_value = is_wasm_inverse_sawtooth(current_increment, function_arguments),
         Noise =>
-            value = is_wasm_noise(),
+            sample_value = is_wasm_noise(),
         NoiseBand =>
-            value = is_wasm_noise_band(current_increment),
+            sample_value = is_wasm_noise_band(current_increment),
         Pulse =>
-            value = is_wasm_pulse(current_increment, function_arguments),
+            sample_value = is_wasm_pulse(current_increment, function_arguments),
         QuantizedArrayBuffer =>
-            value = is_wasm_quantized_array_buffer(current_increment, function_arguments),
+            sample_value = is_wasm_quantized_array_buffer(current_increment, function_arguments),
         Ramp =>
-            value = is_wasm_ramp(current_increment, function_arguments),
+            sample_value = is_wasm_ramp(current_increment, function_arguments),
         RampBand =>
-            value = is_wasm_ramp_band(current_increment),
+            sample_value = is_wasm_ramp_band(current_increment),
         Sawtooth =>
-            value = is_wasm_sawtooth(current_increment, function_arguments),
+            sample_value = is_wasm_sawtooth(current_increment, function_arguments),
         Sine =>
-            value = is_wasm_sine(current_increment, function_arguments),
+            sample_value = is_wasm_sine(current_increment, function_arguments),
         Square =>
-            value = is_wasm_square(current_increment, function_arguments),
+            sample_value = is_wasm_square(current_increment, function_arguments),
         SuspendedOperations =>
-            value = is_wasm_suspended_operations(current_sample, function_arguments),
+            sample_value = is_wasm_suspended_operations(current_sample, function_arguments),
         Triangle =>
-            value = is_wasm_triangle(current_increment, function_arguments),
+            sample_value = is_wasm_triangle(current_increment, function_arguments),
         UnipolarNoise =>
-            value = is_wasm_unipolar_noise(),
+            sample_value = is_wasm_unipolar_noise(),
         UnipolarSine =>
-            value = is_wasm_unipolar_sine(current_increment, function_arguments),
-        ISBufferFunctionType::Undefined => value = 0.0,
+            sample_value = is_wasm_unipolar_sine(current_increment, function_arguments),
+        ISBufferFunctionType::Undefined => sample_value = 0.0,
     }
-    value
+    sample_value
 }
 
 // TODO: You might be able to gain some pretty substantial speed by operation on all of these as
@@ -187,9 +187,9 @@ pub fn is_wasm_frequency_modulated_sine(current_increment: f32, function_argumen
         f32::sin(current_increment * modulator_frequency * TWO_PI);
 
     let modulated_frequency_value = carrier_frequency + modulation_value;
-    let value = f32::sin(current_increment * modulated_frequency_value * TWO_PI);
+    let sample_value = f32::sin(current_increment * modulated_frequency_value * TWO_PI);
 
-    value
+    sample_value
 }
 
 pub fn is_wasm_impulse(current_sample: i32) -> f32
@@ -213,8 +213,8 @@ pub fn is_wasm_inverse_sawtooth(current_increment: f32, function_arguments: &[f3
 
 pub fn is_wasm_noise() -> f32
 {
-    let mut value = js_sys::Math::random() as f32;
-    (value * 2.0) + 1.0
+    let mut sample_value = js_sys::Math::random() as f32;
+    (sample_value * 2.0) + 1.0
 }
 
 pub fn is_wasm_noise_band(current_increment: f32) -> f32 { 1.0 + 0.0 }
@@ -264,28 +264,28 @@ pub fn is_wasm_ramp(current_increment: f32, function_arguments: &[f32]) -> f32
     let up_exponent = function_arguments[6];
     let down_exponent = function_arguments[7];
 
-    let mut value: f32 = 0.0;
+    let mut sample_value: f32 = 0.0;
 
     if (current_increment < ramp_start || current_increment >= ramp_end)
     {
-        value = 0.0;
+        sample_value = 0.0;
     }
     else if (current_increment >= ramp_start && current_increment <= up_end)
     {
-        value = (current_increment - ramp_start) / up_length;
-        value = f32::powf(value, up_exponent);
+        sample_value = (current_increment - ramp_start) / up_length;
+        sample_value = f32::powf(sample_value, up_exponent);
     }
     else if (current_increment > up_end && current_increment < down_start)
     {
-        value = 1.0;
+        sample_value = 1.0;
     }
     else
     {
-        value = 1.0 - ((current_increment - down_start) / down_length);
-        value = f32::powf(value, down_exponent);
+        sample_value = 1.0 - ((current_increment - down_start) / down_length);
+        sample_value = f32::powf(sample_value, down_exponent);
     }
 
-    return value;
+    sample_value
 }
 
 // TODO: figure out what this even is
@@ -359,9 +359,9 @@ pub fn is_wasm_unipolar_sine(current_increment: f32, function_arguments: &[f32])
 {
     let time = current_increment;
     let frequency = function_arguments[0];
-    let value = f32::sin(time * frequency * TWO_PI);
+    let sample_value = f32::sin(time * frequency * TWO_PI);
 
-    value * 0.5 + 0.5
+    sample_value * 0.5 + 0.5
 }
 
 pub fn function_type_string_to_enum(function_type: &str) -> ISBufferFunctionType

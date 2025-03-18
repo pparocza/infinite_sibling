@@ -114,7 +114,7 @@ pub fn is_wasm_buffer_function
         Noise =>
             sample_value = is_wasm_noise(),
         NoiseBand =>
-            sample_value = is_wasm_noise_band(current_increment),
+            sample_value = is_wasm_noise_band(current_increment, function_arguments),
         Pulse =>
             sample_value = is_wasm_pulse(current_increment, function_arguments),
         QuantizedArrayBuffer =>
@@ -217,7 +217,32 @@ pub fn is_wasm_noise() -> f32
     (sample_value * 2.0) - 1.0
 }
 
-pub fn is_wasm_noise_band(current_increment: f32) -> f32 { 1.0 + 0.0 }
+// TODO: The function arguments from JS contain arrays, and function_arguments is an array
+//  of floats
+pub fn is_wasm_noise_band(current_increment: f32, function_arguments: &[f32]) -> f32
+{
+    /*
+    let frequencyData = this.cachedRequestArgumentValues[0];
+
+    let frequencies = frequencyData[0];
+    let amplitudes = frequencyData[1];
+
+    let nFrequencies = frequencies.length;
+
+    let sampleValue = 0;
+
+    for(let frequencyIndex= 0; frequencyIndex < nFrequencies; frequencyIndex++)
+    {
+        let amplitude = amplitudes[frequencyIndex];
+        let frequency = frequencies[frequencyIndex];
+
+        sampleValue += amplitude * Math.sin(frequency * currentIncrement * IS_TWO_PI);
+    }
+
+    return sampleValue;
+    */
+    1.0 + 0.0
+}
 
 pub fn is_wasm_pulse(current_increment: f32, function_arguments: &[f32]) -> f32
 {

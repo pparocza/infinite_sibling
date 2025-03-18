@@ -47,6 +47,7 @@ export class IS_Buffer extends IS_Object
         this._bufferIsReady = true;
         this._printOperations = false;
         this._printOnOperationsComplete = false;
+        this._printTag = null;
 
         this._operationChannel = null;
 
@@ -113,6 +114,7 @@ export class IS_Buffer extends IS_Object
 
     get printOperations() { return this._printOperations; }
     set printOperations(value) { this._printOperations = value; }
+    set printTag(value) { this._printTag = value; }
 
     get printOnOperationsComplete() { return this._printOnOperationsComplete; }
     set printOnOperationsComplete(value) { this._printOnOperationsComplete = value; }
@@ -538,6 +540,11 @@ export class IS_Buffer extends IS_Object
 
     print(channel = null)
     {
+        if(this._printTag !== null)
+        {
+            console.log(this._printTag);
+        }
+
         if(channel === null)
         {
             for(let channelIndex = 0; channelIndex < this.numberOfChannels; channelIndex++)

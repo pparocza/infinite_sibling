@@ -347,7 +347,7 @@ pub fn is_wasm_triangle(current_increment: f32, function_arguments: &[f32]) -> f
         sample_value = 1.0 - current_increment;
     }
 
-    f32::powf(current_increment, exponent)
+    f32::powf(sample_value, exponent)
 }
 
 pub fn is_wasm_unipolar_noise() -> f32

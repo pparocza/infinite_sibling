@@ -214,7 +214,7 @@ pub fn is_wasm_inverse_sawtooth(current_increment: f32, function_arguments: &[f3
 pub fn is_wasm_noise() -> f32
 {
     let mut sample_value = js_sys::Math::random() as f32;
-    (sample_value * 2.0) + 1.0
+    (sample_value * 2.0) - 1.0
 }
 
 pub fn is_wasm_noise_band(current_increment: f32) -> f32 { 1.0 + 0.0 }

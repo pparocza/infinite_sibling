@@ -96,17 +96,17 @@ function getArrayF32FromWasm0(ptr, len) {
 }
 /**
  * @param {Float32Array} current_buffer_array
- * @param {string} function_type
- * @param {string} operator_type
+ * @param {string} function_type_as_string
+ * @param {string} operator_type_as_string
  * @param {Float32Array} function_arguments
  * @returns {Float32Array}
  */
-export function is_wasm_buffer_operation(current_buffer_array, function_type, operator_type, function_arguments) {
+export function is_wasm_buffer_operation(current_buffer_array, function_type_as_string, operator_type_as_string, function_arguments) {
     const ptr0 = passArrayF32ToWasm0(current_buffer_array, wasm.__wbindgen_malloc);
     const len0 = WASM_VECTOR_LEN;
-    const ptr1 = passStringToWasm0(function_type, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+    const ptr1 = passStringToWasm0(function_type_as_string, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
     const len1 = WASM_VECTOR_LEN;
-    const ptr2 = passStringToWasm0(operator_type, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+    const ptr2 = passStringToWasm0(operator_type_as_string, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
     const len2 = WASM_VECTOR_LEN;
     const ptr3 = passArrayF32ToWasm0(function_arguments, wasm.__wbindgen_malloc);
     const len3 = WASM_VECTOR_LEN;

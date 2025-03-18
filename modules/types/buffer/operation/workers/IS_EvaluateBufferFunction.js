@@ -1,6 +1,5 @@
 import { IS_BufferFunctionType } from "../function/IS_BufferFunctionType.js";
 import { IS_Random } from "../../../../utilities/IS_Random.js";
-
 const IS_TWO_PI = Math.PI * 2;
 
 // TODO: Anti-aliasing (sawooth, square)
@@ -30,18 +29,18 @@ export const IS_EvaluateBufferFunction =
 				return this.Buffer(currentSample);
 			case (IS_BufferFunctionType.Constant):
 				return this.Constant();
-			case (IS_BufferFunctionType.Pulse):
-				return this.Pulse(currentIncrement);
 			case (IS_BufferFunctionType.FrequencyModulatedSine):
 				return this.FrequencyModulatedSine(currentIncrement);
 			case (IS_BufferFunctionType.Impulse):
-				return this.Impulse(currentIncrement);
+				return this.Impulse();
 			case (IS_BufferFunctionType.InverseSawtooth):
 				return this.InverseSawtooth(currentIncrement);
 			case (IS_BufferFunctionType.Noise):
 				return this.Noise();
 			case (IS_BufferFunctionType.NoiseBand):
 				return this.NoiseBand(currentIncrement);
+			case (IS_BufferFunctionType.Pulse):
+				return this.Pulse(currentIncrement);
 			case (IS_BufferFunctionType.QuantizedArrayBuffer):
 				return this.QuantizedArrayBuffer(currentIncrement);
 			case (IS_BufferFunctionType.Ramp):
@@ -113,13 +112,13 @@ export const IS_EvaluateBufferFunction =
 		let modulatorFrequency = this.cachedRequestArgumentValues[1];
 		let modulatorGain = this.cachedRequestArgumentValues[2];
 
-		let modulationValue = modulatorGain * Math.sin(modulatorFrequency * time * IS_TWO_PI);
+		let modulationValue = modulatorGain * Math.sin(time * modulatorFrequency * IS_TWO_PI);
 		let modulatedFrequencyValue = carrierFrequency + modulationValue;
 
-		return Math.sin(modulatedFrequencyValue * IS_TWO_PI * time);
+		return Math.sin(time * modulatedFrequencyValue * IS_TWO_PI);
 	},
 
-	Impulse(currentIncrement)
+	Impulse()
 	{
 		return currentIncrement === 0 ? 1 : 0;
 	},

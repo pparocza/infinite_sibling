@@ -3,8 +3,6 @@ import { IS_BufferFunctionType } from "../function/IS_BufferFunctionType.js";
 import { IS_BufferFunctionData } from "../function/IS_BufferFunctionData.js";
 import { IS_BufferOperationQueueBufferRegistry } from "./IS_BufferOperationQueueBufferRegistry.js";
 
-const BufferRegistry = IS_BufferOperationQueueBufferRegistry;
-
 export const IS_BufferOperationQueue =
 {
 	_operationRequestQueue: [],
@@ -25,7 +23,7 @@ export const IS_BufferOperationQueue =
 	requestOperation(iSAudioBuffer, bufferOperationRequestData)
 	{
 		this._isOperating = true;
-		BufferRegistry.addOperationRequest(iSAudioBuffer);
+		IS_BufferOperationQueueBufferRegistry.addOperationRequest(iSAudioBuffer);
 		this._enqueueBufferOperation(bufferOperationRequestData);
 	},
 
@@ -65,7 +63,9 @@ export const IS_BufferOperationQueue =
 		{
 			// TODO: investigate the fact that buffer.getChannelData() returns a reference,
 			//  so you don't have to update currentBuffer when you aren't suspending
-			requestData.currentBufferArray = BufferRegistry.getCurrentSuspendedOperationsArray(requestData.bufferUuid);
+			requestData.currentBufferArray =
+				IS_BufferOperationQueueBufferRegistry
+					.getCurrentSuspendedOperationsArray(requestData.bufferUuid);
 		}
 
 		return requestData;
@@ -82,23 +82,36 @@ export const IS_BufferOperationQueue =
 
 		bufferOperationRequestData.functionData = new IS_BufferFunctionData
 		(
-			IS_BufferFunctionType.Buffer, functionArray
+			IS_BufferFunctionType.Buffer, null
 		);
+
+		/*
+		 Right now, WASM needs to receive this array DIRECTLY, not this array as the first
+		 member of an ...args array
+		 */
+		bufferOperationRequestData.functionData.functionArgs = functionArray;
 
 		return bufferOperationRequestData;
 	},
 
 	_handleSuspendedOperationsFunctionType(bufferOperationRequestData)
 	{
-		let currentSuspendedOperationsArray = BufferRegistry.getCurrentSuspendedOperationsArray
+		let currentSuspendedOperationsArray = IS_BufferOperationQueueBufferRegistry
+		.getCurrentSuspendedOperationsArray
 		(
 			bufferOperationRequestData.bufferUuid
 		);
 
 		bufferOperationRequestData.functionData = new IS_BufferFunctionData
 		(
-			IS_BufferFunctionType.SuspendedOperations, currentSuspendedOperationsArray
+			IS_BufferFunctionType.SuspendedOperations, null
 		);
+
+		/*
+		 Right now, WASM needs to receive this array DIRECTLY, not this array as the first
+		 member of an ...args array
+		 */
+		bufferOperationRequestData.functionData.functionArgs = currentSuspendedOperationsArray;
 
 		return bufferOperationRequestData;
 	},
@@ -107,7 +120,7 @@ export const IS_BufferOperationQueue =
 	{
 		let bufferUuid = completedOperationData.bufferUuid;
 
-		BufferRegistry.completeOperationRequest(completedOperationData);
+		IS_BufferOperationQueueBufferRegistry.completeOperationRequest(completedOperationData);
 
 		this._handleOperationComplete(bufferUuid);
 	},

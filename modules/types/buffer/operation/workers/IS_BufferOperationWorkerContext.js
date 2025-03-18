@@ -1,5 +1,11 @@
 import { IS_BufferOperatorType } from "../IS_BufferOperatorType.js";
-import { IS_EvaluateBufferFunction } from "./IS_EvaluateBufferFunction.js";
+
+import wasmInit,
+{
+	is_wasm_buffer_operation
+} from "../../../../../pkg/wasm_sibling.js";
+
+const rustWasm = await wasmInit("../../../../../pkg/wasm_sibling_bg.wasm");
 
 function INITIALIZE_LISTENER()
 {
@@ -27,57 +33,18 @@ function WORKER(incomingOperationData)
 function DO_WORK(operationData)
 {
 	let currentBufferArray = operationData.currentBufferArray;
-	let operationArray = new Float32Array(currentBufferArray.length);
 
-	let nSamples = operationArray.length;
-
-	let operatorType = operationData.operatorType;
 	let functionData = operationData.functionData;
+
+	let operatorType = operationData.operatorType.toLowerCase();
+
 	let functionArgs = functionData.functionArgs;
-	let functionType = functionData.functionType;
+	let functionType = functionData.functionType.toLowerCase();
 
-	let sampleIncrement = 1 / nSamples;
-	let currentIncrement = 0;
-
-	for(let sampleIndex = 0; sampleIndex < nSamples; sampleIndex++)
-	{
-		let currentValue = currentBufferArray[sampleIndex];
-		let functionValue = IS_EvaluateBufferFunction.evaluate
-		(
-			functionType, functionArgs, currentIncrement, sampleIndex
-		);
-
-		operationArray[sampleIndex] = _evaluateOperation
-		(
-			operatorType, functionValue, currentValue
-		);
-
-		currentIncrement += sampleIncrement;
-	}
-
-	operationData.completedOperationArray = operationArray;
+	operationData.completedOperationArray = is_wasm_buffer_operation
+	(
+		currentBufferArray, functionType, operatorType, functionArgs
+	);
 
 	return operationData;
-}
-
-function _evaluateOperation(iSOperatorType, functionValue, currentSampleValue)
-{
-	if(functionValue === null)
-	{
-		return currentSampleValue;
-	}
-
-	switch(iSOperatorType)
-	{
-		case(IS_BufferOperatorType.Add):
-			return currentSampleValue + functionValue;
-		case(IS_BufferOperatorType.Multiply):
-			return currentSampleValue * functionValue;
-		case(IS_BufferOperatorType.Divide):
-			return currentSampleValue / functionValue;
-		case(IS_BufferOperatorType.Subtract):
-			return currentSampleValue - functionValue;
-		default:
-			break;
-	}
 }

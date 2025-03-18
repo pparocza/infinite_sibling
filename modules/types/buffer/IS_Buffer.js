@@ -442,13 +442,13 @@ export class IS_Buffer extends IS_Object
         return this;
     }
 
-    quantizedArrayBuffer(valueArray, quantizationValue = null)
+    quantizedArrayBuffer(quantizationValue = null, ...values)
     {
-        let quantization = quantizationValue !== null ? quantizationValue : valueArray.length;
+        let quantization = quantizationValue !== null ? quantizationValue : values.length;
 
         this._setOperationRequestFunctionData
         (
-            IS_BufferFunctionType.QuantizedArrayBuffer, valueArray, quantization
+            IS_BufferFunctionType.QuantizedArrayBuffer, quantization, ...values
         );
 
         return this;

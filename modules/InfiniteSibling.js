@@ -235,6 +235,11 @@ export class InfiniteSibling
         return frequencyScale;
     }
 
+    get Mode()
+    {
+        return IS_Mode;
+    }
+
     /*
         RANDOM
     */

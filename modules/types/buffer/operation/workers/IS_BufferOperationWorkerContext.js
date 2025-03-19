@@ -1,5 +1,3 @@
-import { IS_BufferOperatorType } from "../IS_BufferOperatorType.js";
-
 import wasmInit,
 {
 	is_wasm_buffer_operation
@@ -25,8 +23,6 @@ function LISTENER_CALLBACK(message)
 function WORKER(incomingOperationData)
 {
 	let completedOperationData = DO_WORK(incomingOperationData);
-
-	// TODO: this should be a data type
 	postMessage( { operationData: completedOperationData } );
 }
 

@@ -58,7 +58,7 @@ export class IS_SequenceArray extends IS_Array
         {
             if (timeIndex === 0 && includeStart)
             {
-                if(IS_Random.coinToss(density))
+                if(IS_Random.CoinToss(density))
                 {
                     this.value.push(startTime);
                 }
@@ -66,11 +66,11 @@ export class IS_SequenceArray extends IS_Array
             }
 
             let timeToNext = possibleDurationsArray.random() * speedFactor;
-            let drunkAdjustment = timeToNext * IS_Random.randomFloat(-drunk, drunk);
+            let drunkAdjustment = timeToNext * IS_Random.Float(-drunk, drunk);
 
             nextTime = previousTime + timeToNext + drunkAdjustment;
 
-            if (IS_Random.coinToss(density))
+            if (IS_Random.CoinToss(density))
             {
                 if(nextTime < timeLimit)
                 {

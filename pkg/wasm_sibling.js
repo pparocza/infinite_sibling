@@ -150,14 +150,6 @@ async function __wbg_load(module, imports) {
 function __wbg_get_imports() {
     const imports = {};
     imports.wbg = {};
-    imports.wbg.__wbg_floor_3206eb41fe582a22 = function(arg0) {
-        const ret = Math.floor(arg0);
-        return ret;
-    };
-    imports.wbg.__wbg_random_3ad904d98382defe = function() {
-        const ret = Math.random();
-        return ret;
-    };
     imports.wbg.__wbindgen_init_externref_table = function() {
         const table = wasm.__wbindgen_export_0;
         const offset = table.grow(4);

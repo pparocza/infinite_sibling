@@ -1,9 +1,10 @@
 use wasm_bindgen::prelude::*;
-use crate::is_function::is_wasm_buffer_function;
-use crate::is_operator::is_wasm_buffer_operator;
+use crate::is_buffer_function::*;
+use crate::is_operator::*;
 
 mod is_function;
 mod is_operator;
+mod is_buffer_function;
 
 const TWO_PI: f32 = std::f32::consts::PI * 2.0;
 
@@ -29,29 +30,32 @@ pub fn is_wasm_buffer_operation
     let mut function_buffer: Vec<f32> = Vec::new();
 
     let time_increment: f32 = 1.0 / buffer_length as f32;
-    let mut sample_index: i32 = 0;
-    let mut time: f32 = 0.0;
+    let mut current_sample: i32 = 0;
+    let mut current_increment: f32 = 0.0;
     let mut function_value: f32 = 0.0;
     let mut sample_value: f32 = 0.0;
     let mut current_array_value: f32 = 0.0;
 
-    while sample_index < buffer_length
+    let buffer_function = is_function::is_wasm_buffer_function
+    (
+        function_type_as_string, function_arguments
+    );
+
+    let operator = is_operator::is_wasm_buffer_operator
+    (
+        operator_type_as_string
+    );
+
+    while current_sample < buffer_length
     {
-        function_value = is_wasm_buffer_function
-        (
-            function_type_as_string, time, sample_index, function_arguments
-        );
+        current_array_value = current_buffer_array[current_sample as usize];
 
-        current_array_value = current_buffer_array[sample_index as usize];
-
-        sample_value = is_wasm_buffer_operator
-        (
-            operator_type_as_string, current_array_value, function_value
-        );
+        function_value = buffer_function.evaluate(current_increment, current_sample);
+        sample_value = operator.operate(current_array_value, function_value);
 
         function_buffer.push(sample_value);
-        time = time + time_increment;
-        sample_index = sample_index + 1;
+        current_increment = current_increment + time_increment;
+        current_sample = current_sample + 1;
     }
 
     function_buffer

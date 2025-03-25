@@ -1,0 +1,18 @@
+{
+  "name": "wasm_sibling",
+  "type": "module",
+  "collaborators": [
+    "Paul Paroczai <paulparoczai@gmail.com>"
+  ],
+  "version": "0.1.0",
+  "files": [
+    "wasm_sibling_bg.wasm",
+    "wasm_sibling.js",
+    "wasm_sibling.d.ts"
+  ],
+  "main": "wasm_sibling.js",
+  "types": "wasm_sibling.d.ts",
+  "sideEffects": [
+    "./snippets/*"
+  ]
+}

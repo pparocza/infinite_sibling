@@ -1,63 +1,140 @@
 use crate::is_buffer_function::*;
 
-enum ISBufferFunctionType
-{
-    AmplitudeModulatedSine, Buffer, Constant, FrequencyModulatedSine, Impulse, InverseSawtooth,
-    Noise, NoiseBand, Pulse, QuantizedArrayBuffer, Ramp, RampBand, Sawtooth, Sine, Square,
-    SuspendedOperations, Triangle, UnipolarNoise, UnipolarSine, Undefined
-}
-
-pub fn is_wasm_buffer_function
+pub fn is_wasm_buffer_function<'a>
 (
-    function_type_as_string: &str, function_arguments: &[f32]
-) -> impl BufferFunction
+    function_type_as_string: &str, function_arguments: &'a[f32]
+) -> Box<dyn ISEvaluateFunction<'a> + 'a>
 {
     let function_type = function_type_string_to_enum(function_type_as_string);
 
     match function_type
     {
-        /*
-        ISBufferFunctionType::AmplitudeModulatedSine => {
-            ISAmplitudeModulation::new(function_arguments)
+        ISBufferFunctionType::AmplitudeModulatedSine =>
+        {
+            Box::new
+            (
+                ISAmplitudeModulatedSine
+                {
+                    carrier_frequency: function_arguments[0],
+                    modulator_frequency: function_arguments[1],
+                    modulator_gain: function_arguments[2],
+                }
+            )
         },
-        */
-        ISBufferFunctionType::FrequencyModulatedSine => {
-            ISFrequencyModulation::new(function_arguments)
+
+        ISBufferFunctionType::Buffer =>
+        {
+            Box::new(ISBufferAsFunction { buffer_function: function_arguments } )
+        }
+
+        ISBufferFunctionType::Constant =>
+        {
+            Box::new(ISConstant{ value: function_arguments[0] })
+        }
+
+        ISBufferFunctionType::FrequencyModulatedSine =>
+        {
+            Box::new
+            (
+                ISFrequencyModulatedSine
+                {
+                    carrier_frequency: function_arguments[0],
+                    modulator_frequency: function_arguments[1],
+                    modulator_gain: function_arguments[2],
+                }
+            )
         },
-        _ => { ISFrequencyModulation::new(function_arguments) }
-        /*
-        ISBufferFunctionType::Impulse =>
-            sample_value = is_wasm_impulse(current_sample),
+
+        ISBufferFunctionType::Impulse => { Box::new(ISImpulse {} ) }
+
         ISBufferFunctionType::InverseSawtooth =>
-            sample_value = is_wasm_inverse_sawtooth(current_increment, function_arguments),
-        ISBufferFunctionType::Noise =>
-            sample_value = is_wasm_noise(),
-        ISBufferFunctionType::NoiseBand =>
-            sample_value = is_wasm_noise_band(current_increment, function_arguments),
+        {
+            Box::new(ISInverseSawtooth{ exponent: function_arguments[0] } )
+        },
+
+        ISBufferFunctionType::Noise => { Box::new(ISNoise {} ) },
+
+        ISBufferFunctionType::NoiseBand => { Box::new(ISNoiseBand {} ) },
+
         ISBufferFunctionType::Pulse =>
-            sample_value = is_wasm_pulse(current_increment, function_arguments),
+        {
+            Box::new
+            (
+                ISPulse
+                {
+                    pulse_start_percent: function_arguments[0],
+                    pulse_end_percent: function_arguments[1]
+                }
+            )
+        },
+
         ISBufferFunctionType::QuantizedArrayBuffer =>
-            sample_value = is_wasm_quantized_array_buffer(current_increment, function_arguments),
+        {
+            Box::new(ISQuantizedArrayBuffer { arguments: function_arguments } )
+        },
+
         ISBufferFunctionType::Ramp =>
-            sample_value = is_wasm_ramp(current_increment, function_arguments),
-        ISBufferFunctionType::RampBand =>
-            sample_value = is_wasm_ramp_band(current_increment),
+        {
+            Box::new
+            (
+                ISRamp
+                {
+                    ramp_start: function_arguments[0],
+                    ramp_end: function_arguments[1],
+                    up_end: function_arguments[2],
+                    up_length: function_arguments[3],
+                    down_start: function_arguments[4],
+                    down_length: function_arguments[5],
+                    up_exponent: function_arguments[6],
+                    down_exponent: function_arguments[7]
+                }
+            )
+        },
+
+        ISBufferFunctionType::RampBand => { Box::new(ISRampBand {} ) },
+
         ISBufferFunctionType::Sawtooth =>
-            sample_value = is_wasm_sawtooth(current_increment, function_arguments),
-        ISBufferFunctionType::Sine =>
-            sample_value = is_wasm_sine(current_increment, function_arguments),
+        {
+            Box::new
+            (
+                ISSawtooth
+                {
+                    exponent: function_arguments[0],
+                }
+            )
+        },
+
+        ISBufferFunctionType::Sine => { Box::new(ISSine { frequency: function_arguments[0] } ) },
+
         ISBufferFunctionType::Square =>
-            sample_value = is_wasm_square(current_increment, function_arguments),
+        {
+            Box::new
+            (
+                ISSquare
+                {
+                    duty_cycle: function_arguments[0]
+                }
+            )
+        },
+
         ISBufferFunctionType::SuspendedOperations =>
-            sample_value = is_wasm_suspended_operations(current_sample, function_arguments),
+        {
+            Box::new(ISSuspendedOperations { suspended_array: function_arguments } )
+        }
+
         ISBufferFunctionType::Triangle =>
-            sample_value = is_wasm_triangle(current_increment, function_arguments),
-        ISBufferFunctionType::UnipolarNoise =>
-            sample_value = is_wasm_unipolar_noise(),
+        {
+            Box::new(ISTriangle { exponent: function_arguments[0] } )
+        },
+
+        ISBufferFunctionType::UnipolarNoise => { Box::new(ISUnipolarNoise {} ) },
+
         ISBufferFunctionType::UnipolarSine =>
-            sample_value = is_wasm_unipolar_sine(current_increment, function_arguments),
-        ISBufferFunctionType::Undefined => sample_value = 0.0,
-         */
+        {
+            Box::new(ISSine { frequency: function_arguments[0] })
+        }
+
+        _ => { Box::new(ISConstant { value: 0.0 }) }
     }
 }
 

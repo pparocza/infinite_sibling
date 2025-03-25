@@ -36,12 +36,12 @@ pub fn is_wasm_buffer_operation
     let mut sample_value: f32 = 0.0;
     let mut current_array_value: f32 = 0.0;
 
-    let buffer_function = is_function::is_wasm_buffer_function
+    let buffer_function = &is_function::is_wasm_buffer_function
     (
         function_type_as_string, function_arguments
     );
 
-    let operator = is_operator::is_wasm_buffer_operator
+    let operator = &is_operator::is_wasm_buffer_operator
     (
         operator_type_as_string
     );

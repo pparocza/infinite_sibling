@@ -3,18 +3,16 @@ enum ISBufferOperatorType
     Add, Subtract, Multiply, Divide
 }
 
-pub fn is_wasm_buffer_operator(operator_type_as_string: &str) -> impl Operate
+pub fn is_wasm_buffer_operator(operator_type_as_string: &str) -> Box<dyn Operate>
 {
     let operator_type: ISBufferOperatorType = operator_type_string_to_enum(operator_type_as_string);
 
     match operator_type
     {
-        ISBufferOperatorType::Add => { Add {} }
-        /*
-        ISBufferOperatorType::Subtract => { Subtract {} }
-        ISBufferOperatorType::Multiply => { Multiply {} }
-        ISBufferOperatorType::Divide => { Divide {} }
-        */
+        ISBufferOperatorType::Add => { Box::new(Add {}) }
+        ISBufferOperatorType::Subtract => { Box::new(Subtract {}) }
+        ISBufferOperatorType::Multiply => { Box::new(Multiply {}) }
+        ISBufferOperatorType::Divide => { Box::new(Divide {}) }
         _ => { unreachable!() }
     }
 }
@@ -39,23 +37,27 @@ pub trait Operate
 pub struct Add {}
 impl Operate for Add
 {
-    fn operate(&self, current_value: f32, function_value: f32) -> f32 { current_value + function_value }
+    fn operate(&self, current_value: f32, function_value: f32) -> f32
+    { current_value + function_value }
 }
 
 pub struct Subtract {}
 impl Operate for Subtract
 {
-    fn operate(&self, current_value: f32, function_value: f32) -> f32 { current_value - function_value }
+    fn operate(&self, current_value: f32, function_value: f32) -> f32
+    { current_value - function_value }
 }
 
 pub struct Multiply {}
 impl Operate for Multiply
 {
-    fn operate(&self, current_value: f32, function_value: f32) -> f32 { current_value * function_value }
+    fn operate(&self, current_value: f32, function_value: f32) -> f32
+    { current_value * function_value }
 }
 
 pub struct Divide {}
 impl Operate for Divide
 {
-    fn operate(&self, current_value: f32, function_value: f32) -> f32 { current_value / function_value }
+    fn operate(&self, current_value: f32, function_value: f32) -> f32
+    { current_value / function_value }
 }

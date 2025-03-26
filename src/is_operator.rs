@@ -1,12 +1,10 @@
-enum ISBufferOperatorType
+pub enum ISBufferOperatorType
 {
     Add, Subtract, Multiply, Divide
 }
 
-pub fn is_wasm_buffer_operator(operator_type_as_string: &str) -> Box<dyn Operate>
+pub fn is_wasm_buffer_operator(operator_type: ISBufferOperatorType) -> Box<dyn Operate>
 {
-    let operator_type: ISBufferOperatorType = operator_type_string_to_enum(operator_type_as_string);
-
     match operator_type
     {
         ISBufferOperatorType::Add => { Box::new(Add {}) }
@@ -17,7 +15,7 @@ pub fn is_wasm_buffer_operator(operator_type_as_string: &str) -> Box<dyn Operate
     }
 }
 
-fn operator_type_string_to_enum(operator_type: &str) -> ISBufferOperatorType
+pub fn operator_type_string_to_enum(operator_type: &str) -> ISBufferOperatorType
 {
     match operator_type
     {

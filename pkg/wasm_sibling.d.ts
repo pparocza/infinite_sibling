@@ -1,6 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
-export function is_wasm_buffer_operation(current_buffer_array: Float32Array, function_type_as_string: string, operator_type_as_string: string, function_arguments: Float32Array): Float32Array;
+export function is_wasm_buffer_operation(function_type_as_string: string, operator_type_as_string: string, buffer_length: number, buffer_id: number, function_arguments: Float32Array): Float32Array;
 
 export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembly.Module;
 

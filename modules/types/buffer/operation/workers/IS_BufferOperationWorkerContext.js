@@ -28,18 +28,18 @@ function WORKER(incomingOperationData)
 
 function DO_WORK(operationData)
 {
-	let currentBufferArray = operationData.currentBufferArray;
+	let bufferLengthInSamples = operationData.currentBufferArray.length;
 
 	let functionData = operationData.functionData;
 
-	let operatorType = operationData.operatorType.toLowerCase();
+	let operatorTypeAsString = operationData.operatorType.toLowerCase();
 
 	let functionArgs = functionData.functionArgs;
-	let functionType = functionData.functionType.toLowerCase();
+	let functionTypeAsString = functionData.functionType.toLowerCase();
 
 	operationData.completedOperationArray = is_wasm_buffer_operation
 	(
-		currentBufferArray, functionType, operatorType, functionArgs
+		functionTypeAsString, operatorTypeAsString, bufferLengthInSamples, 0, functionArgs
 	);
 
 	return operationData;

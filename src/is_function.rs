@@ -2,11 +2,9 @@ use crate::is_buffer_function::*;
 
 pub fn is_wasm_buffer_function<'a>
 (
-    function_type_as_string: &str, function_arguments: &'a[f32]
+    function_type: ISBufferFunctionType, function_arguments: &'a Vec<f32>
 ) -> Box<dyn ISEvaluateFunction<'a> + 'a>
 {
-    let function_type = function_type_string_to_enum(function_type_as_string);
-
     match function_type
     {
         ISBufferFunctionType::AmplitudeModulatedSine =>
@@ -138,7 +136,7 @@ pub fn is_wasm_buffer_function<'a>
     }
 }
 
-fn function_type_string_to_enum(function_type: &str) -> ISBufferFunctionType
+pub fn function_type_string_to_enum(function_type: &str) -> ISBufferFunctionType
 {
     match function_type
     {

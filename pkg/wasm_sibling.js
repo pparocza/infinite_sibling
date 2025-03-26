@@ -18,23 +18,7 @@ function getStringFromWasm0(ptr, len) {
     return cachedTextDecoder.decode(getUint8ArrayMemory0().subarray(ptr, ptr + len));
 }
 
-let cachedFloat32ArrayMemory0 = null;
-
-function getFloat32ArrayMemory0() {
-    if (cachedFloat32ArrayMemory0 === null || cachedFloat32ArrayMemory0.byteLength === 0) {
-        cachedFloat32ArrayMemory0 = new Float32Array(wasm.memory.buffer);
-    }
-    return cachedFloat32ArrayMemory0;
-}
-
 let WASM_VECTOR_LEN = 0;
-
-function passArrayF32ToWasm0(arg, malloc) {
-    const ptr = malloc(arg.length * 4, 4) >>> 0;
-    getFloat32ArrayMemory0().set(arg, ptr / 4);
-    WASM_VECTOR_LEN = arg.length;
-    return ptr;
-}
 
 const cachedTextEncoder = (typeof TextEncoder !== 'undefined' ? new TextEncoder('utf-8') : { encode: () => { throw Error('TextEncoder not available') } } );
 
@@ -90,30 +74,45 @@ function passStringToWasm0(arg, malloc, realloc) {
     return ptr;
 }
 
+let cachedFloat32ArrayMemory0 = null;
+
+function getFloat32ArrayMemory0() {
+    if (cachedFloat32ArrayMemory0 === null || cachedFloat32ArrayMemory0.byteLength === 0) {
+        cachedFloat32ArrayMemory0 = new Float32Array(wasm.memory.buffer);
+    }
+    return cachedFloat32ArrayMemory0;
+}
+
+function passArrayF32ToWasm0(arg, malloc) {
+    const ptr = malloc(arg.length * 4, 4) >>> 0;
+    getFloat32ArrayMemory0().set(arg, ptr / 4);
+    WASM_VECTOR_LEN = arg.length;
+    return ptr;
+}
+
 function getArrayF32FromWasm0(ptr, len) {
     ptr = ptr >>> 0;
     return getFloat32ArrayMemory0().subarray(ptr / 4, ptr / 4 + len);
 }
 /**
- * @param {Float32Array} current_buffer_array
  * @param {string} function_type_as_string
  * @param {string} operator_type_as_string
+ * @param {number} buffer_length
+ * @param {number} buffer_id
  * @param {Float32Array} function_arguments
  * @returns {Float32Array}
  */
-export function is_wasm_buffer_operation(current_buffer_array, function_type_as_string, operator_type_as_string, function_arguments) {
-    const ptr0 = passArrayF32ToWasm0(current_buffer_array, wasm.__wbindgen_malloc);
+export function is_wasm_buffer_operation(function_type_as_string, operator_type_as_string, buffer_length, buffer_id, function_arguments) {
+    const ptr0 = passStringToWasm0(function_type_as_string, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
     const len0 = WASM_VECTOR_LEN;
-    const ptr1 = passStringToWasm0(function_type_as_string, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+    const ptr1 = passStringToWasm0(operator_type_as_string, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
     const len1 = WASM_VECTOR_LEN;
-    const ptr2 = passStringToWasm0(operator_type_as_string, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+    const ptr2 = passArrayF32ToWasm0(function_arguments, wasm.__wbindgen_malloc);
     const len2 = WASM_VECTOR_LEN;
-    const ptr3 = passArrayF32ToWasm0(function_arguments, wasm.__wbindgen_malloc);
-    const len3 = WASM_VECTOR_LEN;
-    const ret = wasm.is_wasm_buffer_operation(ptr0, len0, ptr1, len1, ptr2, len2, ptr3, len3);
-    var v5 = getArrayF32FromWasm0(ret[0], ret[1]).slice();
+    const ret = wasm.is_wasm_buffer_operation(ptr0, len0, ptr1, len1, buffer_length, buffer_id, ptr2, len2);
+    var v4 = getArrayF32FromWasm0(ret[0], ret[1]).slice();
     wasm.__wbindgen_free(ret[0], ret[1] * 4, 4);
-    return v5;
+    return v4;
 }
 
 async function __wbg_load(module, imports) {

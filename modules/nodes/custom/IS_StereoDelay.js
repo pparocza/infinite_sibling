@@ -8,8 +8,8 @@ export class IS_StereoDelay extends IS_MixEffect
     {
         super(siblingContext, IS_Type.IS_EffectType.IS_MixEffect.IS_StereoDelay, wetMix);
 
-        this._inputNode = this._siblingContext.createGain();
-        this._outputNode = this._siblingContext.createGain();
+        this._inputNode = new GainNode(this._siblingContext.AudioContext);
+        this._outputNode = new GainNode(this._siblingContext.AudioContext);
 
         this._delayLeft = this._siblingContext.createDelay(delayTimeLeft, feedbackPercent, wetMix, maxDelayTime);
         this._delayRight = this._siblingContext.createDelay(delayTimeRight, feedbackPercent, wetMix, maxDelayTime);
@@ -26,8 +26,8 @@ export class IS_StereoDelay extends IS_MixEffect
         this._delayLeft.connect(this._panLeft);
         this._delayRight.connect(this._panRight);
 
-        this._inputNode.connect(this._delayLeft);
-        this._inputNode.connect(this._delayRight);
+        this._inputNode.connect(this._delayLeft.input);
+        this._inputNode.connect(this._delayRight.input);
 
         this._panLeft.connect(this._outputNode);
         this._panRight.connect(this._outputNode);

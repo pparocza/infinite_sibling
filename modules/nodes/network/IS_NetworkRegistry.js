@@ -10,7 +10,11 @@ export const IS_NetworkRegistry =
 	_idArray: [],
 
 	get nNetworks() { return this._idArray.length; },
-	getNetwork(index){ return this._idArray[index]; },
+	getNetwork(index)
+	{
+		let networkId = this._idArray[index];
+		return this._registry[networkId];
+	},
 
 	HandleNodeCreated(audioNode)
 	{
@@ -34,6 +38,12 @@ export const IS_NetworkRegistry =
 	{
 		let networkId1 = audioNode1.networkId;
 		let networkId2 = audioNode2.networkId;
+
+		// If the node is already in the network (ex: node1.connect(node2) ... node2.connect(node1))
+		if(networkId1 === networkId2)
+		{
+			return;
+		}
 
 		let networkSize1 = this._registry[networkId1].size;
 		let networkSize2 = this._registry[networkId2].size;

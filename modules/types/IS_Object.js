@@ -11,5 +11,8 @@ export class IS_Object
     isISObject = true;
 
     get iSType() { return this._iSType; };
+    // TODO: optimize (no reason you need this specifically,
+    //  so changing to something that takes less memory would
+    //  be good at some point
     get uuid() { return this._uuid; };
 }

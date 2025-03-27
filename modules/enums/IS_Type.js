@@ -52,5 +52,9 @@ export const IS_Type =
 		IS_SequenceArray: "IS_SequenceArray"
 	},
 
-	IS_Network: "IS_Network"
+	IS_Network:
+	{
+		Network: "IS_Network",
+		Node: "IS_NetworkNode"
+	}
 }

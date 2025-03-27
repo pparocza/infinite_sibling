@@ -140,6 +140,14 @@ export class InfiniteSibling
         return new IS_BiquadFilter(this, type, frequency, Q, gain, detune);
     }
 
+    // TODO: This sort of works as a constructor, but then you have to include the sibling context as an argument
+    //  -> so I guess you should have some kind of constructor class or factory that references the context?
+    get Gain()
+    {
+        return IS_Gain;
+    }
+
+    // TODO: Change to constructors, or keep consistent with WAAPI? -> probably both
     createGain(gainValue = 1)
     {
         return new IS_Gain(this, gainValue);

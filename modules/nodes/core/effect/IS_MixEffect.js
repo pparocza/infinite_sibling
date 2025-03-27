@@ -1,6 +1,5 @@
 import { IS_Effect } from "./IS_Effect.js";
 import { IS_AudioParameter } from "../../../types/parameter/IS_AudioParameter.js";
-import { IS_Type } from "../../../enums/IS_Type.js";
 
 export class IS_MixEffect extends IS_Effect
 {
@@ -8,11 +7,11 @@ export class IS_MixEffect extends IS_Effect
     {
         super(siblingContext, iSEffectType);
 
-        this._mixEffectInputNode = this._siblingContext.createGain();
-        this._mixEffectOutputNode = this._siblingContext.createGain();
+        this._mixEffectInputNode = new GainNode(siblingContext.AudioContext);
+        this._mixEffectOutputNode = new GainNode(siblingContext.AudioContext);
 
-        this.dryGainNode = this._siblingContext.createGain();
-        this.wetGainNode = this._siblingContext.createGain();
+        this.dryGainNode = new GainNode(siblingContext.AudioContext);
+        this.wetGainNode = new GainNode(siblingContext.AudioContext);
 
         this._dryGain = new IS_AudioParameter(this._siblingContext, this.dryGainNode.gain, 0);
         this._wetGain = new IS_AudioParameter(this._siblingContext, this.wetGainNode.gain, 1);
@@ -38,7 +37,7 @@ export class IS_MixEffect extends IS_Effect
         }
         else
         {
-            output.connect(this._mixEffectOutputNode.input);
+            output.connect(this._mixEffectOutputNode);
         }
     }
 

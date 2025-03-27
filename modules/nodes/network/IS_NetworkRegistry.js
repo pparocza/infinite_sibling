@@ -1,3 +1,4 @@
+import { IS_NetworkNode } from "./IS_NetworkNode.js";
 import { IS_Network } from "./IS_Network.js";
 
 // TODO: This and the NodeRegistry should maybe be optional imports?
@@ -5,14 +6,23 @@ import { IS_Network } from "./IS_Network.js";
 //  you should make sure that no core functionalities depend on them
 export const IS_NetworkRegistry =
 {
-	_registry: [],
+	_registry: {},
+	_idArray: [],
 
-	CreateNetwork(audioNode)
+	get nNetworks() { return this._idArray.length; },
+	getNetwork(index){ return this._idArray[index]; },
+
+	HandleNodeCreated(audioNode)
 	{
-		let network = new IS_Network(audioNode);
-		this[network.uuid] = network;
+		let networkNode = new IS_NetworkNode(audioNode);
 
-		return network.uuid;
+		let network = new IS_Network(networkNode);
+		networkNode.setNetworkId(network.id);
+
+		this._registry[network.id] = network;
+		this._idArray.push(network.id);
+
+		return networkNode;
 	},
 
 	// TODO: might be worth pushing this into a worker, as networks
@@ -25,8 +35,8 @@ export const IS_NetworkRegistry =
 		let networkId1 = audioNode1.networkId;
 		let networkId2 = audioNode2.networkId;
 
-		let networkSize1 = IS_NetworkRegistry[networkId1].size;
-		let networkSize2 = IS_NetworkRegistry[networkId2].size;
+		let networkSize1 = this._registry[networkId1].size;
+		let networkSize2 = this._registry[networkId2].size;
 
 		// If they're equal, network1 is just considered bigger
 		let oneIsBigger = networkSize1 >= networkSize2;
@@ -35,6 +45,10 @@ export const IS_NetworkRegistry =
 
 		biggerNetwork.consume(smallerNetwork.nodes);
 
-		this._registry.delete(smallerNetwork.networkId);
+		let smallerNetworkID = smallerNetwork.id;
+		let smallerIdIndex = this._idArray.indexOf(smallerNetworkID);
+		this._idArray.splice(smallerIdIndex, smallerIdIndex);
+
+		delete this._registry[smallerNetwork.id];
 	}
 }

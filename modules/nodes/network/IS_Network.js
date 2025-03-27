@@ -3,11 +3,12 @@ import { IS_Object } from "../../types/IS_Object.js";
 
 export class IS_Network extends IS_Object
 {
-	constructor(audioNode)
+	constructor(networkNode)
 	{
-		super(IS_Type.IS_Network);
+		super(IS_Type.IS_Network.Network);
 
 		this._nodes = [];
+		this._nodes.push(networkNode);
 
 		/*
 		 each node is assigned a layer relative to the first node added (0)
@@ -32,9 +33,9 @@ export class IS_Network extends IS_Object
 	{
 		while(smallerNetworkNodesArray.length > 0)
 		{
-			let node = smallerNetworkNodesArray.shift();
-			node._setNetworkId(this.id);
-			this._nodes.push(node);
+			let networkNode = smallerNetworkNodesArray.shift();
+			networkNode.setNetworkId(this.id);
+			this._nodes.push(networkNode);
 		}
 	}
 

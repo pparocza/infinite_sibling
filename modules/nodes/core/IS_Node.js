@@ -2,7 +2,7 @@ import { IS_Object } from "../../types/IS_Object.js";
 import { IS_Type } from "../../enums/IS_Type.js";
 import { Utilities } from "../../utilities/Utilities.js";
 import { IS_AudioParameter } from "../../types/parameter/IS_AudioParameter.js";
-import { IS_NetworkRegistry } from "../network/IS_NetworkRegistry";
+import { IS_NetworkRegistry } from "../network/IS_NetworkRegistry.js";
 
 export class IS_Node extends IS_Object
 {
@@ -17,7 +17,8 @@ export class IS_Node extends IS_Object
         this._gain = new IS_AudioParameter(this._siblingContext, this._output.gain);
 
         this._registryData = this._siblingContext.NodeRegistry.registerNode(this);
-        this._networkId = IS_NetworkRegistry.CreateNetwork(this);
+
+        this._networkNode = IS_NetworkRegistry.HandleNodeCreated(this);
 
         this._readyCallbacks = null;
         this._analyser = null;
@@ -26,7 +27,6 @@ export class IS_Node extends IS_Object
     isISNode = true;
 
     get registryData() { return this._registryData; };
-    get networkId() { return this._networkId; }
 
     get gain() { return this._gain; }
     set gain(value) { this._gain.value = value; }
@@ -143,11 +143,11 @@ export class IS_Node extends IS_Object
 
     _handleNetworkMembership(otherAudioNode)
     {
-        IS_NetworkRegistry.ResolveNetworkMembership(this, otherAudioNode);
+        if(otherAudioNode.isISNode)
+        {
+            IS_NetworkRegistry.ResolveNetworkMembership(this, otherAudioNode);
+        }
     }
 
-    _setNetworkId(id)
-    {
-        this._networkId = id;
-    }
+    get networkId() { return this._networkNode.networkId; }
 }

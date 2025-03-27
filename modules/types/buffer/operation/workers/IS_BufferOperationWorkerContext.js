@@ -39,7 +39,7 @@ function DO_WORK(operationData)
 
 	operationData.completedOperationArray = is_wasm_buffer_operation
 	(
-		functionTypeAsString, operatorTypeAsString, bufferLengthInSamples, 0, functionArgs
+		operationData.currentBufferArray, functionTypeAsString, operatorTypeAsString, functionArgs
 	);
 
 	return operationData;

@@ -402,7 +402,7 @@ export class IS_Buffer extends IS_Object
     }
 
     // TODO: dealing with multiple frequencies
-    sine(frequency)
+    sine(frequency = 1)
     {
         this._setOperationRequestFunctionData
         (
@@ -412,7 +412,7 @@ export class IS_Buffer extends IS_Object
         return this;
     }
 
-    unipolarSine(frequency)
+    unipolarSine(frequency = 1)
     {
         this._setOperationRequestFunctionData
         (

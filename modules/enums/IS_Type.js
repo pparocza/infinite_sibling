@@ -50,5 +50,7 @@ export const IS_Type =
 		IS_ScheduleItem: "IS_ScheduleItem",
 		IS_Sequence: "IS_Sequence",
 		IS_SequenceArray: "IS_SequenceArray"
-	}
+	},
+
+	IS_Network: "IS_Network"
 }

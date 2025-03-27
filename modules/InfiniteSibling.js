@@ -1,8 +1,9 @@
 const INFINITE_SIBLING_AUDIO_CONTEXT = new AudioContext();
 
 // core
-import { IS_NodeRegistry } from "./nodes/registry/IS_NodeRegistry.js";
 import { IS_LifeCycle } from "./utilities/IS_LifeCycle.js";
+import { IS_NodeRegistry } from "./nodes/registry/IS_NodeRegistry.js";
+import { IS_NetworkRegistry } from "./nodes/network/IS_NetworkRegistry.js"
 import { IS_Scheduler } from "./types/schedule/IS_Scheduler.js";
 import { IS_ContextConnectionManager } from "./utilities/IS_ContextConnectionManager.js";
 
@@ -62,6 +63,11 @@ export class InfiniteSibling
         NODE REGISTRY
     */
     get NodeRegistry()  { return IS_NodeRegistry; }
+
+    /*
+        NETWORK REGISTY
+    */
+    get NetworkRegistry() { return IS_NetworkRegistry; }
 
     /*
         LIFE CYCLE

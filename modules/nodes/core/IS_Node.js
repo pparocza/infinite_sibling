@@ -59,16 +59,13 @@ export class IS_Node extends IS_Object
 
             if(audioNode.isISObject)
             {
-                switch (audioNode.iSType)
+                if (audioNode.isISEffect)
                 {
-                    case (IS_Type.IS_Effect):
-                        this._output.connect(audioNode.input);
-                        break;
-                    case (IS_Type.IS_AudioParameter):
-                        this._output.connect(audioNode.parameter);
-                        break;
-                    default:
-                        break;
+                    this._output.connect(audioNode.input);
+                }
+                else if(audioNode.isISAudioParameter)
+                {
+                    this._output.connect(audioNode.parameter);
                 }
             }
             else

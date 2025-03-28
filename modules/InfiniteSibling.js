@@ -68,6 +68,18 @@ export class InfiniteSibling
         NETWORK REGISTY
     */
     get NetworkRegistry() { return IS_NetworkRegistry; }
+    set GenerateNetworkRepresentation(value)
+    {
+        if(value === true)
+        {
+            IS_LifeCycle.beforeReady(this._generateNetworkRepresentations);
+        }
+    }
+
+    _generateNetworkRepresentations()
+    {
+        IS_NetworkRegistry.generateNetworkRepresentations();
+    }
 
     /*
         LIFE CYCLE

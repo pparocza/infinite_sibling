@@ -5,7 +5,7 @@ export class IS_Effect extends IS_Node
 {
     constructor(siblingContext, iSEffectType = undefined)
     {
-        super(siblingContext, IS_Type.IS_Effect);
+        super(siblingContext, iSEffectType);
 
         this._effectInputNode = new GainNode(siblingContext.AudioContext);
     }

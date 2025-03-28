@@ -10,7 +10,7 @@ export class IS_Gain extends IS_Effect
 
         this._gainNode = new GainNode(siblingContext.AudioContext);
 
-        this._gain = new IS_AudioParameter(this._siblingContext, this._gainNode.gain, gainValue);
+        this._gain = new IS_AudioParameter(this._siblingContext, this, this._gainNode.gain, gainValue);
 
         this.configureInput(this._gainNode);
         this._configureOutput(this._gainNode);

@@ -10,7 +10,7 @@ export class IS_StereoPanner extends IS_Effect
 
         this._pannerNode = new StereoPannerNode(siblingContext.AudioContext);
 
-        this._pan = new IS_AudioParameter(this._siblingContext, this._pannerNode.pan, pan)
+        this._pan = new IS_AudioParameter(this._siblingContext, this, this._pannerNode.pan, pan)
 
         this.configureInput(this._pannerNode);
         this._configureOutput(this._pannerNode);

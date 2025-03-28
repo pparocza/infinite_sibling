@@ -30,8 +30,8 @@ export class IS_BufferSource extends IS_StartableNode
         this._loopStart = loopStart;
         this._loopEnd = loopEnd;
 
-        this._detune = new IS_StartableNodeAudioParameter(siblingContext, detune);
-        this._playbackRate = new IS_StartableNodeAudioParameter(siblingContext, playbackRate);
+        this._detune = new IS_StartableNodeAudioParameter(siblingContext, this, detune);
+        this._playbackRate = new IS_StartableNodeAudioParameter(siblingContext, this, playbackRate);
 
         this.initializeCallback = this.initialize;
     }

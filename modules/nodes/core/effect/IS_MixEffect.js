@@ -13,8 +13,8 @@ export class IS_MixEffect extends IS_Effect
         this.dryGainNode = new GainNode(siblingContext.AudioContext);
         this.wetGainNode = new GainNode(siblingContext.AudioContext);
 
-        this._dryGain = new IS_AudioParameter(this._siblingContext, this.dryGainNode.gain, 0);
-        this._wetGain = new IS_AudioParameter(this._siblingContext, this.wetGainNode.gain, 1);
+        this._dryGain = new IS_AudioParameter(this._siblingContext, this, this.dryGainNode.gain, 0);
+        this._wetGain = new IS_AudioParameter(this._siblingContext, this, this.wetGainNode.gain, 1);
 
         this._wetMix = wetMix;
 

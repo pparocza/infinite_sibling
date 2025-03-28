@@ -3,12 +3,14 @@ import { IS_Type } from "../../enums/IS_Type.js";
 
 export class IS_AudioParameter extends IS_Object
 {
-    constructor(siblingContext, audioParameter = null, value = null)
+    // TODO: note that the parameter can now just pull the context form the parent node
+    constructor(siblingContext, parentNode, audioParameter = null, value = null)
     {
         super(IS_Type.IS_AudioParameter);
 
         this.siblingContext = siblingContext;
         this._scheduler = siblingContext.Scheduler;
+        this._parentNode = parentNode;
 
         if (audioParameter !== null)
         {
@@ -21,7 +23,7 @@ export class IS_AudioParameter extends IS_Object
         }
     }
 
-    isAudioParameter = true;
+    isISAudioParameter = true;
 
     get parameter()
     {
@@ -71,4 +73,6 @@ export class IS_AudioParameter extends IS_Object
             this.parameter.setValueAtTime(value, this.siblingContext.now + time);
         }
     }
+
+    get parentNode(){ return this._parentNode; }
 }

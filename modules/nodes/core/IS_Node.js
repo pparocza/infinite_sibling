@@ -18,7 +18,7 @@ export class IS_Node extends IS_Object
 
         this._registryData = this._siblingContext.NodeRegistry.registerNode(this);
 
-        this._networkNode = IS_NetworkRegistry.HandleNodeCreated(this);
+        this._networkNode = IS_NetworkRegistry.HandleNodeCreated(this.iSType);
 
         this._readyCallbacks = null;
         this._analyser = null;
@@ -138,13 +138,13 @@ export class IS_Node extends IS_Object
         this._output.connect(this._analyser);
     }
 
-    _handleNetworkMembership(otherAudioNode)
+    _handleNetworkMembership(toNode)
     {
-        if(otherAudioNode.isISNode)
+        if(toNode.isISNode || toNode.isISAudioParameter)
         {
-            IS_NetworkRegistry.ResolveNetworkMembership(this, otherAudioNode);
+            IS_NetworkRegistry.ResolveNetworkMembership(this, toNode);
         }
     }
 
-    get networkId() { return this._networkNode.networkId; }
+    _getNetworkNode() { return this._networkNode; }
 }

@@ -75,12 +75,12 @@ export class InfiniteSibling
             IS_LifeCycle.beforeReady(this._generateNetworkRepresentations);
         }
     }
-
+    
     _generateNetworkRepresentations()
     {
         IS_NetworkRegistry.generateNetworkRepresentations();
     }
-
+    
     /*
         LIFE CYCLE
     */

@@ -1,88 +1,88 @@
 import { IS_BufferOperationQueue } from "../types/buffer/operation/operationQueue/IS_BufferOperationQueue.js";
 
 export const IS_LifeCycle =
+{
+	_loadCallbacks: [],
+	_readyCallbacks: [],
+	_beforeReadyCallbacks: [],
+	_startCallbacks: [],
+	_stopCallbacks: [],
+
+	load()
 	{
-		_loadCallbacks: [],
-		_readyCallbacks: [],
-		_beforeReadyCallbacks: [],
-		_startCallbacks: [],
-		_stopCallbacks: [],
+		this._doCallbacks(this._loadCallbacks);
+		this._wait();
+	},
 
-		load()
+	// TODO: this should be Promises and async awaits at some point
+	_wait()
+	{
+		if(IS_BufferOperationQueue.isOperating)
 		{
-			this._doCallbacks(this._loadCallbacks);
-			this._wait();
-		},
+			console.log("Waiting on Buffer Operation Queue!");
+			IS_BufferOperationQueue.registerWaiter(this);
+		}
+		else
+		{
+			this._ready();
+		}
+	},
 
-		// TODO: this should be Promises and async awaits at some point
-		_wait()
+	endWait(waitingOn)
+	{
+		if(waitingOn === IS_BufferOperationQueue)
 		{
-			if(IS_BufferOperationQueue.isOperating)
-			{
-				console.log("Waiting on Buffer Operation Queue!");
-				IS_BufferOperationQueue.registerWaiter(this);
-			}
-			else
-			{
-				this._ready();
-			}
-		},
+			console.log("Operation Queue Finished!");
+			this._ready();
+		}
+	},
 
-		endWait(waitingOn)
-		{
-			if(waitingOn === IS_BufferOperationQueue)
-			{
-				console.log("Operation Queue Finished!");
-				this._ready();
-			}
-		},
+	_ready()
+	{
+		this._doCallbacks(this._beforeReadyCallbacks);
+		this._doCallbacks(this._readyCallbacks);
+	},
 
-		_ready()
-		{
-			this._doCallbacks(this._beforeReadyCallbacks);
-			this._doCallbacks(this._readyCallbacks);
-		},
+	start()
+	{
+		this._doCallbacks(this._startCallbacks)
+	},
 
-		start()
-		{
-			this._doCallbacks(this._startCallbacks)
-		},
+	stop()
+	{
+		this._doCallbacks(this._stopCallbacks);
+	},
 
-		stop()
-		{
-			this._doCallbacks(this._stopCallbacks);
-		},
+	onLoad(callback)
+	{
+		this._loadCallbacks.push(callback);
+	},
 
-		onLoad(callback)
-		{
-			this._loadCallbacks.push(callback);
-		},
+	beforeReady(callback)
+	{
+		this._beforeReadyCallbacks.push(callback);
+	},
 
-		beforeReady(callback)
-		{
-			this._beforeReadyCallbacks.push(callback);
-		},
+	onReady(callback)
+	{
+		this._readyCallbacks.push(callback);
+	},
 
-		onReady(callback)
-		{
-			this._readyCallbacks.push(callback);
-		},
+	onStart(callback)
+	{
+		this._startCallbacks.push(callback);
+	},
 
-		onStart(callback)
-		{
-			this._startCallbacks.push(callback);
-		},
+	onStop(callback)
+	{
+		this._stopCallbacks.push(callback);
+	},
 
-		onStop(callback)
+	_doCallbacks(callbacks)
+	{
+		while(callbacks.length > 0)
 		{
-			this._stopCallbacks.push(callback);
-		},
-
-		_doCallbacks(callbacks)
-		{
-			while(callbacks.length > 0)
-			{
-				callbacks.shift()();
-			}
+			callbacks.shift()();
 		}
 	}
+}

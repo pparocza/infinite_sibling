@@ -10,19 +10,8 @@ export class IS_Network extends IS_Object
 		this._nodes = [];
 		this._nodes.push(networkNode);
 
-		/*
-		 each node is assigned a layer relative to the first node added (0)
-			 - +1 = outputconnection
-			 - -1 = inputconnection
-		 -- feedback overrides 	node1 -> node2 -> node3
-		 						 (0)      (1)      (2)
-		 						node3 -> node1
-		 						 (2)      (0)
-		 						node2 -> node4
-		 						 (1)      (2)
-	 	*/
-
-		this._layers = []; // IS_NetworkLayer?
+		this._layers = [];
+		this._layeredNodes = {};
 	}
 
 	get id() { return this.uuid; }
@@ -39,8 +28,90 @@ export class IS_Network extends IS_Object
 		}
 	}
 
-	_representation()
+	generateRepresentation()
 	{
+		let firstNodeLayerNumber = 0;
+		let firstNode = this._nodes[firstNodeLayerNumber];
+		firstNode.representationLayerNumber = firstNodeLayerNumber;
+		this._addNodeToLayer(firstNode, firstNodeLayerNumber)
+		this._propagateFromNode(firstNode);
 
+		// if you're logging a toNode, and the number you're giving it is greater than what it already has,
+		// replace it
+
+		console.log(this._layers);
+	}
+
+	_propagateFromNode(networkNode)
+	{
+		let toNodes = networkNode.toNodes;
+		let fromLayer = networkNode.representationLayerNumber;
+		let nextPropagation = [];
+
+		for(let toNodeIndex = 0; toNodeIndex < toNodes.length; toNodeIndex++)
+		{
+			let toNode = toNodes[toNodeIndex];
+
+			this._handleLayerPlacement(toNode, fromLayer);
+
+			toNode.concatFromNodes(networkNode.fromNodes);
+
+			if(!toNode.willPropagate && toNode.toNodes.length > 0 && !networkNode.isFeedback(toNode))
+			{
+				toNode.willPropagate = true;
+				this._propagateFromNode(toNode);
+			}
+		}
+	}
+
+	_handleLayerPlacement(networkNode, fromLayerNumber)
+	{
+		let currentLayerNumber = networkNode.representationLayerNumber;
+
+		if(currentLayerNumber === null)
+		{
+			this._handleNodeNotLayered(networkNode, fromLayerNumber);
+		}
+		else
+		{
+			this._handleNodeAlreadyLayered(networkNode, fromLayerNumber);
+		}
+	}
+
+	_handleNodeNotLayered(networkNode, fromLayerNumber)
+	{
+		let layerNumber = fromLayerNumber + 1;
+		networkNode.representationLayerNumber = layerNumber;
+
+		this._addNodeToLayer(networkNode, layerNumber);
+	}
+
+	_handleNodeAlreadyLayered(networkNode, fromLayerNumber)
+	{
+		let propsedLayerNumber = fromLayerNumber + 1;
+		let currentLayerNumber = networkNode.representationLayerNumber;
+
+		let currentLayer = this._layers[currentLayerNumber];
+		let indexAtCurrentLayer = currentLayer.indexOf(networkNode);
+
+		if(currentLayerNumber < propsedLayerNumber)
+		{
+			currentLayer.splice(indexAtCurrentLayer, 1);
+			this._addNodeToLayer(networkNode, propsedLayerNumber);
+		}
+	}
+
+	_addNodeToLayer(networkNode, layerNumber)
+	{
+		let layerExists = this._layers[layerNumber];
+
+		if(layerExists)
+		{
+			this._layers[layerNumber].push(networkNode);
+		}
+		else
+		{
+			this._layers[layerNumber] = [networkNode];
+		}
 	}
 }

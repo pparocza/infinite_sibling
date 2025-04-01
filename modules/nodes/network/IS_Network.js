@@ -1,5 +1,6 @@
 import { IS_Type } from "../../enums/IS_Type.js";
 import { IS_Object } from "../../types/IS_Object.js";
+import { IS_NetworkConnectionMatrix } from "./IS_NetworkConnectionMatrix.js";
 
 export class IS_Network extends IS_Object
 {
@@ -11,21 +12,31 @@ export class IS_Network extends IS_Object
 		this._nodes.push(networkNode);
 
 		this._layers = [];
-		this._layeredNodes = {};
+
+		this._matrix = new IS_NetworkConnectionMatrix(networkNode, this);
 	}
 
 	get id() { return this.uuid; }
 	get size() { return this._nodes.length; }
 	get nodes() { return this._nodes; }
 
-	consume(smallerNetworkNodesArray)
+	consume(networkToConsume, consumingNode, consumedNode)
 	{
-		while(smallerNetworkNodesArray.length > 0)
+		let nodesToConsume = networkToConsume.nodes;
+
+		this._matrix.update(networkToConsume, consumingNode, consumedNode);
+
+		while(nodesToConsume.length > 0)
 		{
-			let networkNode = smallerNetworkNodesArray.shift();
-			networkNode.setNetworkId(this.id);
+			let networkNode = nodesToConsume.shift();
+			networkNode.setNetworkID(this.id);
 			this._nodes.push(networkNode);
 		}
+	}
+
+	handleNewInternalConnection(fromNode, toNode)
+	{
+		this._matrix.handleNewInternalConnection(fromNode, toNode);
 	}
 
 	generateRepresentation()
@@ -35,9 +46,6 @@ export class IS_Network extends IS_Object
 		firstNode.representationLayerNumber = firstNodeLayerNumber;
 		this._addNodeToLayer(firstNode, firstNodeLayerNumber)
 		this._propagateFromNode(firstNode);
-
-		// if you're logging a toNode, and the number you're giving it is greater than what it already has,
-		// replace it
 
 		console.log(this._layers);
 	}
@@ -98,20 +106,6 @@ export class IS_Network extends IS_Object
 		{
 			currentLayer.splice(indexAtCurrentLayer, 1);
 			this._addNodeToLayer(networkNode, propsedLayerNumber);
-		}
-	}
-
-	_addNodeToLayer(networkNode, layerNumber)
-	{
-		let layerExists = this._layers[layerNumber];
-
-		if(layerExists)
-		{
-			this._layers[layerNumber].push(networkNode);
-		}
-		else
-		{
-			this._layers[layerNumber] = [networkNode];
 		}
 	}
 }

@@ -21,13 +21,12 @@ export class IS_NetworkNode extends IS_Object
 
 	get id () { return this._uuid; }
 	get networkID() { return this._networkId; }
+	set networkID(value) { this._networkId = value; }
+
 	get audioNodeType() { return this._audioNodeType; }
 
 	get isFrom() { return this._isFrom; }
 	set isFrom(value) { this._isFrom = value; }
 
-	setNetworkID(networkId)
-	{
-		this._networkId = networkId;
-	}
+
 }

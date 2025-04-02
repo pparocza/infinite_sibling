@@ -9,7 +9,12 @@ export class IS_NetworkNode extends IS_Object
 
 		this._audioNodeType = audioNodeType;
 
-		this._isReceiving = false;
+		/*
+		 	TODO: indicates this nodes relationship to ONE OTHER node when a connection is
+		 	 made, for the purposes of sorting in an IS_NetworkConnectionMatrix
+		 	 ... probably not the best but good for now
+	 	*/
+		this._isFrom = false;
 
 		this._networkId = null;
 	}
@@ -18,8 +23,8 @@ export class IS_NetworkNode extends IS_Object
 	get networkID() { return this._networkId; }
 	get audioNodeType() { return this._audioNodeType; }
 
-	get isReceiving() { return this._isRecieving; }
-	set isReceiving(value) { this._isRecieving = value; }
+	get isFrom() { return this._isFrom; }
+	set isFrom(value) { this._isFrom = value; }
 
 	setNetworkID(networkId)
 	{

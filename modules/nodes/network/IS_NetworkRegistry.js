@@ -42,7 +42,8 @@ export const IS_NetworkRegistry =
 		let fromNetworkNode = fromNode._getNetworkNode();
 		let toNetworkNode = toNode._getNetworkNode();
 
-		fromNetworkNode.isReceiving = true;
+		fromNetworkNode.isFrom = true;
+		toNetworkNode.isFrom = false;
 
 		if(toNode.isISAudioParameter)
 		{
@@ -81,5 +82,16 @@ export const IS_NetworkRegistry =
 		this._idArray.splice(smallerIdIndex, 1);
 
 		delete this._registry[smallerNetwork.id];
+	},
+
+	printNetworks()
+	{
+		for(let networkIndex = 0; networkIndex < this._idArray.length; networkIndex++)
+		{
+			let id = this._idArray[networkIndex];
+			let network = this._registry[id];
+
+			network.print();
+		}
 	}
 }

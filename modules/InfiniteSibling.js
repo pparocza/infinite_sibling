@@ -65,21 +65,9 @@ export class InfiniteSibling
     get NodeRegistry()  { return IS_NodeRegistry; }
 
     /*
-        NETWORK REGISTY
+        NETWORK REGISTRY
     */
     get NetworkRegistry() { return IS_NetworkRegistry; }
-    set GenerateNetworkRepresentation(value)
-    {
-        if(value === true)
-        {
-            IS_LifeCycle.beforeReady(this._generateNetworkRepresentations);
-        }
-    }
-    
-    _generateNetworkRepresentations()
-    {
-        IS_NetworkRegistry.generateNetworkRepresentations();
-    }
     
     /*
         LIFE CYCLE

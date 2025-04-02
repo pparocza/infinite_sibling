@@ -1,22 +1,37 @@
 export class IS_NetworkConnectionMatrixNodeData
 {
-	constructor(networkNode, rowNumber)
+	constructor(networkNode)
 	{
 		this._networkNodeID = networkNode.id;
 		this._audioNodeType = networkNode.audioNodeType;
-		this._rowNumber = rowNumber;
-		this._connectionDestinations = [];
-		this._rowPosition = null;
+
+		this._row = null;
+
+		this._connectedNodes =
+		{
+			from: [],
+			to: []
+		};
 	}
 
 	get id() { return this._networkNodeID; }
 	get audioNodeType() { return this._audioNodeType; }
 
-	get rowNumber() { return this._rowNumber; }
+	set row(networkConnectionMatrixRow) { this._row = networkConnectionMatrixRow; }
 
-	get rowPosition() { return this._rowPosition; }
-	set rowPosition(value) { this._rowPosition = value; }
+	get rowNumber() { return this._row.number; }
+	get rowPosition() { return this._row.getNodePosition(this); }
 
-	get connectionDestinations() { return this._connectionDestinations }
-	addConnectionDestination(connectionDestination) { this._connectionDestinations.push(connectionDestination) }
+	get connectedNodes() { return this._connectedNodes }
+	addConnectedNode(networkConnectionMatrixNodeData, isReceiving)
+	{
+		if(isReceiving)
+		{
+			this._connectedNodes.from.push(networkConnectionMatrixNodeData);
+		}
+		else
+		{
+			this._connectedNodes.to.push(networkConnectionMatrixNodeData);
+		}
+	}
 }

@@ -9,76 +9,25 @@ export class IS_NetworkNode extends IS_Object
 
 		this._audioNodeType = audioNodeType;
 
-		this._networkId = null;
-		
-		this._fromNodes = [];
-		this._toNodes = [];
-		this._toParameters = [];
-		this._parameterInputs = [];
+		/*
+		 	TODO: indicates this nodes relationship to ONE OTHER node when a connection is
+		 	 made, for the purposes of sorting in an IS_NetworkConnectionMatrix
+		 	 ... probably not the best but good for now
+	 	*/
+		this._isFrom = false;
 
-		this._representationLayerNumber = null;
-		this._willPropagate = false;
+		this._networkId = null;
 	}
 
-	get networkId() { return this._networkId; }
+	get id () { return this._uuid; }
+	get networkID() { return this._networkId; }
 	get audioNodeType() { return this._audioNodeType; }
 
-	get fromNodes() { return this._fromNodes; }
-	get toNodes() { return this._toNodes; }
+	get isFrom() { return this._isFrom; }
+	set isFrom(value) { this._isFrom = value; }
 
-	get representationLayerNumber() { return this._representationLayerNumber; }
-	set representationLayerNumber(value) { this._representationLayerNumber = value; }
-
-	get willPropagate() { return this._willPropagate; }
-	set willPropagate(value) { this._willPropagate = value; }
-
-	setNetworkId(networkId)
+	setNetworkID(networkId)
 	{
 		this._networkId = networkId;
-	}
-	
-	addFromNode(networkNode)
-	{
-		this._fromNodes.push(networkNode);
-
-		// do not aquire froms if connection is feedback
-		if(this._toNodes.includes(networkNode))
-		{
-			return;
-		}
-
-		let concatenatedFromNodes = this._fromNodes.concat(networkNode.fromNodes);
-		// remove duplicates
-		this._fromNodes = [...new Set(concatenatedFromNodes)];
-	}
-	
-	addToNode(networkNode)
-	{
-		this._toNodes.push(networkNode)
-
-		// do not aquire tos if connection is feedback
-		if(this._fromNodes.includes(networkNode))
-		{
-			return;
-		}
-
-		let concatenatedToNodes = this._toNodes.concat(networkNode.toNodes);
-		// remove duplicates
-		this._toNodes = [...new Set(concatenatedToNodes)];
-	}
-
-	addToParameter(networkNode)
-	{
-		this._toParameters.push(networkNode);
-	}
-
-	addParameterInput(networkNode)
-	{
-		this._parameterInputs.push(networkNode);
-	}
-
-	isFeedback(networkNode)
-	{
-		return this._fromNodes.includes(networkNode);
 	}
 }

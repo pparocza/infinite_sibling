@@ -58,6 +58,10 @@ export const IS_LifeCycle =
 		this._loadCallbacks.push(callback);
 	},
 
+	/*
+		Currently unused, but might be good for internal processes that can be optionally enabled (previously
+		created to accommodate generating network representations before the creation of IS_NetworkConnectionMatrix
+ 	*/
 	beforeReady(callback)
 	{
 		this._beforeReadyCallbacks.push(callback);

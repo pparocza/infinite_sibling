@@ -10,7 +10,7 @@ export class IS_Delay extends IS_MixEffect
         delayTime = 1, feedbackPercent = 0.25, wetMix = 0.5, maxDelayTime = 1
     )
     {
-        super(siblingContext, IS_Type.IS_EffectType.IS_Delay);
+        super(siblingContext, IS_Type.IS_EffectType.IS_MixEffect.IS_Delay);
 
         this._delayNode = siblingContext.AudioContext.createDelay(maxDelayTime);
 

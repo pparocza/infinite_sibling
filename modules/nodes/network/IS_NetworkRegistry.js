@@ -8,6 +8,8 @@ import { IS_Network } from "./IS_Network.js";
 export const IS_NetworkRegistry =
 {
 	_registry: {},
+	// For now, this makes the registry easily iterable, so...
+	// TODO: helper function to iterate _registry
 	_idArray: [],
 
 	get nNetworks() { return this._idArray.length; },
@@ -22,17 +24,12 @@ export const IS_NetworkRegistry =
 		let networkNode = new IS_NetworkNode(audioNodeType);
 
 		let network = new IS_Network(networkNode);
-		networkNode.setNetworkId(network.id);
+		networkNode.setNetworkID(network.id);
 
 		this._registry[network.id] = network;
 		this._idArray.push(network.id);
 
 		return networkNode;
-	},
-
-	HandleAudioParameterConnection()
-	{
-
 	},
 
 	// TODO: might be worth pushing this into a worker, as networks
@@ -43,43 +40,42 @@ export const IS_NetworkRegistry =
 	ResolveNetworkMembership(fromNode, toNode)
 	{
 		let fromNetworkNode = fromNode._getNetworkNode();
-		// TODO: specific AudioParameter handling
-		// -> a parameter is always a part of its parents network
-		let toNetworkNode;
+		let toNetworkNode = toNode._getNetworkNode();
+
+		fromNetworkNode.isFrom = true;
+		toNetworkNode.isFrom = false;
 
 		if(toNode.isISAudioParameter)
 		{
-			toNetworkNode = toNode.parentNode._getNetworkNode();
-
-			fromNetworkNode.addToParameter(new IS_NetworkNodeAudioParameter(toNode));
-			toNetworkNode.addParameterInput(fromNetworkNode);
+			// probably going to have to do something about this
 		}
 		else
 		{
-			toNetworkNode = toNode._getNetworkNode();
-
-			fromNetworkNode.addToNode(toNetworkNode);
-			toNetworkNode.addFromNode(fromNetworkNode);
+			// probably going to have to do something about this
 		}
 
-		let networkId1 = fromNetworkNode.networkId;
-		let networkId2 = toNetworkNode.networkId;
+		let fromNetworkID = fromNetworkNode.networkID;
+		let toNetworkID = toNetworkNode.networkID;
 
 		// If the node is already in the network (ex: node1.connect(node2) ... node2.connect(node1))
-		if(networkId1 === networkId2)
+		if(fromNetworkID === toNetworkID)
 		{
+			this._registry[toNetworkID].handleNewInternalConnection(fromNetworkNode, toNetworkNode);
 			return;
 		}
 
-		let networkSize1 = this._registry[networkId1].size;
-		let networkSize2 = this._registry[networkId2].size;
+		let fromNetworkSize = this._registry[fromNetworkID].size;
+		let toNetworkSize = this._registry[toNetworkID].size;
 
 		// If they're equal, network1 is just considered bigger
-		let oneIsBigger = networkSize1 >= networkSize2;
-		let biggerNetwork = oneIsBigger ? this._registry[networkId1] : this._registry[networkId2];
-		let smallerNetwork = !oneIsBigger ? this._registry[networkId1] : this._registry[networkId2];
+		let fromIsBigger = fromNetworkSize >= toNetworkSize;
+		let biggerNetwork = fromIsBigger ? this._registry[fromNetworkID] : this._registry[toNetworkID];
+		let smallerNetwork = !fromIsBigger ? this._registry[fromNetworkID] : this._registry[toNetworkID];
 
-		biggerNetwork.consume(smallerNetwork.nodes);
+		let consumingNode = fromIsBigger ? fromNetworkNode : toNetworkNode;
+		let consumedNode = fromIsBigger ? toNetworkNode : fromNetworkNode;
+
+		biggerNetwork.consume(smallerNetwork, consumingNode, consumedNode);
 
 		let smallerNetworkID = smallerNetwork.id;
 		let smallerIdIndex = this._idArray.indexOf(smallerNetworkID);
@@ -88,21 +84,14 @@ export const IS_NetworkRegistry =
 		delete this._registry[smallerNetwork.id];
 	},
 
-	// TODO: Can this be ongoing? - as the nodes construct their to-and-from relationships, they're
-	// added to a "represented" dictionary, and if a new node is not in the current representation, it's
-	// representation is resolved
-	// -> the representation is always created from the first node, and after the to and from nodes are
-	// concatenated, the "current representation" which originates from the original node's to and froms
-	// is checked - and if the new node is not represented, the representation is resolved
-	generateNetworkRepresentations()
+	printNetworks()
 	{
-		console.log(this._registry);
-		/*
-		for(let networkIndex = 0; networkIndex < this.nNetworks; networkIndex++)
+		for(let networkIndex = 0; networkIndex < this._idArray.length; networkIndex++)
 		{
-			let networkID = this._idArray[networkIndex];
-			this._registry[networkID].generateRepresentation();
+			let id = this._idArray[networkIndex];
+			let network = this._registry[id];
+
+			network.print();
 		}
-		 */
 	}
 }

@@ -30,19 +30,6 @@ export class IS_NetworkConnectionMatrixNodeData
 
 	get connectedNodes() { return this._connectedNodes }
 
-	// TODO: "add" helpers below maybe eliminate the need for this?
-	addConnectedNode(networkConnectionMatrixNodeData, isReceiving)
-	{
-		if(isReceiving)
-		{
-			this._connectedNodes.from.push(networkConnectionMatrixNodeData);
-		}
-		else
-		{
-			this._connectedNodes.to.push(networkConnectionMatrixNodeData);
-		}
-	}
-
 	get nFromNodes() { return this._connectedNodes.from.length; }
 	get nToNodes() { return this._connectedNodes.to.length; }
 

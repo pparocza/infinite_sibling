@@ -11,6 +11,8 @@ export class IS_NetworkConnectionMatrixRow
 	set number(value) { this._number = value; }
 	get number() { return this._number; }
 
+	getNode(index) { return this._networkMatrixNodeData[index]; }
+
 	getNodePosition(networkConnectionMatrixNodeData)
 	{
 		return this._networkMatrixNodeData.indexOf(networkConnectionMatrixNodeData);

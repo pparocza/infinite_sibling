@@ -1,7 +1,12 @@
-export class IS_NetworkConnectionMatrixNodeData
+import { IS_Type } from "../../enums/IS_Type.js";
+import { IS_Object } from "../../types/IS_Object.js";
+
+export class IS_NetworkConnectionMatrixNodeData extends IS_Object
 {
 	constructor(audioNodeType)
 	{
+		super(IS_Type);
+
 		this._audioNodeType = audioNodeType;
 
 		this._row = null;

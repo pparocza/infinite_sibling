@@ -74,19 +74,31 @@ export const IS_PrintNetworkConnectionMatrix =
 			let connection = toNodes[connectionIndex];
 
 			let feedbackMessage = this._feedBackMessage(rowIndex, nodeData, connection);
-			console.log
-			(
-				"=== === SENDING TO:",
-				connection.audioNodeType, "At:", connection.rowNumber + printRowOffset, connection.rowPosition,
-				feedbackMessage
-			)
+
+			if(feedbackMessage === null)
+			{
+				console.log
+				(
+					"=== === SENDING TO:",
+					connection.audioNodeType, "At:", connection.rowNumber + printRowOffset, connection.rowPosition
+				)
+			}
+			else
+			{
+				console.log
+				(
+					"=== === SENDING TO:",
+					connection.audioNodeType, "At:", connection.rowNumber + printRowOffset, connection.rowPosition,
+					feedbackMessage
+				)
+			}
 		}
 	},
 
 	// TODO: More thorough feedback check
 	_feedBackMessage(rowIndex, nodeData, connection)
 	{
-		let message = "";
+		let message = null;
 
 		if
 		(

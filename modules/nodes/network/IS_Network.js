@@ -18,6 +18,7 @@ export class IS_Network extends IS_Object
 	get networkNodes() { return this._networkNodes; }
 	get size() { return this.networkNodes.length; }
 	get connectionMatrix() { return this._connectionMatrix; }
+	get matrixRepresentation() { return this._connectionMatrix; }
 
 	consume(consumedNetwork, consumingNode, consumedNode)
 	{
@@ -34,9 +35,9 @@ export class IS_Network extends IS_Object
 		}
 	}
 
-	getConsumedNodeOriginalMatrixPosition(consumedNetwork, consumedNode)
+	getConsumedNodeOriginalMatrixPosition(consumedNetwork, consumedNetworkNode)
 	{
-		return consumedNetwork.getConnectionMatrixData(consumedNode).matrixPosition;
+		return consumedNetwork.getConnectionMatrixData(consumedNetworkNode).matrixPosition;
 	}
 
 	consumeConnection(consumedNetwork, consumingNode, consumedNode)
@@ -45,8 +46,9 @@ export class IS_Network extends IS_Object
 		this.networkNodes.push(consumedNode);
 
 		let consumingMatrixNodeData = this.getConnectionMatrixData(consumingNode);
+		let consumedMatrixNodeData = consumedNetwork.getConnectionMatrixData(consumedNode)
 
-		this.connectionMatrix.consumeConnection(consumedNode, consumingMatrixNodeData);
+		this.connectionMatrix.consumeConnection(consumedNode, consumedMatrixNodeData, consumingMatrixNodeData);
 	}
 
 	consumeNetwork(consumedNetwork, consumedNode, consumedNodeOriginalMatrixPosition)
@@ -58,19 +60,19 @@ export class IS_Network extends IS_Object
 			this.networkNodes.push(nodeToConsume);
 		}
 
-		let consumedMatrix = consumedNetwork.connectionMatrix;
-		this.connectionMatrix.consumeMatrix(consumedMatrix, consumedNode, consumedNodeOriginalMatrixPosition);
+		let consumedMatrix = consumedNetwork._connectionMatrix;
+		this._connectionMatrix.consumeMatrix(consumedMatrix, consumedNode, consumedNodeOriginalMatrixPosition);
 	}
 
 	getConnectionMatrixData(networkNode)
 	{
 		let networkNodeID = networkNode.id;
-		return this.connectionMatrix.connectionMatrixNodeData[networkNodeID];
+		return this._connectionMatrix.nodeData[networkNodeID];
 	}
 
 	handleNewInternalConnection(fromNode, toNode)
 	{
-		this.connectionMatrix.handleNewInternalConnection(fromNode, toNode);
+		this._connectionMatrix.handleNewInternalConnection(fromNode, toNode);
 	}
 
 	print()
@@ -80,6 +82,6 @@ export class IS_Network extends IS_Object
 
 	_printConnectionMatrix()
 	{
-		this.connectionMatrix.print();
+		this._connectionMatrix.print();
 	}
 }

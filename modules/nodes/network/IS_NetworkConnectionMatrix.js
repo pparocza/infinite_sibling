@@ -14,49 +14,55 @@ export class IS_NetworkConnectionMatrix
 		this._emptyRowNumbers = [];
 
 		// key: IS_NetworkNode.id, value: IS_NetworkConnectionMatrixNodeData
-		this._connectionMatrixNodeData = {};
+		this._nodeData = {};
 
-		this._createFirstConnectionMatrixNodeData(networkNode);
+		this._createFirstNodeData(networkNode);
 	}
 
 	get network() { return this._network; }
 	get networkID() { return this._network.id; }
 
-	get nNodes() { return Object.keys(this.connectionMatrixNodeData).length; }
+	get nNodes() { return Object.keys(this.nodeData).length; }
+
+	get rows() { return this._rows; }
+	getRow(index)
+	{
+		let adjustedIndex = index + this._lowestRowNumber;
+		return this._rows[adjustedIndex];
+	}
 	get nRows() { return 1 + (this._highestRowNumber - this._lowestRowNumber); }
 
-	get connectionMatrixNodeData() { return this._connectionMatrixNodeData; }
+	get nodeData() { return this._nodeData; }
 
-	_createFirstConnectionMatrixNodeData(networkNode)
+	_createFirstNodeData(networkNode)
 	{
-		let connectionMatrixNodeData =
-			this._createConnectionMatrixNodeData(networkNode);
-
-		this._addNodeToRow(connectionMatrixNodeData, 0);
+		let nodeData = this._createNodeData(networkNode);
+		this._addNodeToRow(nodeData, 0);
 	}
 
-	_createConnectionMatrixNodeData(networkNode)
+	_createNodeData(networkNode)
 	{
-		let connectionMatrixNodeData = new IS_NetworkConnectionMatrixNodeData
+		let nodeData = new IS_NetworkConnectionMatrixNodeData
 		(
 			networkNode.audioNodeType
 		);
 
-		this.connectionMatrixNodeData[networkNode.id] = connectionMatrixNodeData;
+		this.nodeData[networkNode.id] = nodeData;
 
-		return connectionMatrixNodeData;
+		return nodeData;
 	}
 
-	consumeConnection(consumedNode, consumingMatrixNodeData)
+	consumeConnection(consumedNetworkNode, consumedMatrixNodeData, consumingMatrixNodeData)
 	{
-		let consumedMatrixNodeData = this._createConnectionMatrixNodeData(consumedNode);
+		let consumedIsFrom = consumedNetworkNode.isFrom;
+		this.nodeData[consumedNetworkNode.id] = consumedMatrixNodeData;
 
 		let consumingRowNumber = consumingMatrixNodeData.rowNumber;
-		let consumedRowNumber = consumedNode.isFrom ? consumingRowNumber - 1 : consumingRowNumber + 1;
+		let consumedRowNumber = consumedIsFrom ? consumingRowNumber - 1 : consumingRowNumber + 1;
 
 		this._addNodeToRow(consumedMatrixNodeData, consumedRowNumber);
 
-		if(consumedNode.isFrom)
+		if(consumedIsFrom)
 		{
 			consumedMatrixNodeData.addToNode(consumingMatrixNodeData);
 			consumingMatrixNodeData.addFromNode(consumedMatrixNodeData);
@@ -71,7 +77,7 @@ export class IS_NetworkConnectionMatrix
 	consumeMatrix(consumedMatrix, consumedNetworkNode, consumedNodeOriginalMatrixPosition)
 	{
 		this._concatenateConsumedRows(consumedMatrix, consumedNetworkNode, consumedNodeOriginalMatrixPosition);
-		this._consumeConnectionMatrixNodeData(consumedMatrix.connectionMatrixNodeData);
+		this._consumeNodeData(consumedMatrix.nodeData);
 	}
 
 	_concatenateConsumedRows(consumedMatrix, consumedNetworkNode, consumedNodeOriginalMatrixPosition)
@@ -116,18 +122,18 @@ export class IS_NetworkConnectionMatrix
 		}
 	}
 
-	_consumeConnectionMatrixNodeData(consumedConnectionMatrixNodeData)
+	_consumeNodeData(consumedNodeData)
 	{
-		for(const [networkNodeID, connectionMatrixNodeData] of Object.entries(consumedConnectionMatrixNodeData))
+		for(const [networkNodeID, nodeData] of Object.entries(consumedNodeData))
 		{
-			this.connectionMatrixNodeData[networkNodeID] = connectionMatrixNodeData;
+			this.nodeData[networkNodeID] = nodeData;
 		}
 	}
 
 	handleNewInternalConnection(fromNode, toNode)
 	{
-		let fromNodeData = this.connectionMatrixNodeData[fromNode.uuid];
-		let toNodeData = this.connectionMatrixNodeData[toNode.uuid];
+		let fromNodeData = this.nodeData[fromNode.uuid];
+		let toNodeData = this.nodeData[toNode.uuid];
 
 		fromNodeData.addToNode(toNodeData);
 		toNodeData.addFromNode(fromNodeData);
@@ -154,7 +160,7 @@ export class IS_NetworkConnectionMatrix
 					If nodes are in the same row, AND this toNode (toNode1) has a toNode in the
 					next row (toNode2), create and insert new row into which to put toNode1
 				*/
-				console.log(toNodeData.audioNodeType, toNodeData.hasToNodesInNextRow, toNodeData.nToNodesInNextRow)
+				// console.log(toNodeData.audioNodeType, toNodeData.hasToNodesInNextRow, toNodeData.nToNodesInNextRow)
 				/*
 					let newRow = this._createRowBelow(toNodeData.rowNumber);
 					let currentRow = toNodeData.row;
@@ -166,19 +172,19 @@ export class IS_NetworkConnectionMatrix
 		}
 	}
 
-	_addNodeToRow(networkConnectionMatrixNodeData, rowNumber)
+	_addNodeToRow(nodeData, rowNumber)
 	{
 		let existingRow = this._rows[rowNumber];
 
 		if(existingRow)
 		{
-			existingRow.addNetworkMatrixNodeData(networkConnectionMatrixNodeData);
+			existingRow.addNetworkMatrixNodeData(nodeData);
 		}
 		else
 		{
 			let newRow = new IS_NetworkConnectionMatrixRow(rowNumber);
 			this._rows[rowNumber] = newRow;
-			newRow.addNetworkMatrixNodeData(networkConnectionMatrixNodeData);
+			newRow.addNetworkMatrixNodeData(nodeData);
 		}
 
 		this._updateRowBounds(rowNumber);

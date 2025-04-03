@@ -8,46 +8,78 @@ export class IS_Network extends IS_Object
 	{
 		super(IS_Type.IS_Network.Network);
 
-		// TODO: this._matrix has enough functionality for this to be removed
-		//  you actually really need to do this, there's a lot of sloppy crossover
-		//  with stuff like this._matrix._updateCurrentNodes;
-		this._nodes = [];
-		this._nodes.push(networkNode);
+		networkNode.networkID = this.id;
+		this._networkNodes = [networkNode];
 
-		this._matrix = new IS_NetworkConnectionMatrix(networkNode, this);
+		this._connectionMatrix = new IS_NetworkConnectionMatrix(this, networkNode);
 	}
 
 	get id() { return this.uuid; }
-	get size() { return this._nodes.length; }
-	get nodes() { return this._nodes; }
-	get matrix() { return this._matrix; }
+	get networkNodes() { return this._networkNodes; }
+	get size() { return this.networkNodes.length; }
+	get connectionMatrix() { return this._connectionMatrix; }
 
-	consume(networkToConsume, consumingNode, consumedNode)
+	consume(consumedNetwork, consumingNode, consumedNode)
 	{
-		let nodesToConsume = networkToConsume.nodes;
+		let consumedNodeOriginalMatrixPosition = this.getConsumedNodeOriginalMatrixPosition
+		(
+			consumedNetwork, consumedNode
+		);
 
-		this._matrix.handleNodeConnected(networkToConsume, consumingNode, consumedNode);
+		this.consumeConnection(consumedNetwork, consumingNode, consumedNode);
 
-		while(nodesToConsume.length > 0)
+		if(consumedNetwork.size > 1)
 		{
-			let networkNode = nodesToConsume.shift();
-			networkNode.setNetworkID(this.id);
-			this._nodes.push(networkNode);
+			this.consumeNetwork(consumedNetwork, consumedNode, consumedNodeOriginalMatrixPosition);
 		}
+	}
+
+	getConsumedNodeOriginalMatrixPosition(consumedNetwork, consumedNode)
+	{
+		return consumedNetwork.getConnectionMatrixData(consumedNode).matrixPosition;
+	}
+
+	consumeConnection(consumedNetwork, consumingNode, consumedNode)
+	{
+		consumedNode.networkID = this.id;
+		this.networkNodes.push(consumedNode);
+
+		let consumingMatrixNodeData = this.getConnectionMatrixData(consumingNode);
+
+		this.connectionMatrix.consumeConnection(consumedNode, consumingMatrixNodeData);
+	}
+
+	consumeNetwork(consumedNetwork, consumedNode, consumedNodeOriginalMatrixPosition)
+	{
+		for(let nodeIndex = 0; nodeIndex < consumedNetwork.size; nodeIndex++)
+		{
+			let nodeToConsume = consumedNetwork.networkNodes[nodeIndex];
+			nodeToConsume.networkID = this.id;
+			this.networkNodes.push(nodeToConsume);
+		}
+
+		let consumedMatrix = consumedNetwork.connectionMatrix;
+		this.connectionMatrix.consumeMatrix(consumedMatrix, consumedNode, consumedNodeOriginalMatrixPosition);
+	}
+
+	getConnectionMatrixData(networkNode)
+	{
+		let networkNodeID = networkNode.id;
+		return this.connectionMatrix.connectionMatrixNodeData[networkNodeID];
 	}
 
 	handleNewInternalConnection(fromNode, toNode)
 	{
-		this._matrix.handleNewInternalConnection(fromNode, toNode);
-	}
-
-	_printConnectionMatrix()
-	{
-		this._matrix.print();
+		this.connectionMatrix.handleNewInternalConnection(fromNode, toNode);
 	}
 
 	print()
 	{
 		this._printConnectionMatrix();
+	}
+
+	_printConnectionMatrix()
+	{
+		this.connectionMatrix.print();
 	}
 }

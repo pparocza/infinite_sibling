@@ -24,7 +24,6 @@ export const IS_NetworkRegistry =
 		let networkNode = new IS_NetworkNode(audioNodeType);
 
 		let network = new IS_Network(networkNode);
-		networkNode.setNetworkID(network.id);
 
 		this._registry[network.id] = network;
 		this._idArray.push(network.id);
@@ -39,6 +38,7 @@ export const IS_NetworkRegistry =
 	//  own thread
 	ResolveNetworkMembership(fromNode, toNode)
 	{
+		// TODO: IS_NodeConnection class?
 		let fromNetworkNode = fromNode._getNetworkNode();
 		let toNetworkNode = toNode._getNetworkNode();
 

@@ -1,9 +1,8 @@
 export class IS_NetworkConnectionMatrixNodeData
 {
-	constructor(networkNode)
+	constructor(audioNodeType)
 	{
-		this._networkNodeID = networkNode.id;
-		this._audioNodeType = networkNode.audioNodeType;
+		this._audioNodeType = audioNodeType;
 
 		this._row = null;
 
@@ -14,24 +13,62 @@ export class IS_NetworkConnectionMatrixNodeData
 		};
 	}
 
-	get id() { return this._networkNodeID; }
 	get audioNodeType() { return this._audioNodeType; }
 
+	get row() { return this._row; }
 	set row(networkConnectionMatrixRow) { this._row = networkConnectionMatrixRow; }
 
 	get rowNumber() { return this._row.number; }
 	get rowPosition() { return this._row.getNodePosition(this); }
+	get matrixPosition() { return [this.rowNumber, this.rowPosition]; }
 
 	get connectedNodes() { return this._connectedNodes }
-	addConnectedNode(networkConnectionMatrixNodeData, isReceiving)
+
+	get nFromNodes() { return this._connectedNodes.from.length; }
+	get nToNodes() { return this._connectedNodes.to.length; }
+
+	get fromNodes() { return this._connectedNodes.from; }
+	get toNodes() { return this._connectedNodes.to; }
+
+	addFromNode(networkConnectionMatrixNodeData)
 	{
-		if(isReceiving)
+		this._connectedNodes.from.push(networkConnectionMatrixNodeData)
+	}
+
+	addToNode(networkConnectionMatrixNodeData)
+	{
+		this._connectedNodes.to.push(networkConnectionMatrixNodeData)
+	}
+
+	get hasToNodesInNextRow()
+	{
+		for(let nodeIndex = 0; nodeIndex < this.toNodes.length; nodeIndex++)
 		{
-			this._connectedNodes.from.push(networkConnectionMatrixNodeData);
+			let toNode = this.toNodes[nodeIndex];
+
+			if(toNode.rowNumber === this.rowNumber + 1)
+			{
+				return true;
+			}
 		}
-		else
+
+		return false;
+	}
+
+	get nToNodesInNextRow()
+	{
+		let connectionsInNextRow = 0;
+
+		for(let nodeIndex = 0; nodeIndex < this.toNodes.length; nodeIndex++)
 		{
-			this._connectedNodes.to.push(networkConnectionMatrixNodeData);
+			let toNode = this.toNodes[nodeIndex];
+
+			if(toNode.rowNumber === this.rowNumber + 1)
+			{
+				connectionsInNextRow += 1;
+			}
 		}
+
+		return connectionsInNextRow;
 	}
 }

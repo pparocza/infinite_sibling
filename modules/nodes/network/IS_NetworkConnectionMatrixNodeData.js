@@ -1,13 +1,8 @@
 export class IS_NetworkConnectionMatrixNodeData
 {
-	constructor(networkID, networkNode)
+	constructor(audioNodeType)
 	{
-		networkNode.networkID = networkID;
-
-		// TODO: mmmmmeeeeeeeehhhhhhhhhh
-		this._networkNode = networkNode;
-
-		this._audioNodeType = networkNode.audioNodeType;
+		this._audioNodeType = audioNodeType;
 
 		this._row = null;
 
@@ -18,8 +13,6 @@ export class IS_NetworkConnectionMatrixNodeData
 		};
 	}
 
-	get networkNode() { return this._networkNode; }
-	get networkNodeID() { return this._networkNode.id; }
 	get audioNodeType() { return this._audioNodeType; }
 
 	get row() { return this._row; }
@@ -27,6 +20,7 @@ export class IS_NetworkConnectionMatrixNodeData
 
 	get rowNumber() { return this._row.number; }
 	get rowPosition() { return this._row.getNodePosition(this); }
+	get matrixPosition() { return [this.rowNumber, this.rowPosition]; }
 
 	get connectedNodes() { return this._connectedNodes }
 
@@ -44,5 +38,37 @@ export class IS_NetworkConnectionMatrixNodeData
 	addToNode(networkConnectionMatrixNodeData)
 	{
 		this._connectedNodes.to.push(networkConnectionMatrixNodeData)
+	}
+
+	get hasToNodesInNextRow()
+	{
+		for(let nodeIndex = 0; nodeIndex < this.toNodes.length; nodeIndex++)
+		{
+			let toNode = this.toNodes[nodeIndex];
+
+			if(toNode.rowNumber === this.rowNumber + 1)
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	get nToNodesInNextRow()
+	{
+		let connectionsInNextRow = 0;
+
+		for(let nodeIndex = 0; nodeIndex < this.toNodes.length; nodeIndex++)
+		{
+			let toNode = this.toNodes[nodeIndex];
+
+			if(toNode.rowNumber === this.rowNumber + 1)
+			{
+				connectionsInNextRow += 1;
+			}
+		}
+
+		return connectionsInNextRow;
 	}
 }

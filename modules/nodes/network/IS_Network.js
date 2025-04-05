@@ -8,17 +8,15 @@ export class IS_Network extends IS_Object
 	{
 		super(IS_Type.IS_Network.Network);
 
-		networkNode.networkID = this.id;
+		networkNode.networkUUID = this.uuid;
 		this._networkNodes = [networkNode];
 
 		this._connectionMatrix = new IS_NetworkConnectionMatrix(this, networkNode);
 	}
 
-	get id() { return this.uuid; }
 	get networkNodes() { return this._networkNodes; }
 	get size() { return this.networkNodes.length; }
 	get connectionMatrix() { return this._connectionMatrix; }
-	get matrixRepresentation() { return this._connectionMatrix; }
 
 	consume(consumedNetwork, consumingNode, consumedNode)
 	{
@@ -42,7 +40,7 @@ export class IS_Network extends IS_Object
 
 	consumeConnection(consumedNetwork, consumingNode, consumedNode)
 	{
-		consumedNode.networkID = this.id;
+		consumedNode.networkUUID = this.uuid;
 		this.networkNodes.push(consumedNode);
 
 		let consumingMatrixNodeData = this.getConnectionMatrixData(consumingNode);
@@ -56,7 +54,7 @@ export class IS_Network extends IS_Object
 		for(let nodeIndex = 0; nodeIndex < consumedNetwork.size; nodeIndex++)
 		{
 			let nodeToConsume = consumedNetwork.networkNodes[nodeIndex];
-			nodeToConsume.networkID = this.id;
+			nodeToConsume.networkUUID = this.uuid;
 			this.networkNodes.push(nodeToConsume);
 		}
 

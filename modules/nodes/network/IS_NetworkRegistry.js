@@ -2,31 +2,26 @@ import { IS_NetworkNode } from "./IS_NetworkNode.js";
 import { IS_NetworkNodeAudioParameter } from "./IS_NetworkNodeAudioParameter.js";
 import { IS_Network } from "./IS_Network.js";
 
-// TODO: This and the NodeRegistry should maybe be optional imports?
-//  They are pretty useful Utilities, so maybe not, but at the very least
-//  you should make sure that no core functionalities depend on them
 export const IS_NetworkRegistry =
 {
 	_registry: {},
-	// For now, this makes the registry easily iterable, so...
-	// TODO: helper function to iterate _registry
 	_idArray: [],
 
 	get nNetworks() { return this._idArray.length; },
 	getNetwork(index)
 	{
-		let networkId = this._idArray[index];
-		return this._registry[networkId];
+		let networkUUID = this._idArray[index];
+		return this._registry[networkUUID];
 	},
 
-	HandleNodeCreated(audioNodeType)
+	HandleNodeCreated(audioNode)
 	{
-		let networkNode = new IS_NetworkNode(audioNodeType);
+		let networkNode = new IS_NetworkNode(audioNode);
 
 		let network = new IS_Network(networkNode);
 
-		this._registry[network.id] = network;
-		this._idArray.push(network.id);
+		this._registry[network.uuid] = network;
+		this._idArray.push(network.uuid);
 
 		return networkNode;
 	},
@@ -54,23 +49,23 @@ export const IS_NetworkRegistry =
 			// probably going to have to do something about this
 		}
 
-		let fromNetworkID = fromNetworkNode.networkID;
-		let toNetworkID = toNetworkNode.networkID;
+		let fromNetworkUUID = fromNetworkNode.networkUUID;
+		let toNetworkUUID = toNetworkNode.networkUUID;
 
 		// If the node is already in the network (ex: node1.connect(node2) ... node2.connect(node1))
-		if(fromNetworkID === toNetworkID)
+		if(fromNetworkUUID === toNetworkUUID)
 		{
-			this._registry[toNetworkID].handleNewInternalConnection(fromNetworkNode, toNetworkNode);
+			this._registry[toNetworkUUID].handleNewInternalConnection(fromNetworkNode, toNetworkNode);
 			return;
 		}
 
-		let fromNetworkSize = this._registry[fromNetworkID].size;
-		let toNetworkSize = this._registry[toNetworkID].size;
+		let fromNetworkSize = this._registry[fromNetworkUUID].size;
+		let toNetworkSize = this._registry[toNetworkUUID].size;
 
 		// If they're equal, network1 is just considered bigger
 		let fromIsBigger = fromNetworkSize >= toNetworkSize;
-		let biggerNetwork = fromIsBigger ? this._registry[fromNetworkID] : this._registry[toNetworkID];
-		let smallerNetwork = !fromIsBigger ? this._registry[fromNetworkID] : this._registry[toNetworkID];
+		let biggerNetwork = fromIsBigger ? this._registry[fromNetworkUUID] : this._registry[toNetworkUUID];
+		let smallerNetwork = !fromIsBigger ? this._registry[fromNetworkUUID] : this._registry[toNetworkUUID];
 
 		let consumingNode = fromIsBigger ? fromNetworkNode : toNetworkNode;
 		let consumedNode = fromIsBigger ? toNetworkNode : fromNetworkNode;

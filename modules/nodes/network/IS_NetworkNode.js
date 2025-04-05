@@ -3,11 +3,14 @@ import { IS_Type } from "../../enums/IS_Type.js";
 
 export class IS_NetworkNode extends IS_Object
 {
-	constructor(audioNodeType)
+	constructor(audioNode)
 	{
 		super(IS_Type.IS_Network.Node);
 
-		this._audioNodeType = audioNodeType;
+		this._networkUUID = null;
+
+		this._audioNodeType = audioNode.iSType;
+		this._audioNodeRegistryHash = audioNode.hash;
 
 		/*
 		 	TODO: indicates this nodes relationship to ONE OTHER node when a connection is
@@ -15,15 +18,13 @@ export class IS_NetworkNode extends IS_Object
 		 	 ... probably not the best but good for now
 	 	*/
 		this._isFrom = false;
-
-		this._networkId = null;
 	}
 
-	get id () { return this._uuid; }
-	get networkID() { return this._networkId; }
-	set networkID(value) { this._networkId = value; }
+	get networkUUID() { return this._networkUUID; }
+	set networkUUID(value) { this._networkUUID = value; }
 
 	get audioNodeType() { return this._audioNodeType; }
+	get audioNodeRegistryHash() { return this._audioNodeRegistryHash; }
 
 	get isFrom() { return this._isFrom; }
 	set isFrom(value) { this._isFrom = value; }

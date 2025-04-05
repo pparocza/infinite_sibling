@@ -66,7 +66,7 @@ export class IS_Network extends IS_Object
 
 	getConnectionMatrixData(networkNode)
 	{
-		let networkNodeID = networkNode.id;
+		let networkNodeID = networkNode.uuid;
 		return this._connectionMatrix.nodeData[networkNodeID];
 	}
 

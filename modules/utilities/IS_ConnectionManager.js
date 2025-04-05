@@ -1,4 +1,4 @@
-export const IS_ContextConnectionManager =
+export const IS_ConnectionManager =
 {
 	series(...audioNodes)
 	{

@@ -5,7 +5,7 @@ import { IS_LifeCycle } from "./utilities/IS_LifeCycle.js";
 import { IS_NodeRegistry } from "./nodes/registry/IS_NodeRegistry.js";
 import { IS_NetworkRegistry } from "./nodes/network/IS_NetworkRegistry.js"
 import { IS_Scheduler } from "./types/schedule/IS_Scheduler.js";
-import { IS_ContextConnectionManager } from "./utilities/IS_ContextConnectionManager.js";
+import { IS_ConnectionManager } from "./utilities/IS_ConnectionManager.js";
 
 // audio nodes
 import { IS_Gain } from "./nodes/core/effect/IS_Gain.js";
@@ -119,7 +119,7 @@ export class InfiniteSibling
     /*
         CONNECTION
     */
-    get connect() { return IS_ContextConnectionManager; }
+    get connect() { return IS_ConnectionManager; }
 
     /*
         GLOBAL VALUES

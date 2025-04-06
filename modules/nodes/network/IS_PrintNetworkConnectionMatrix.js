@@ -46,7 +46,7 @@ export const IS_PrintNetworkConnectionMatrix =
 		console.log
 		(
 			"===",
-			nodeData.audioNodeType, "At:", nodeData.rowNumber + printRowOffset, nodeData.rowPosition
+			nodeData.audioNodeRegistryData.iSType, "At:", nodeData.rowNumber + printRowOffset, nodeData.rowPosition
 		);
 	},
 
@@ -60,7 +60,8 @@ export const IS_PrintNetworkConnectionMatrix =
 			console.log
 			(
 				"=== === RECEIVING FROM:",
-				connection.audioNodeType, "At:", connection.rowNumber + printRowOffset, connection.rowPosition
+				connection.audioNodeRegistryData.iSType,
+				"At:", connection.rowNumber + printRowOffset, connection.rowPosition
 			)
 		}
 	},
@@ -80,7 +81,8 @@ export const IS_PrintNetworkConnectionMatrix =
 				console.log
 				(
 					"=== === SENDING TO:",
-					connection.audioNodeType, "At:", connection.rowNumber + printRowOffset, connection.rowPosition
+					connection.audioNodeRegistryData.iSType,
+					"At:", connection.rowNumber + printRowOffset, connection.rowPosition
 				)
 			}
 			else
@@ -88,7 +90,8 @@ export const IS_PrintNetworkConnectionMatrix =
 				console.log
 				(
 					"=== === SENDING TO:",
-					connection.audioNodeType, "At:", connection.rowNumber + printRowOffset, connection.rowPosition,
+					connection.audioNodeRegistryData.iSType,
+					"At:", connection.rowNumber + printRowOffset, connection.rowPosition,
 					feedbackMessage
 				)
 			}

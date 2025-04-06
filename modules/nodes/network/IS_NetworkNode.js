@@ -1,16 +1,19 @@
 import { IS_Object } from "../../types/IS_Object.js";
 import { IS_Type } from "../../enums/IS_Type.js";
+import { IS_NodeRegistry } from "../registry/IS_NodeRegistry.js";
 
 export class IS_NetworkNode extends IS_Object
 {
-	constructor(audioNode)
+	constructor(audioNodeRegistryHash)
 	{
 		super(IS_Type.IS_Network.Node);
 
+		/*
+		 Storing the registry hash here allows stuff that uses this data
+		  to get additional data from IS_NodeRegistry if needed
+	 	*/
+		this._audioNodeRegistryHash = audioNodeRegistryHash;
 		this._networkUUID = null;
-
-		this._audioNodeType = audioNode.iSType;
-		this._audioNodeRegistryHash = audioNode.hash;
 
 		/*
 		 	TODO: indicates this nodes relationship to ONE OTHER node when a connection is
@@ -23,11 +26,11 @@ export class IS_NetworkNode extends IS_Object
 	get networkUUID() { return this._networkUUID; }
 	set networkUUID(value) { this._networkUUID = value; }
 
-	get audioNodeType() { return this._audioNodeType; }
-	get audioNodeRegistryHash() { return this._audioNodeRegistryHash; }
+	get audioNodeRegistryData()
+	{
+		return IS_NodeRegistry.getNodeData(this._audioNodeRegistryHash);
+	};
 
 	get isFrom() { return this._isFrom; }
 	set isFrom(value) { this._isFrom = value; }
-
-
 }

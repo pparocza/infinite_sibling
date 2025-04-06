@@ -13,6 +13,9 @@ export const IS_NodeRegistry =
 	{
 		let nodeData = new IS_NodeRegistryData(audioNode);
 		nodeData.setHash(this._assignHash());
+		// TODO: This will create issues for references to the hash if the node ever moves
+		//  in the registry - AKA if other nodes are added or removed in a way that moves
+		//  this one so maybe this should be a dictionary with uuid keys
 		this._registry.push(nodeData);
 		return nodeData;
 	},

@@ -44,11 +44,10 @@ export class IS_NetworkConnectionMatrix
 	{
 		let nodeData = new IS_NetworkConnectionMatrixNodeData
 		(
-			networkNode.audioNodeType
+			networkNode.audioNodeRegistryData.hash
 		);
 
 		this.nodeData[networkNode.uuid] = nodeData;
-
 		return nodeData;
 	}
 

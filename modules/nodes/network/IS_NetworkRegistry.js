@@ -16,7 +16,7 @@ export const IS_NetworkRegistry =
 
 	HandleNodeCreated(audioNode)
 	{
-		let networkNode = new IS_NetworkNode(audioNode);
+		let networkNode = new IS_NetworkNode(audioNode.registryData.hash);
 
 		let network = new IS_Network(networkNode);
 

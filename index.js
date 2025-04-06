@@ -24,7 +24,6 @@ export { IS_Oscillator } from "./modules/nodes/core/source/IS_Oscillator.js";
 export { IS_AmplitudeModulator } from "./modules/nodes/custom/IS_AmplitudeModulator.js";
 export { IS_ParallelEffect } from "./modules/nodes/custom/IS_ParallelEffect.js";
 export { IS_StereoDelay } from "./modules/nodes/custom/IS_StereoDelay.js";
-import { IS_NodeMatrix } from "./modules/nodes/custom/IS_NodeMatrix.js";
 
 // types
 export { IS_Array } from "./modules/types/array/IS_Array.js"
@@ -34,7 +33,6 @@ export { IS_AudioParameter } from "./modules/types/parameter/IS_AudioParameter.j
 export { IS_Scale } from "./modules/types/array/IS_Scale.js";
 export { IS_SequenceArray } from "./modules/types/array/IS_SequenceArray.js";
 export { IS_Schedule } from "./modules/types/schedule/IS_Schedule.js"
-export { IS_NodeRegistryData } from "./modules/nodes/registry/IS_NodeRegistryData.js";
 
 // utilities
 export * from "./modules/utilities/Constants.js";

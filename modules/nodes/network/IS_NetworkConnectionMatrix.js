@@ -44,18 +44,17 @@ export class IS_NetworkConnectionMatrix
 	{
 		let nodeData = new IS_NetworkConnectionMatrixNodeData
 		(
-			networkNode.audioNodeType
+			networkNode.audioNodeRegistryData.hash
 		);
 
-		this.nodeData[networkNode.id] = nodeData;
-
+		this.nodeData[networkNode.uuid] = nodeData;
 		return nodeData;
 	}
 
 	consumeConnection(consumedNetworkNode, consumedMatrixNodeData, consumingMatrixNodeData)
 	{
 		let consumedIsFrom = consumedNetworkNode.isFrom;
-		this.nodeData[consumedNetworkNode.id] = consumedMatrixNodeData;
+		this.nodeData[consumedNetworkNode.uuid] = consumedMatrixNodeData;
 
 		let consumingRowNumber = consumingMatrixNodeData.rowNumber;
 		let consumedRowNumber = consumedIsFrom ? consumingRowNumber - 1 : consumingRowNumber + 1;
@@ -124,9 +123,9 @@ export class IS_NetworkConnectionMatrix
 
 	_consumeNodeData(consumedNodeData)
 	{
-		for(const [networkNodeID, nodeData] of Object.entries(consumedNodeData))
+		for(const [networkNodeUUID, nodeData] of Object.entries(consumedNodeData))
 		{
-			this.nodeData[networkNodeID] = nodeData;
+			this.nodeData[networkNodeUUID] = nodeData;
 		}
 	}
 

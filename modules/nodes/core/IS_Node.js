@@ -18,7 +18,7 @@ export class IS_Node extends IS_Object
 
         this._registryData = this._siblingContext.NodeRegistry.registerNode(this);
 
-        this._networkNode = IS_NetworkRegistry.HandleNodeCreated(this.iSType);
+        this._networkNode = IS_NetworkRegistry.HandleNodeCreated(this);
 
         this._readyCallbacks = null;
         this._analyser = null;
@@ -33,20 +33,6 @@ export class IS_Node extends IS_Object
 
     get volume() { return Utilities.AmplitudeToDecibels(this._gain.value); }
     set volume(value) { this._gain.value = Utilities.DecibelsToAmplitude(value); }
-
-    get analyser()
-    {
-        this._initializeAnalyser();
-
-        return this._analyser;
-    }
-
-    // TODO: Something that isn't just the first value of the analysis buffer
-    get outputValue()
-    {
-        this.analyser.getFloatTimeDomainData(this._analyserData);
-        return this._analyserData[0];
-    }
 
     /*
         CONNECTION
@@ -73,7 +59,6 @@ export class IS_Node extends IS_Object
                 this._output.connect(audioNode);
             }
 
-            this._registryData.registerConnection(audioNode.registryData);
             this._handleNetworkMembership(audioNode);
         }
     }
@@ -136,6 +121,20 @@ export class IS_Node extends IS_Object
         this._analyser.getFloatTimeDomainData(this._analyserData);
 
         this._output.connect(this._analyser);
+    }
+
+    get analyser()
+    {
+        this._initializeAnalyser();
+
+        return this._analyser;
+    }
+
+    // TODO: Something that isn't just the first value of the analysis buffer
+    get outputValue()
+    {
+        this.analyser.getFloatTimeDomainData(this._analyserData);
+        return this._analyserData[0];
     }
 
     _handleNetworkMembership(toNode)

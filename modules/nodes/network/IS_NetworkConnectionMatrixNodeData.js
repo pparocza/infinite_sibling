@@ -1,15 +1,18 @@
 import { IS_Type } from "../../enums/IS_Type.js";
 import { IS_Object } from "../../types/IS_Object.js";
+import { IS_NodeRegistry } from "../registry/IS_NodeRegistry.js";
 
+/**
+ * Manage information about an IS_NetworkNode's position in an IS_Network
+ */
 export class IS_NetworkConnectionMatrixNodeData extends IS_Object
 {
-	constructor(audioNodeType)
+	constructor(audioNodeRegistryHash)
 	{
 		super(IS_Type);
 
-		this._audioNodeType = audioNodeType;
-
 		this._row = null;
+		this._audioNodeRegistryHash = audioNodeRegistryHash;
 
 		this._connectedNodes =
 		{
@@ -18,7 +21,10 @@ export class IS_NetworkConnectionMatrixNodeData extends IS_Object
 		};
 	}
 
-	get audioNodeType() { return this._audioNodeType; }
+	get audioNodeRegistryData()
+	{
+		return IS_NodeRegistry.getNodeData(this._audioNodeRegistryHash);
+	};
 
 	get row() { return this._row; }
 	set row(networkConnectionMatrixRow) { this._row = networkConnectionMatrixRow; }

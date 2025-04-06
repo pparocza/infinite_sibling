@@ -12,7 +12,7 @@ export class IS_NetworkNode extends IS_Object
 		 Storing the registry hash here allows stuff that uses this data
 		  to get additional data from IS_NodeRegistry if needed
 	 	*/
-		this._audioNodeRegistryHash = audioNodeRegistryHash;
+		this._audioNodeUUID = audioNodeRegistryHash;
 		this._networkUUID = null;
 
 		/*
@@ -26,9 +26,9 @@ export class IS_NetworkNode extends IS_Object
 	get networkUUID() { return this._networkUUID; }
 	set networkUUID(value) { this._networkUUID = value; }
 
-	get audioNodeRegistryData()
+	get audioNode()
 	{
-		return IS_NodeRegistry.getNodeData(this._audioNodeRegistryHash);
+		return IS_NodeRegistry.getAudioNodeFromUUID(this._audioNodeUUID);
 	};
 
 	get isFrom() { return this._isFrom; }

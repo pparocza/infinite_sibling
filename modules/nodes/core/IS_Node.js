@@ -16,7 +16,7 @@ export class IS_Node extends IS_Object
         this._output = new GainNode(siblingContext.AudioContext);
         this._gain = new IS_AudioParameter(this._siblingContext, this, this._output.gain);
 
-        this._registryData = this._siblingContext.NodeRegistry.registerNode(this);
+        this._siblingContext.NodeRegistry.registerNode(this);
 
         this._networkNode = IS_NetworkRegistry.HandleNodeCreated(this);
 
@@ -25,8 +25,6 @@ export class IS_Node extends IS_Object
     }
 
     isISNode = true;
-
-    get registryData() { return this._registryData; };
 
     get gain() { return this._gain; }
     set gain(value) { this._gain.value = value; }

@@ -7,12 +7,12 @@ import { IS_NodeRegistry } from "../registry/IS_NodeRegistry.js";
  */
 export class IS_NetworkConnectionMatrixNodeData extends IS_Object
 {
-	constructor(audioNodeRegistryHash)
+	constructor(audioNodeUUID)
 	{
 		super(IS_Type);
 
 		this._row = null;
-		this._audioNodeRegistryHash = audioNodeRegistryHash;
+		this._audioNodeUUID = audioNodeUUID;
 
 		this._connectedNodes =
 		{
@@ -21,9 +21,9 @@ export class IS_NetworkConnectionMatrixNodeData extends IS_Object
 		};
 	}
 
-	get audioNodeRegistryData()
+	get audioNode()
 	{
-		return IS_NodeRegistry.getNodeData(this._audioNodeRegistryHash);
+		return IS_NodeRegistry.getAudioNodeFromUUID(this._audioNodeUUID);
 	};
 
 	get row() { return this._row; }

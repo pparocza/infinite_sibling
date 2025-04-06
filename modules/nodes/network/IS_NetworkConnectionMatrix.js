@@ -44,7 +44,7 @@ export class IS_NetworkConnectionMatrix
 	{
 		let nodeData = new IS_NetworkConnectionMatrixNodeData
 		(
-			networkNode.audioNodeRegistryData.hash
+			networkNode.audioNode.uuid
 		);
 
 		this.nodeData[networkNode.uuid] = nodeData;

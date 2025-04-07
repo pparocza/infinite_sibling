@@ -41,6 +41,19 @@ export class IS_Node extends IS_Object
         {
             let audioNode = audioNodes[nodeIndex];
 
+            if(audioNode.isISObject && !audioNode.isISAudioParameter && !audioNode.input)
+            {
+                // TODO: Warning/Error utilities
+                console.warn
+                (
+                    "INFINITE SIBLING:", "ErrType: CONNECTION_ERR", "[" + this.iSType + "]",
+                    "Attempted to connect to:", "[" + audioNode.iSType + "]",
+                    ", which has no input."
+                )
+
+                return;
+            }
+
             if(audioNode.isISObject)
             {
                 if (audioNode.isISEffect)
@@ -51,6 +64,7 @@ export class IS_Node extends IS_Object
                 {
                     this._output.connect(audioNode.parameter);
                 }
+
             }
             else
             {

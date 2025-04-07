@@ -4,15 +4,15 @@ import { IS_NodeRegistry } from "../registry/IS_NodeRegistry.js";
 
 export class IS_NetworkNode extends IS_Object
 {
-	constructor(audioNodeRegistryHash)
+	constructor(audioNodeUUID)
 	{
 		super(IS_Type.IS_Network.Node);
 
 		/*
-		 Storing the registry hash here allows stuff that uses this data
+		 Storing the uuid here allows anything that uses this data
 		  to get additional data from IS_NodeRegistry if needed
 	 	*/
-		this._audioNodeUUID = audioNodeRegistryHash;
+		this._audioNodeUUID = audioNodeUUID;
 		this._networkUUID = null;
 
 		/*

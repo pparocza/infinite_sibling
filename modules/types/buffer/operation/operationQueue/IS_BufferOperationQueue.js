@@ -20,6 +20,11 @@ export const IS_BufferOperationQueue =
 
 	get Progress() { return this._progress; },
 
+	// TODO: batch operations for a single buffer into a single piece of data that gets sent to WASM
+	//  OR, every time WASM completes an operation, it pings back to JS for the next one <- this is
+	//  exactly what you're trying to reduce tho <- the biggest issue is that you don't know when
+	//  to consider a batch done, though since this is currently all offline, you can just have that
+	//  happen on load (no bueno for real time buffer generation on the fly tho)
 	requestOperation(iSAudioBuffer, bufferOperationRequestData)
 	{
 		this._isOperating = true;
@@ -61,8 +66,6 @@ export const IS_BufferOperationQueue =
 
 		if (requestData.isSuspendedOperation)
 		{
-			// TODO: investigate the fact that buffer.getChannelData() returns a reference,
-			//  so you don't have to update currentBuffer when you aren't suspending
 			requestData.currentBufferArray =
 				IS_BufferOperationQueueBufferRegistry
 					.getCurrentSuspendedOperationsArray(requestData.bufferUuid);
@@ -73,7 +76,6 @@ export const IS_BufferOperationQueue =
 
 	_handleBufferFunctionType(bufferOperationRequestData)
 	{
-		// TODO: another reason why each "args" should be its own data type
 		let otherBuffer = bufferOperationRequestData.functionData.functionArgs[0];
 
 		let functionBuffer = otherBuffer.isISBuffer ? otherBuffer.buffer : otherBuffer;

@@ -4,7 +4,7 @@ import { IS_Random } from "../../utilities/IS_Random.js";
 import { BufferPrint } from "../../utilities/BufferPrint.js";
 import { Utilities } from "../../utilities/Utilities.js";
 import { IS_BufferPresets } from "../../presets/IS_BufferPresets.js";
-import { IS_BufferOperationRequestData } from "./operation/IS_BufferOperationRequestData.js";
+import { IS_BufferOperationData } from "./operation/IS_BufferOperationData.js";
 import { IS_BufferFunctionData } from "./operation/function/IS_BufferFunctionData.js";
 import { IS_BufferFunctionType } from "./operation/function/IS_BufferFunctionType.js";
 import { IS_BufferOperatorType } from "./operation/IS_BufferOperatorType.js"
@@ -40,8 +40,8 @@ export class IS_Buffer extends IS_Object
 
         this._siblingContext = siblingContext;
 
-        this._operationRequestData = new IS_BufferOperationRequestData();
-        this._operationRequestData.bufferLength = this._sampleRate;
+        this._operationRequestData = new IS_BufferOperationData();
+        this._operationRequestData.bufferLength = this._length;
         this._operationsSuspended = false;
 
         this._bufferIsReady = true;
@@ -119,7 +119,6 @@ export class IS_Buffer extends IS_Object
     get printOnOperationsComplete() { return this._printOnOperationsComplete; }
     set printOnOperationsComplete(value) { this._printOnOperationsComplete = value; }
 
-    // TODO: How much of "OPERATION REQUESTS" can you extract to an IS_BufferOperation const?
     // OPERATION REQUESTS
     _requestOperation()
     {
@@ -154,7 +153,7 @@ export class IS_Buffer extends IS_Object
     {
         let functionType = this._operationRequestData.functionData.functionType;
 
-        let operationRequestData = new IS_BufferOperationRequestData
+        let operationRequestData = new IS_BufferOperationData
         (
             this._operationRequestData.operatorType,
             this._operationRequestData.functionData,
@@ -177,10 +176,12 @@ export class IS_Buffer extends IS_Object
         return operationRequestData;
     }
 
-    completeOperation(completedOperationData)
+    completeOperation(completedOperationArray)
     {
-        let bufferArray = completedOperationData.completedOperationArray;
+        this._buffer.copyToChannel(completedOperationArray, 0);
+        this.operationsComplete();
 
+        /*
         if(completedOperationData.functionData.type === IS_BufferFunctionType.SuspendedOperations)
         {
             this._suspendedOperationsArray = new Float32Array(this.length);
@@ -193,7 +194,7 @@ export class IS_Buffer extends IS_Object
         else
         {
             this._buffer.copyToChannel(bufferArray, completedOperationData.channelNumber);
-        }
+        }*/
 
         if(this.printOperations)
         {

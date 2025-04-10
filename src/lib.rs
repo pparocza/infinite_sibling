@@ -1,3 +1,4 @@
+use std::env::args;
 use wasm_bindgen::prelude::*;
 use crate::is_buffer_function::*;
 use crate::is_function::*;
@@ -22,18 +23,67 @@ extern "C"
 #[wasm_bindgen]
 pub fn is_wasm_buffer_operation
 (
+    buffer_length: u32,
     function_type_as_string: &str, operator_type_as_string: &str,
-    buffer_length: u32, buffer_id: u32, function_arguments: &[f32]
+    function_arguments: &[f32], argument_slice_data: &[u32]
 ) -> Vec<f32>
 {
-    let operation_request = OperationRequestData::new
-    (
-        function_type_as_string, operator_type_as_string, buffer_length, function_arguments
-    );
+    let function_type_iter = function_type_as_string.lines();
+    let operator_type_iter = operator_type_as_string.lines();
 
-    let mut function_buffer: Vec<f32> = Vec::new();
+    let mut function_types: Vec<&str> = Vec::new();
+    let mut operator_types: Vec<&str> = Vec::new();
+    let mut argument_slices: Vec<Vec<f32>> = Vec::new();
 
-    let time_increment: f32 = 1.0 / buffer_length as f32;
+    for function_type in function_type_iter
+    {
+        function_types.push(function_type);
+    }
+
+    for operator_type in operator_type_iter
+    {
+        operator_types.push(operator_type);
+    }
+
+    for argument_slice_index in 0..argument_slice_data.len() / 2
+    {
+        let index = argument_slice_index * 2;
+        let slice_offset = argument_slice_data[index];
+        let slice_length = argument_slice_data[index + 1];
+        let slice_start = slice_offset;
+        let slice_end = slice_offset + slice_length;
+
+        let mut arg_vec: Vec<f32> = Vec::new();
+
+        for argument_index in slice_start..slice_end
+        {
+            arg_vec.push(function_arguments[argument_index as usize]);
+        }
+
+        argument_slices.push(arg_vec);
+    }
+
+    let mut function_buffer: Vec<f32> = vec![0.0; buffer_length as usize];
+
+    for operation_index in 0..function_types.len()
+    {
+        let operation_request = OperationRequestData::new
+        (
+            function_types[operation_index],
+            operator_types[operation_index],
+            buffer_length,
+            &argument_slices[operation_index]
+        );
+
+        operate(operation_request, &mut function_buffer);
+    }
+
+    function_buffer
+}
+
+fn operate(operation_request: OperationRequestData, function_buffer: &mut Vec<f32>)
+{
+    let time_increment: f32 = 1.0 / function_buffer.len() as f32;
     let mut current_sample: u32 = 0;
     let mut current_increment: f32 = 0.0;
     let mut function_value: f32 = 0.0;
@@ -52,18 +102,15 @@ pub fn is_wasm_buffer_operation
 
     while current_sample < operation_request.buffer_length_in_samples
     {
-        current_array_value = 0.0;
-        // current_array_value = current_buffer_array[current_sample as usize];
+        current_array_value = function_buffer[current_sample as usize];
 
         function_value = buffer_function.evaluate(current_increment, current_sample);
         sample_value = operator.operate(current_array_value, function_value);
 
-        function_buffer.push(sample_value);
+        function_buffer[current_sample as usize] = sample_value;
         current_increment = current_increment + time_increment;
         current_sample = current_sample + 1;
     }
-
-    function_buffer
 }
 
 struct OperationRequestData

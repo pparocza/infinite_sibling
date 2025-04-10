@@ -11,7 +11,6 @@ export const IS_BufferOperationWorkerBridge =
 	{
 		BUFFER_WORKER_CONTEXT.postMessage
 		(
-			// TODO: iSBufferOperation should be a data type
 			{ request: "operate", operationData: iSBufferOperationData }
 		);
 	},

@@ -1,16 +1,11 @@
 import { IS_BufferOperationWorkerBridge } from "../workers/IS_BufferOperationWorkerBridge.js";
 import { IS_BufferFunctionType } from "../function/IS_BufferFunctionType.js";
 import { IS_BufferFunctionData } from "../function/IS_BufferFunctionData.js";
-import { IS_BufferOperationQueueBufferRegistry } from "./IS_BufferOperationQueueBufferRegistry.js";
+import { IS_BufferOperationRegistry } from "./IS_BufferOperationRegistry.js";
+import { IS_BufferOperationRequest } from "./IS_BufferOperationRequest.js";
 
 export const IS_BufferOperationQueue =
 {
-	_operationRequestQueue: [],
-	get operationRequestQueue() { return this._operationRequestQueue; },
-
-	_isOperating: false,
-	get isOperating() { return this._isOperating; },
-
 	_progress: 0,
 	_progressIncrement: 0,
 	_queueLength: 0,
@@ -20,69 +15,62 @@ export const IS_BufferOperationQueue =
 
 	get Progress() { return this._progress; },
 
-	// TODO: batch operations for a single buffer into a single piece of data that gets sent to WASM
-	//  OR, every time WASM completes an operation, it pings back to JS for the next one <- this is
-	//  exactly what you're trying to reduce tho <- the biggest issue is that you don't know when
-	//  to consider a batch done, though since this is currently all offline, you can just have that
-	//  happen on load (no bueno for real time buffer generation on the fly tho)
-	requestOperation(iSAudioBuffer, bufferOperationRequestData)
+	Operate()
 	{
-		this._isOperating = true;
-		IS_BufferOperationQueueBufferRegistry.addOperationRequest(iSAudioBuffer);
-		this._enqueueBufferOperation(bufferOperationRequestData);
-	},
+		let operationDataRegistry = IS_BufferOperationRegistry.registry;
 
-	_enqueueBufferOperation(bufferOperationRequestData)
-	{
-		this.operationRequestQueue.push(bufferOperationRequestData);
-
-		if(this.operationRequestQueue.length === 1)
+		for(const [bufferUUID, registryData] of Object.entries(operationDataRegistry))
 		{
-			this._nextOperation();
+			let operationRequest = new IS_BufferOperationRequest
+			(
+				registryData.operationData, registryData.buffer.length, bufferUUID
+			);
+
+			IS_BufferOperationWorkerBridge.requestOperation(operationRequest);
 		}
 	},
 
-	_nextOperation()
+	requestOperation(iSAudioBuffer, bufferOperationData)
 	{
-		let currentRequest = this.operationRequestQueue[0];
-		let requestData = this._ensureCurrentData(currentRequest);
-
-		IS_BufferOperationWorkerBridge.requestOperation(requestData);
+		IS_BufferOperationRegistry.addOperationRequest
+		(
+			iSAudioBuffer, bufferOperationData
+		);
 	},
 
-	_ensureCurrentData(requestData)
+	_ensureCurrentData(operationData)
 	{
-		let functionType = requestData.functionData.functionType;
+		let functionType = operationData.functionData.functionType;
 
 		switch(functionType)
 		{
 			case(IS_BufferFunctionType.Buffer):
-				requestData = this._handleBufferFunctionType(requestData);
+				operationData = this._handleBufferFunctionType(operationData);
 				break;
 			case(IS_BufferFunctionType.SuspendedOperations):
-				requestData = this._handleSuspendedOperationsFunctionType(requestData);
+				operationData = this._handleSuspendedOperationsFunctionType(operationData);
 				break;
 		}
 
-		if (requestData.isSuspendedOperation)
+		if (operationData.isSuspendedOperation)
 		{
-			requestData.currentBufferArray =
-				IS_BufferOperationQueueBufferRegistry
-					.getCurrentSuspendedOperationsArray(requestData.bufferUuid);
+			operationData.currentBufferArray =
+				IS_BufferOperationRegistry
+					.getCurrentSuspendedOperationsArray(operationData.bufferUuid);
 		}
 
-		return requestData;
+		return operationData;
 	},
 
-	_handleBufferFunctionType(bufferOperationRequestData)
+	_handleBufferFunctionType(bufferOperationData)
 	{
-		let otherBuffer = bufferOperationRequestData.functionData.functionArgs[0];
+		let otherBuffer = bufferOperationData.functionData.functionArgs[0];
 
 		let functionBuffer = otherBuffer.isISBuffer ? otherBuffer.buffer : otherBuffer;
 		let functionArray = new Float32Array(functionBuffer.length);
 		functionBuffer.copyFromChannel(functionArray, 0);
 
-		bufferOperationRequestData.functionData = new IS_BufferFunctionData
+		bufferOperationData.functionData = new IS_BufferFunctionData
 		(
 			IS_BufferFunctionType.Buffer, null
 		);
@@ -91,20 +79,20 @@ export const IS_BufferOperationQueue =
 		 Right now, WASM needs to receive this array DIRECTLY, not this array as the first
 		 member of an ...args array
 		 */
-		bufferOperationRequestData.functionData.functionArgs = functionArray;
+		bufferOperationData.functionData.functionArgs = functionArray;
 
-		return bufferOperationRequestData;
+		return bufferOperationData;
 	},
 
-	_handleSuspendedOperationsFunctionType(bufferOperationRequestData)
+	_handleSuspendedOperationsFunctionType(bufferOperationData)
 	{
-		let currentSuspendedOperationsArray = IS_BufferOperationQueueBufferRegistry
+		let currentSuspendedOperationsArray = IS_BufferOperationRegistry
 		.getCurrentSuspendedOperationsArray
 		(
-			bufferOperationRequestData.bufferUuid
+			bufferOperationData.bufferUuid
 		);
 
-		bufferOperationRequestData.functionData = new IS_BufferFunctionData
+		bufferOperationData.functionData = new IS_BufferFunctionData
 		(
 			IS_BufferFunctionType.SuspendedOperations, null
 		);
@@ -113,31 +101,16 @@ export const IS_BufferOperationQueue =
 		 Right now, WASM needs to receive this array DIRECTLY, not this array as the first
 		 member of an ...args array
 		 */
-		bufferOperationRequestData.functionData.functionArgs = currentSuspendedOperationsArray;
+		bufferOperationData.functionData.functionArgs = currentSuspendedOperationsArray;
 
-		return bufferOperationRequestData;
+		return bufferOperationData;
 	},
 
 	CompleteOperation(completedOperationData)
 	{
-		let bufferUuid = completedOperationData.bufferUuid;
+		IS_BufferOperationRegistry.fulfillOperationRequest(completedOperationData);
 
-		IS_BufferOperationQueueBufferRegistry.completeOperationRequest(completedOperationData);
-
-		this._handleOperationComplete(bufferUuid);
-	},
-
-	_handleOperationComplete(uuid)
-	{
-		this.operationRequestQueue.shift();
-
-		this._updateProgress();
-
-		if(this.operationRequestQueue.length > 0)
-		{
-			this._nextOperation();
-		}
-		else
+		if(IS_BufferOperationRegistry.isEmpty)
 		{
 			this._handleQueueComplete();
 		}
@@ -145,8 +118,6 @@ export const IS_BufferOperationQueue =
 
 	_handleQueueComplete()
 	{
-		this._isOperating = false;
-
 		this._endWaits();
 		this._resetProgress();
 	},

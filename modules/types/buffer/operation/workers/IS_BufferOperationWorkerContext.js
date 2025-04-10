@@ -20,27 +20,44 @@ function LISTENER_CALLBACK(message)
 	}
 }
 
-function WORKER(incomingOperationData)
+function WORKER(incomingOperationRequest)
 {
-	let completedOperationData = DO_WORK(incomingOperationData);
+	let completedOperationData = DO_WORK(incomingOperationRequest);
 	postMessage( { operationData: completedOperationData } );
 }
 
-function DO_WORK(operationData)
+// TODO: Make this less terrible (but good job getting a proof of concept)
+function DO_WORK(operationRequestData)
 {
-	let bufferLengthInSamples = operationData.currentBufferArray.length;
+	let bufferLengthInSamples = operationRequestData.bufferLength;
+	let functionTypes = "";
+	let operatorTypes = "";
+	let argumentArray = [];
+	let argumentSliceData = [];
+	let argumentOffset = 0;
 
-	let functionData = operationData.functionData;
+	let operationData = operationRequestData.operationData;
 
-	let operatorTypeAsString = operationData.operatorType.toLowerCase();
+	for(let operationIndex = 0; operationIndex < operationData.length; operationIndex++)
+	{
+		let operation = operationData[operationIndex];
+		functionTypes += operation.functionData.functionType.toLowerCase() + "\n";
+		operatorTypes += operation.operatorType.toLowerCase() + "\n" ;
 
-	let functionArgs = functionData.functionArgs;
-	let functionTypeAsString = functionData.functionType.toLowerCase();
+		let functionArgs = operation.functionData.functionArgs;
 
-	operationData.completedOperationArray = is_wasm_buffer_operation
+		argumentArray.push(...functionArgs);
+		argumentSliceData.push(argumentOffset, functionArgs.length);
+		argumentOffset += functionArgs.length;
+	}
+
+	let argumentArrayAsFloatArray = new Float32Array(argumentArray);
+	let argumentSliceDataAsUIntArray = new Uint32Array(argumentSliceData);
+
+	operationRequestData.completedOperationArray = is_wasm_buffer_operation
 	(
-		operationData.currentBufferArray, functionTypeAsString, operatorTypeAsString, functionArgs
+		bufferLengthInSamples, functionTypes, operatorTypes, argumentArrayAsFloatArray, argumentSliceDataAsUIntArray
 	);
 
-	return operationData;
+	return operationRequestData;
 }

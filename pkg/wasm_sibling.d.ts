@@ -1,12 +1,12 @@
 /* tslint:disable */
 /* eslint-disable */
-export function is_wasm_buffer_operation(function_type_as_string: string, operator_type_as_string: string, buffer_length: number, buffer_id: number, function_arguments: Float32Array): Float32Array;
+export function is_wasm_buffer_operation(buffer_length: number, function_type_as_string: string, operator_type_as_string: string, function_arguments: Float32Array, argument_slice_data: Uint32Array): Float32Array;
 
 export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembly.Module;
 
 export interface InitOutput {
   readonly memory: WebAssembly.Memory;
-  readonly is_wasm_buffer_operation: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number) => [number, number];
+  readonly is_wasm_buffer_operation: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number) => [number, number];
   readonly __wbindgen_export_0: WebAssembly.Table;
   readonly __wbindgen_malloc: (a: number, b: number) => number;
   readonly __wbindgen_realloc: (a: number, b: number, c: number, d: number) => number;

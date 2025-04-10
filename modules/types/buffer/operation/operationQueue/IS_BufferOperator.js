@@ -2,9 +2,9 @@ import { IS_BufferOperationWorkerBridge } from "../workers/IS_BufferOperationWor
 import { IS_BufferFunctionType } from "../function/IS_BufferFunctionType.js";
 import { IS_BufferFunctionData } from "../function/IS_BufferFunctionData.js";
 import { IS_BufferOperationRegistry } from "./IS_BufferOperationRegistry.js";
-import { IS_BufferOperationRequest } from "./IS_BufferOperationRequest.js";
 
-export const IS_BufferOperationQueue =
+
+export const IS_BufferOperator =
 {
 	_progress: 0,
 	_progressIncrement: 0,
@@ -17,16 +17,11 @@ export const IS_BufferOperationQueue =
 
 	Operate()
 	{
-		let operationDataRegistry = IS_BufferOperationRegistry.registry;
+		let operationRegistry = IS_BufferOperationRegistry.registry;
 
-		for(const [bufferUUID, registryData] of Object.entries(operationDataRegistry))
+		for(const [bufferUUID, registryData] of Object.entries(operationRegistry))
 		{
-			let operationRequest = new IS_BufferOperationRequest
-			(
-				registryData.operationData, registryData.buffer.length, bufferUUID
-			);
-
-			IS_BufferOperationWorkerBridge.requestOperation(operationRequest);
+			IS_BufferOperationWorkerBridge.requestOperation(registryData);
 		}
 	},
 

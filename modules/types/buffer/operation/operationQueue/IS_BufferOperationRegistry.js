@@ -1,39 +1,16 @@
 import { IS_BufferOperationRegistryData } from "./IS_BufferOperationRegistryData.js";
 
-const BufferRegistryData = IS_BufferOperationRegistryData;
-
 export const IS_BufferOperationRegistry =
 {
 	_registry: {},
 	get registry() { return this._registry; },
 
-	get isEmpty() { return Object.keys(this._registry).length === 0; },
+	get length() { return Object.keys(this._registry).length; },
+	get isEmpty() { return this.length === 0; },
 
-	addOperationRequest(iSAudioBuffer, bufferOperationRequestData)
+	addOperationRequest(iSAudioBuffer, bufferOperationData)
 	{
-		this._addOperationRequestToRegistry(iSAudioBuffer, bufferOperationRequestData);
-	},
-
-	fulfillOperationRequest(completedOperationData)
-	{
-		let bufferUuid = completedOperationData.bufferUUID;
-		let completedOperationArray = completedOperationData.completedOperationArray;
-
-		let registryData = this._registry[bufferUuid];
-		registryData.completeOperation(completedOperationArray);
-
-		this._removeFinishedBuffersFromRegistry(bufferUuid);
-	},
-
-	getCurrentSuspendedOperationsArray(bufferUuid)
-	{
-		let bufferData = this._registry[bufferUuid];
-		return bufferData.buffer._suspendedOperationsArray;
-	},
-
-	_registerBuffer(iSAudioBuffer)
-	{
-		this._registry[iSAudioBuffer.uuid] = new BufferRegistryData(iSAudioBuffer);
+		this._addOperationRequestToRegistry(iSAudioBuffer, bufferOperationData);
 	},
 
 	_addOperationRequestToRegistry(iSAudioBuffer, bufferOperationData)
@@ -49,8 +26,35 @@ export const IS_BufferOperationRegistry =
 		registryData.addOperationData(bufferOperationData);
 	},
 
-	_removeFinishedBuffersFromRegistry(uuid)
+	_registerBuffer(iSAudioBuffer)
+	{
+		this._registry[iSAudioBuffer.uuid] = new IS_BufferOperationRegistryData(iSAudioBuffer);
+	},
+
+	/**
+	 * Return array from WASM to IS_Buffer
+	 * @param completedOperationData
+	 */
+	fulfillOperationRequest(completedOperationData)
+	{
+		let bufferUuid = completedOperationData.bufferUUID;
+		let completedOperationArray = completedOperationData.completedOperationArray;
+
+		let registryData = this._registry[bufferUuid];
+		registryData.completeOperation(completedOperationArray);
+
+		this._removeCompletedOperations(bufferUuid);
+	},
+
+	_removeCompletedOperations(uuid)
 	{
 		delete this._registry[uuid];
 	},
+
+	// TODO: This will eventually be gone and entirely managed on the WASM side
+	getCurrentSuspendedOperationsArray(bufferUUID)
+	{
+		let bufferData = this._registry[bufferUUID];
+		return bufferData.buffer._suspendedOperationsArray;
+	}
 }

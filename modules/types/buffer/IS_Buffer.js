@@ -8,7 +8,7 @@ import { IS_BufferOperationData } from "./operation/IS_BufferOperationData.js";
 import { IS_BufferFunctionData } from "./operation/function/IS_BufferFunctionData.js";
 import { IS_BufferFunctionType } from "./operation/function/IS_BufferFunctionType.js";
 import { IS_BufferOperatorType } from "./operation/IS_BufferOperatorType.js"
-import { IS_BufferOperationQueue } from "./operation/operationQueue/IS_BufferOperationQueue.js";
+import { IS_BufferOperator } from "./operation/operationQueue/IS_BufferOperator.js";
 
 // TODO: SmoothClip
 
@@ -136,24 +136,24 @@ export class IS_Buffer extends IS_Object
 
     _requestOperationForChannel(channel)
     {
-        let operationData = this._createOperationRequestData(channel);
-        IS_BufferOperationQueue.requestOperation(this, operationData);
+        let operationData = this._createOperationRequest(channel);
+        IS_BufferOperator.requestOperation(this, operationData);
     }
 
     _requestOperationForAllChannels()
     {
         for(let channelIndex = 0; channelIndex < this.numberOfChannels; channelIndex++)
         {
-            let operationData = this._createOperationRequestData(channelIndex);
-            IS_BufferOperationQueue.requestOperation(this, operationData);
+            let operationData = this._createOperationRequest(channelIndex);
+            IS_BufferOperator.requestOperation(this, operationData);
         }
     }
 
-    _createOperationRequestData(channel)
+    _createOperationRequest(channel)
     {
         let functionType = this._operationRequestData.functionData.functionType;
 
-        let operationRequestData = new IS_BufferOperationData
+        let operationData = new IS_BufferOperationData
         (
             this._operationRequestData.operatorType,
             this._operationRequestData.functionData,
@@ -162,22 +162,23 @@ export class IS_Buffer extends IS_Object
 
         if (this._operationsSuspended && functionType !== IS_BufferFunctionType.SuspendedOperations)
         {
-            operationRequestData.isSuspendedOperation = true;
+            operationData.isSuspendedOperation = true;
         }
         else
         {
-            operationRequestData.isSuspendedOperation = false;
-            operationRequestData.channelNumber = channel;
-            operationRequestData.currentBufferArray = this.buffer.getChannelData(channel);
+            operationData.isSuspendedOperation = false;
+            operationData.channelNumber = channel;
+            operationData.currentBufferArray = this.buffer.getChannelData(channel);
 
             this._operationsSuspended = false;
         }
 
-        return operationRequestData;
+        return operationData;
     }
 
     completeOperation(completedOperationArray)
     {
+        // TODO: Channels etc.
         this._buffer.copyToChannel(completedOperationArray, 0);
         this.operationsComplete();
 

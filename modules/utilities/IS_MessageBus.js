@@ -1,4 +1,4 @@
-import { IS_BufferOperationQueue } from "../types/buffer/operation/operationQueue/IS_BufferOperationQueue.js";
+import { IS_BufferOperator } from "../types/buffer/operation/operationQueue/IS_BufferOperator.js";
 
 export const IS_MessageBus =
 {
@@ -11,7 +11,7 @@ export const IS_MessageBus =
 	{
 		BufferOperationQueue:
 			{
-				set Progress(listener) { IS_BufferOperationQueue.progressListener = listener; }
+				set Progress(listener) { IS_BufferOperator.progressListener = listener; }
 			}
 	},
 }

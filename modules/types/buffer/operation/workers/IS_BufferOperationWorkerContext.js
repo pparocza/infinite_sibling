@@ -5,42 +5,51 @@ import wasmInit,
 
 const rustWasm = await wasmInit("../../../../../pkg/wasm_sibling_bg.wasm");
 
-function INITIALIZE_LISTENER()
+function INITIALIZE_MESSAGE_LISTENER()
 {
-	addEventListener("message", (message) => { LISTENER_CALLBACK(message); });
+	addEventListener
+	(
+		"message",
+		(operationWASMRequestMessage) =>
+		{
+			MESSAGE_LISTENER_CALLBACK(operationWASMRequestMessage);
+		}
+	);
 }
 
-INITIALIZE_LISTENER();
+INITIALIZE_MESSAGE_LISTENER();
 
-function LISTENER_CALLBACK(message)
+function MESSAGE_LISTENER_CALLBACK(operationWASMRequestMessage)
 {
-	if (message.data.request === "operate")
+	if (operationWASMRequestMessage.data.request === "operate")
 	{
-		WORKER(message.data.operationData);
+		WORKER(operationWASMRequestMessage.data.operationRequests);
 	}
 }
 
-function WORKER(incomingOperationRequest)
+function WORKER(operationWASMRequestMessage)
 {
-	let completedOperationData = DO_WORK(incomingOperationRequest);
+	let completedOperationData = DO_WORK(operationWASMRequestMessage);
 	postMessage( { operationData: completedOperationData } );
 }
 
 // TODO: Make this less terrible (but good job getting a proof of concept)
-function DO_WORK(operationRequestData)
+function DO_WORK(operationWASMRequestMessage)
 {
-	let bufferLengthInSamples = operationRequestData.bufferLength;
+	// TODO: Figure out a way to send all this as a single data type that WASM can just
+	//  swallow wholesale and spit back a completed array
+	let bufferLengthInSamples = operationWASMRequestMessage.bufferLength;
 	let functionTypes = "";
 	let operatorTypes = "";
 	let argumentArray = [];
 	let argumentSliceData = [];
 	let argumentOffset = 0;
 
-	let operationData = operationRequestData.operationData;
+	let operationRequests = operationWASMRequestMessage.operationRequests;
 
-	for(let operationIndex = 0; operationIndex < operationData.length; operationIndex++)
+	for(let operationIndex = 0; operationIndex < operationRequests.length; operationIndex++)
 	{
-		let operation = operationData[operationIndex];
+		let operation = operationRequests[operationIndex];
 		functionTypes += operation.functionData.functionType.toLowerCase() + "\n";
 		operatorTypes += operation.operatorType.toLowerCase() + "\n" ;
 
@@ -54,10 +63,12 @@ function DO_WORK(operationRequestData)
 	let argumentArrayAsFloatArray = new Float32Array(argumentArray);
 	let argumentSliceDataAsUIntArray = new Uint32Array(argumentSliceData);
 
-	operationRequestData.completedOperationArray = is_wasm_buffer_operation
+	operationWASMRequestMessage.completedOperationArray = is_wasm_buffer_operation
 	(
-		bufferLengthInSamples, functionTypes, operatorTypes, argumentArrayAsFloatArray, argumentSliceDataAsUIntArray
+		bufferLengthInSamples,
+		functionTypes, operatorTypes,
+		argumentArrayAsFloatArray, argumentSliceDataAsUIntArray
 	);
 
-	return operationRequestData;
+	return operationWASMRequestMessage;
 }

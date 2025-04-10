@@ -1,18 +1,18 @@
+/**
+ * Ties an IS_Buffer to requested operations in IS_BufferOperationRegistry
+ */
 export class IS_BufferOperationRegistryData
 {
 	constructor(buffer)
 	{
-		// TODO: at some point this can probably be a uuid instead of the buffer
 		this._buffer = buffer;
-		this._operationRequestCount = 0;
-		this._operationData = [];
-		this._isDone = null;
+		this._operationRequests = [];
 	}
 
 	get buffer() { return this._buffer; }
-	get isDone() { return this._isDone; }
-
-	get operationData() { return this._operationData; }
+	get bufferLength () { return this._buffer.length; }
+	get bufferUUID() { return this._buffer.uuid; }
+	get operationRequests() { return this._operationRequests; }
 
 	completeOperation(completedOperationData)
 	{
@@ -21,8 +21,6 @@ export class IS_BufferOperationRegistryData
 
 	addOperationData(bufferOperationData)
 	{
-		this._operationRequestCount++;
-		this._operationData.push(bufferOperationData);
-		this._isDone = false;
+		this._operationRequests.push(bufferOperationData);
 	}
 }

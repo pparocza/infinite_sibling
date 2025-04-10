@@ -1,4 +1,4 @@
-import { IS_BufferOperationQueue } from "../types/buffer/operation/operationQueue/IS_BufferOperationQueue.js";
+import { IS_BufferOperator } from "../types/buffer/operation/operationQueue/IS_BufferOperator.js";
 
 export const IS_LifeCycle =
 {
@@ -18,15 +18,15 @@ export const IS_LifeCycle =
 
 	_beforeReady()
 	{
-		IS_BufferOperationQueue.registerWaiter(this);
+		IS_BufferOperator.registerWaiter(this);
 		console.log("Starting Buffer Operations!");
 		this._start = Date.now();
-		IS_BufferOperationQueue.Operate();
+		IS_BufferOperator.Operate();
 	},
 
 	endWait(waitingOn)
 	{
-		if(waitingOn === IS_BufferOperationQueue)
+		if(waitingOn === IS_BufferOperator)
 		{
 			console.log("Operation Queue Finished!", Date.now() - this._start);
 			this._ready();

@@ -1,43 +1,19 @@
-use std::env::args;
 use wasm_bindgen::prelude::*;
-use crate::is_buffer_function::*;
 use crate::is_function::*;
 use crate::is_operator::*;
+use crate::is_buffer_function::*;
+use crate::is_operation_request_data::*;
+use crate::is_wasm_operation_data::*;
+use crate::is_log::*;
 
 mod is_function;
 mod is_operator;
 mod is_buffer_function;
+mod is_operation_request_data;
+mod is_wasm_operation_data;
+mod is_log;
 
 const TWO_PI: f32 = std::f32::consts::PI * 2.0;
-
-#[wasm_bindgen]
-extern "C"
-{
-    #[wasm_bindgen(js_namespace = console)]
-    fn log(s: &str);
-}
-
-// TODO: would be really nice to put this in a separate file (crate?)
-#[wasm_bindgen(module ="/modules/types/buffer/operation/workers/IS_WASMOperationData.js")]
-extern "C"
-{
-    type IS_WASMOperationData;
-
-    #[wasm_bindgen(constructor)]
-    fn new() -> IS_WASMOperationData;
-
-    #[wasm_bindgen(method, getter)]
-    fn operatorType(this: &IS_WASMOperationData) -> String;
-
-    #[wasm_bindgen(method, getter)]
-    fn functionType(this: &IS_WASMOperationData) -> String;
-
-    #[wasm_bindgen(method, getter)]
-    fn functionArgs(this: &IS_WASMOperationData) -> Vec<f32>;
-
-    #[wasm_bindgen(method, getter)]
-    fn isSuspendedOperation(this: &IS_WASMOperationData) -> bool;
-}
 
 #[wasm_bindgen]
 pub fn is_wasm_buffer_operation
@@ -100,40 +76,5 @@ fn operate
         current_increment = current_increment + time_increment;
         current_sample = current_sample + 1;
     }
-}
-
-struct OperationRequestData
-{
-    pub function_type: ISBufferFunctionType,
-    pub operator_type: ISBufferOperatorType,
-    pub function_arguments: Vec<f32>
-}
-
-impl OperationRequest for OperationRequestData
-{
-    fn new
-    (
-        function_type_as_string: &str,
-        operator_type_as_string: &str,
-        function_arguments: Vec<f32>
-    ) -> OperationRequestData
-    {
-        OperationRequestData
-        {
-            function_type: function_type_string_to_enum(function_type_as_string),
-            operator_type: operator_type_string_to_enum(operator_type_as_string),
-            function_arguments: function_arguments
-        }
-    }
-}
-
-pub trait OperationRequest
-{
-    fn new
-    (
-        function_type_as_string: &str,
-        operator_type_as_string: &str,
-        function_arguments: Vec<f32>
-    ) -> OperationRequestData;
 }
 

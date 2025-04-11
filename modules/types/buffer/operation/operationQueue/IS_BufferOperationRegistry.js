@@ -49,12 +49,5 @@ export const IS_BufferOperationRegistry =
 	_removeCompletedOperations(uuid)
 	{
 		delete this._registry[uuid];
-	},
-
-	// TODO: This will eventually be gone and entirely managed on the WASM side
-	getCurrentSuspendedOperationsArray(bufferUUID)
-	{
-		let bufferData = this._registry[bufferUUID];
-		return bufferData.buffer._suspendedOperationsArray;
 	}
 }

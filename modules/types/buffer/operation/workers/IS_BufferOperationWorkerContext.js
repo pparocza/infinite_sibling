@@ -30,16 +30,8 @@ function WORKER(operationWASMRequestMessage)
 	postMessage( { operationData: completedOperationData } );
 }
 
-// TODO: Make this less terrible (but good job getting a proof of concept)
-//  https://rustwasm.github.io/wasm-bindgen/examples/import-js.html <- importing custom classes to WASM from JS
 function DO_WORK(operationWASMRequestMessage)
 {
-	// TODO: Suspended Operations -> should be fairly manageable in WASM by creating a temporary array
-	//  that gets folded back in when it processes a "Supsended Operations" function
-	// TODO: Buffer function type -> this will actually have to wait until that buffer is ready,
-	//  which will likely need to be handled by one IS_Buffer putting in a request to another, the former
-	//  of which doesn't attempt any of it's operations until the other has been completed
-
 	let operationRequests = operationWASMRequestMessage.operationRequests;
 	let WASMOperationData = [];
 

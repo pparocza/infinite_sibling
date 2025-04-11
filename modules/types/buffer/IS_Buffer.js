@@ -171,7 +171,7 @@ export class IS_Buffer extends IS_Object
 
     completeOperation(completedOperationArray)
     {
-        // TODO: Channels etc.
+        // TODO: CHANNEL HANDLING
         this._buffer.copyToChannel(completedOperationArray, 0);
         this.operationsComplete();
     }
@@ -384,7 +384,7 @@ export class IS_Buffer extends IS_Object
         return this;
     }
 
-    // TODO: dealing with multiple frequencies
+    // TODO: MULTIPLE FREQUENCIES / ARGUMENT ARRAYS
     sine(frequency = 1)
     {
         this._setOperationRequestFunctionData

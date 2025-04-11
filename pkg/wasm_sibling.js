@@ -185,6 +185,10 @@ function __wbg_get_imports() {
         getDataViewMemory0().setInt32(arg0 + 4 * 1, len1, true);
         getDataViewMemory0().setInt32(arg0 + 4 * 0, ptr1, true);
     };
+    imports.wbg.__wbg_isSuspendedOperation_c3aefb4d306377bd = function(arg0) {
+        const ret = arg0.isSuspendedOperation;
+        return ret;
+    };
     imports.wbg.__wbg_operatorType_6c80bb68f3577486 = function(arg0, arg1) {
         const ret = arg1.operatorType;
         const ptr1 = passStringToWasm0(ret, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);

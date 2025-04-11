@@ -30,9 +30,6 @@ export class IS_Buffer extends IS_Object
         this._length = lengthSamples;
         this._sampleRate = sampleRate;
 
-        // This is created in the suspendOperations method
-        this._suspendedOperationsArray = null;
-
         this._buffer = siblingContext.AudioContext.createBuffer
         (
             numberOfChannels, lengthSamples, this._sampleRate

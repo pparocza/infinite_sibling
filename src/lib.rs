@@ -22,20 +22,39 @@ pub fn is_wasm_buffer_operation
 ) -> Vec<f32>
 {
     let mut function_buffer: Vec<f32> = vec![0.0; buffer_length as usize];
+    let mut suspension_buffer: Vec<f32> = vec![0.0; buffer_length as usize];
+
     let n_operations = operations.len();
 
     for operation_index in 0..n_operations
     {
         let operation = &operations[operation_index];
 
-        let operation_request = OperationRequestData::new
+        let mut operation_request = OperationRequestData::new
         (
             operation.functionType().as_str(),
             operation.operatorType().as_str(),
             operation.functionArgs()
         );
 
-        operate(buffer_length, operation_request, &mut function_buffer);
+        if operation.isSuspendedOperation()
+        {
+            operate(buffer_length, operation_request, &mut suspension_buffer);
+        }
+        else
+        {
+            if operation.functionType() == "suspendedoperations"
+            {
+                operation_request.function_arguments = suspension_buffer;
+
+                operate(buffer_length, operation_request, &mut function_buffer);
+                suspension_buffer = vec![0.0; buffer_length as usize];
+            }
+            else
+            {
+                operate(buffer_length, operation_request, &mut function_buffer);
+            }
+        }
     }
 
     function_buffer
@@ -45,10 +64,10 @@ fn operate
 (
     buffer_length: u32,
     operation_request: OperationRequestData,
-    function_buffer: &mut Vec<f32>
+    buffer_to_operate_on: &mut Vec<f32>
 )
 {
-    let time_increment: f32 = 1.0 / function_buffer.len() as f32;
+    let time_increment: f32 = 1.0 / buffer_to_operate_on.len() as f32;
     let mut current_sample: u32 = 0;
     let mut current_increment: f32 = 0.0;
     let mut function_value: f32 = 0.0;
@@ -67,12 +86,12 @@ fn operate
 
     while current_sample < buffer_length
     {
-        current_array_value = function_buffer[current_sample as usize];
+        current_array_value = buffer_to_operate_on[current_sample as usize];
 
         function_value = buffer_function.evaluate(current_increment, current_sample);
         sample_value = operator.operate(current_array_value, function_value);
 
-        function_buffer[current_sample as usize] = sample_value;
+        buffer_to_operate_on[current_sample as usize] = sample_value;
         current_increment = current_increment + time_increment;
         current_sample = current_sample + 1;
     }

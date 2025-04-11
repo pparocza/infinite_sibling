@@ -42,7 +42,6 @@ export class IS_Buffer extends IS_Object
         this._operationsSuspended = false;
 
         this._bufferIsReady = true;
-        this._printOperations = false;
         this._printOnOperationsComplete = false;
         this._printTag = null;
 
@@ -61,7 +60,7 @@ export class IS_Buffer extends IS_Object
         this._buffer = buffer.isISBuffer ? buffer.buffer : buffer;
     }
 
-    requestBuffer(iSAudioNode)
+    requestBuffer(awaitingBuffer)
     {
         if(this.bufferIsReady)
         {
@@ -69,7 +68,7 @@ export class IS_Buffer extends IS_Object
         }
         else
         {
-            this._awaitingBuffer.push(iSAudioNode);
+            this._awaitingBuffer.push(awaitingBuffer);
         }
     }
 
@@ -109,8 +108,6 @@ export class IS_Buffer extends IS_Object
     set operationChannel(value) { this._operationChannel = value; }
     operateOnAllChannels() { this._operationChannel = null; }
 
-    get printOperations() { return this._printOperations; }
-    set printOperations(value) { this._printOperations = value; }
     set printTag(value) { this._printTag = value; }
 
     get printOnOperationsComplete() { return this._printOnOperationsComplete; }
@@ -177,26 +174,6 @@ export class IS_Buffer extends IS_Object
         // TODO: Channels etc.
         this._buffer.copyToChannel(completedOperationArray, 0);
         this.operationsComplete();
-
-        /*
-        if(completedOperationData.functionData.type === IS_BufferFunctionType.SuspendedOperations)
-        {
-            this._suspendedOperationsArray = new Float32Array(this.length);
-        }
-
-        if(completedOperationData.isSuspendedOperation)
-        {
-            this._suspendedOperationsArray = bufferArray;
-        }
-        else
-        {
-            this._buffer.copyToChannel(bufferArray, completedOperationData.channelNumber);
-        }*/
-
-        if(this.printOperations)
-        {
-            this.print();
-        }
     }
 
     operationsComplete()
@@ -214,7 +191,16 @@ export class IS_Buffer extends IS_Object
     {
         while(this._awaitingBuffer.length > 0)
         {
-            this._awaitingBuffer.shift().buffer = this.buffer;
+            let awaitingBuffer = this._awaitingBuffer.shift();
+
+            if(awaitingBuffer.isISBufferSource || awaitingBuffer.isISConvolver)
+            {
+                awaitingBuffer.buffer = this.buffer;
+            }
+            else if(awaitingBuffer.isISBufferRegistryData)
+            {
+                awaitingBuffer.getAwaitedBuffer(this);
+            }
         }
     }
 
@@ -234,7 +220,6 @@ export class IS_Buffer extends IS_Object
     // OPERATION SUSPENSION
     suspendOperations()
     {
-        this._suspendedOperationsArray = new Float32Array(this._length);
         this._operationsSuspended = true;
     }
 
@@ -570,23 +555,6 @@ export class IS_Buffer extends IS_Object
 
         let bufferData = new Float32Array(this.length);
         this.buffer.copyFromChannel(bufferData, channel, 0);
-
-        for(let sample= 0; sample < bufferData.length; sample++)
-        {
-            bufferData[sample] = (0.5 * (100 + (Math.floor(bufferData[sample] * 100))));
-        }
-
-        BufferPrint.print(bufferData);
-    }
-
-    printSuspendedOperations(channel = 0, tag)
-    {
-        if (tag)
-        {
-            console.log(tag)
-        }
-
-        let bufferData = [...this._suspendedOperationsArray];
 
         for(let sample= 0; sample < bufferData.length; sample++)
         {

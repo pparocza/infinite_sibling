@@ -1,6 +1,4 @@
 import { IS_BufferOperationWorkerBridge } from "../workers/IS_BufferOperationWorkerBridge.js";
-import { IS_BufferFunctionType } from "../function/IS_BufferFunctionType.js";
-import { IS_BufferFunctionData } from "../function/IS_BufferFunctionData.js";
 import { IS_BufferOperationRegistry } from "./IS_BufferOperationRegistry.js";
 
 
@@ -21,8 +19,24 @@ export const IS_BufferOperator =
 
 		for(const [bufferUUID, registryData] of Object.entries(operationRegistry))
 		{
+			if(registryData.awaitingBuffer)
+			{
+				this.registryDataAwaitingBuffers(registryData);
+				continue;
+			}
+
 			IS_BufferOperationWorkerBridge.requestOperation(registryData);
 		}
+	},
+
+	registryDataAwaitingBuffers(registryData)
+	{
+		registryData.operateWhenReady(this._registryDataReady);
+	},
+
+	_registryDataReady(registryData)
+	{
+		IS_BufferOperationWorkerBridge.requestOperation(registryData);
 	},
 
 	requestOperation(iSAudioBuffer, bufferOperationData)
@@ -31,74 +45,6 @@ export const IS_BufferOperator =
 		(
 			iSAudioBuffer, bufferOperationData
 		);
-	},
-
-	_ensureCurrentData(operationData)
-	{
-		let functionType = operationData.functionData.functionType;
-
-		switch(functionType)
-		{
-			case(IS_BufferFunctionType.Buffer):
-				operationData = this._handleBufferFunctionType(operationData);
-				break;
-			case(IS_BufferFunctionType.SuspendedOperations):
-				operationData = this._handleSuspendedOperationsFunctionType(operationData);
-				break;
-		}
-
-		if (operationData.isSuspendedOperation)
-		{
-			operationData.currentBufferArray =
-				IS_BufferOperationRegistry
-					.getCurrentSuspendedOperationsArray(operationData.bufferUuid);
-		}
-
-		return operationData;
-	},
-
-	_handleBufferFunctionType(bufferOperationData)
-	{
-		let otherBuffer = bufferOperationData.functionData.functionArgs[0];
-
-		let functionBuffer = otherBuffer.isISBuffer ? otherBuffer.buffer : otherBuffer;
-		let functionArray = new Float32Array(functionBuffer.length);
-		functionBuffer.copyFromChannel(functionArray, 0);
-
-		bufferOperationData.functionData = new IS_BufferFunctionData
-		(
-			IS_BufferFunctionType.Buffer, null
-		);
-
-		/*
-		 Right now, WASM needs to receive this array DIRECTLY, not this array as the first
-		 member of an ...args array
-		 */
-		bufferOperationData.functionData.functionArgs = functionArray;
-
-		return bufferOperationData;
-	},
-
-	_handleSuspendedOperationsFunctionType(bufferOperationData)
-	{
-		let currentSuspendedOperationsArray = IS_BufferOperationRegistry
-		.getCurrentSuspendedOperationsArray
-		(
-			bufferOperationData.bufferUuid
-		);
-
-		bufferOperationData.functionData = new IS_BufferFunctionData
-		(
-			IS_BufferFunctionType.SuspendedOperations, null
-		);
-
-		/*
-		 Right now, WASM needs to receive this array DIRECTLY, not this array as the first
-		 member of an ...args array
-		 */
-		bufferOperationData.functionData.functionArgs = currentSuspendedOperationsArray;
-
-		return bufferOperationData;
 	},
 
 	CompleteOperation(completedOperationData)
@@ -117,11 +63,14 @@ export const IS_BufferOperator =
 		this._resetProgress();
 	},
 
+	// TODO: resolve this with new structure
 	_updateProgress()
 	{
-		if(this._queueLength === 0)
+		let registryLength = IS_BufferOperationRegistry.length;
+
+		if(registryLength === 0)
 		{
-			let currentOperationRequestQueueLength = this._operationRequestQueue.length;
+			let currentOperationRequestQueueLength = IS_BufferOperationRegistry.length;
 			this._queueLength = Math.max(1, currentOperationRequestQueueLength);
 		}
 

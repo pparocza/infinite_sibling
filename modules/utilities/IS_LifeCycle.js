@@ -1,4 +1,4 @@
-import { IS_BufferOperationQueue } from "../types/buffer/operation/operationQueue/IS_BufferOperationQueue.js";
+import { IS_BufferOperator } from "../types/buffer/operation/operationQueue/IS_BufferOperator.js";
 
 export const IS_LifeCycle =
 {
@@ -8,31 +8,27 @@ export const IS_LifeCycle =
 	_startCallbacks: [],
 	_stopCallbacks: [],
 
+	_start: 0,
+
 	load()
 	{
 		this._doCallbacks(this._loadCallbacks);
-		this._wait();
+		this._beforeReady();
 	},
 
-	// TODO: this should be Promises and async awaits at some point
-	_wait()
+	_beforeReady()
 	{
-		if(IS_BufferOperationQueue.isOperating)
-		{
-			console.log("Waiting on Buffer Operation Queue!");
-			IS_BufferOperationQueue.registerWaiter(this);
-		}
-		else
-		{
-			this._ready();
-		}
+		IS_BufferOperator.registerWaiter(this);
+		console.log("Starting Buffer Operations!");
+		this._start = Date.now();
+		IS_BufferOperator.Operate();
 	},
 
 	endWait(waitingOn)
 	{
-		if(waitingOn === IS_BufferOperationQueue)
+		if(waitingOn === IS_BufferOperator)
 		{
-			console.log("Operation Queue Finished!");
+			console.log("Operation Queue Finished!", Date.now() - this._start);
 			this._ready();
 		}
 	},
@@ -56,15 +52,6 @@ export const IS_LifeCycle =
 	onLoad(callback)
 	{
 		this._loadCallbacks.push(callback);
-	},
-
-	/*
-		Currently unused, but might be good for internal processes that can be optionally enabled (previously
-		created to accommodate generating network representations before the creation of IS_NetworkConnectionMatrix
- 	*/
-	beforeReady(callback)
-	{
-		this._beforeReadyCallbacks.push(callback);
 	},
 
 	onReady(callback)

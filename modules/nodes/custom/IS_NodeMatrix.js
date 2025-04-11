@@ -63,7 +63,6 @@ export class IS_NodeMatrix extends IS_Effect
 
 		this.registerStartableNodes(audioNodes, this._channels.length - 1);
 
-		// TODO: maybe time for a hasInput property?
 		if(audioNodes[0].iSType === IS_Type.IS_Effect)
 		{
 			this.configureInput(audioNodes[0]);

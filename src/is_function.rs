@@ -89,30 +89,18 @@ pub fn is_wasm_buffer_function<'a>
             )
         },
 
-        ISBufferFunctionType::RampBand => { Box::new(ISRampBand {} ) },
+        ISBufferFunctionType::RampBand => { Box::new(ISRampBand{}) },
 
         ISBufferFunctionType::Sawtooth =>
         {
-            Box::new
-            (
-                ISSawtooth
-                {
-                    exponent: function_arguments[0],
-                }
-            )
+            Box::new(ISSawtooth { exponent: function_arguments[0]})
         },
 
-        ISBufferFunctionType::Sine => { Box::new(ISSine { frequency: function_arguments[0] } ) },
+        ISBufferFunctionType::Sine => { Box::new(ISSine{frequency: function_arguments[0]})},
 
         ISBufferFunctionType::Square =>
         {
-            Box::new
-            (
-                ISSquare
-                {
-                    duty_cycle: function_arguments[0]
-                }
-            )
+            Box::new(ISSquare { duty_cycle: function_arguments[0] } )
         },
 
         ISBufferFunctionType::SuspendedOperations =>
@@ -129,7 +117,7 @@ pub fn is_wasm_buffer_function<'a>
 
         ISBufferFunctionType::UnipolarSine =>
         {
-            Box::new(ISSine { frequency: function_arguments[0] })
+            Box::new(ISSine {frequency: function_arguments[0]})
         }
 
         _ => { Box::new(ISConstant { value: 0.0 }) }

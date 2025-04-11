@@ -12,7 +12,6 @@ export class IS_Node extends IS_Object
 
         this._siblingContext = siblingContext;
 
-        // TODO: Context wrapper so that IS_Nodes use IS_Nodes?
         this._output = new GainNode(siblingContext.AudioContext);
         this._gain = new IS_AudioParameter(this._siblingContext, this, this._output.gain);
 

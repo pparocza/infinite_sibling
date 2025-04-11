@@ -4,11 +4,11 @@ import { IS_Random } from "../../utilities/IS_Random.js";
 import { BufferPrint } from "../../utilities/BufferPrint.js";
 import { Utilities } from "../../utilities/Utilities.js";
 import { IS_BufferPresets } from "../../presets/IS_BufferPresets.js";
-import { IS_BufferOperationRequestData } from "./operation/IS_BufferOperationRequestData.js";
+import { IS_BufferOperationData } from "./operation/IS_BufferOperationData.js";
 import { IS_BufferFunctionData } from "./operation/function/IS_BufferFunctionData.js";
 import { IS_BufferFunctionType } from "./operation/function/IS_BufferFunctionType.js";
 import { IS_BufferOperatorType } from "./operation/IS_BufferOperatorType.js"
-import { IS_BufferOperationQueue } from "./operation/operationQueue/IS_BufferOperationQueue.js";
+import { IS_BufferOperator } from "./operation/operationQueue/IS_BufferOperator.js";
 
 // TODO: SmoothClip
 
@@ -30,9 +30,6 @@ export class IS_Buffer extends IS_Object
         this._length = lengthSamples;
         this._sampleRate = sampleRate;
 
-        // This is created in the suspendOperations method
-        this._suspendedOperationsArray = null;
-
         this._buffer = siblingContext.AudioContext.createBuffer
         (
             numberOfChannels, lengthSamples, this._sampleRate
@@ -40,12 +37,11 @@ export class IS_Buffer extends IS_Object
 
         this._siblingContext = siblingContext;
 
-        this._operationRequestData = new IS_BufferOperationRequestData();
-        this._operationRequestData.bufferLength = this._sampleRate;
+        this._operationRequestData = new IS_BufferOperationData();
+        this._operationRequestData.bufferLength = this._length;
         this._operationsSuspended = false;
 
         this._bufferIsReady = true;
-        this._printOperations = false;
         this._printOnOperationsComplete = false;
         this._printTag = null;
 
@@ -64,7 +60,7 @@ export class IS_Buffer extends IS_Object
         this._buffer = buffer.isISBuffer ? buffer.buffer : buffer;
     }
 
-    requestBuffer(iSAudioNode)
+    requestBuffer(awaitingBuffer)
     {
         if(this.bufferIsReady)
         {
@@ -72,7 +68,7 @@ export class IS_Buffer extends IS_Object
         }
         else
         {
-            this._awaitingBuffer.push(iSAudioNode);
+            this._awaitingBuffer.push(awaitingBuffer);
         }
     }
 
@@ -112,14 +108,11 @@ export class IS_Buffer extends IS_Object
     set operationChannel(value) { this._operationChannel = value; }
     operateOnAllChannels() { this._operationChannel = null; }
 
-    get printOperations() { return this._printOperations; }
-    set printOperations(value) { this._printOperations = value; }
     set printTag(value) { this._printTag = value; }
 
     get printOnOperationsComplete() { return this._printOnOperationsComplete; }
     set printOnOperationsComplete(value) { this._printOnOperationsComplete = value; }
 
-    // TODO: How much of "OPERATION REQUESTS" can you extract to an IS_BufferOperation const?
     // OPERATION REQUESTS
     _requestOperation()
     {
@@ -137,68 +130,55 @@ export class IS_Buffer extends IS_Object
 
     _requestOperationForChannel(channel)
     {
-        let operationData = this._createOperationRequestData(channel);
-        IS_BufferOperationQueue.requestOperation(this, operationData);
+        let operationData = this._createOperationRequest(channel);
+        IS_BufferOperator.requestOperation(this, operationData);
     }
 
     _requestOperationForAllChannels()
     {
         for(let channelIndex = 0; channelIndex < this.numberOfChannels; channelIndex++)
         {
-            let operationData = this._createOperationRequestData(channelIndex);
-            IS_BufferOperationQueue.requestOperation(this, operationData);
+            let operationData = this._createOperationRequest(channelIndex);
+            IS_BufferOperator.requestOperation(this, operationData);
         }
     }
 
-    _createOperationRequestData(channel)
+    _createOperationRequest(channel)
     {
         let functionType = this._operationRequestData.functionData.functionType;
 
-        let operationRequestData = new IS_BufferOperationRequestData
+        let operationData = new IS_BufferOperationData
         (
             this._operationRequestData.operatorType,
             this._operationRequestData.functionData,
+            channel,
             this._uuid
         );
 
         if (this._operationsSuspended && functionType !== IS_BufferFunctionType.SuspendedOperations)
         {
-            operationRequestData.isSuspendedOperation = true;
+            operationData.isSuspendedOperation = true;
         }
         else
         {
-            operationRequestData.isSuspendedOperation = false;
-            operationRequestData.channelNumber = channel;
-            operationRequestData.currentBufferArray = this.buffer.getChannelData(channel);
+            operationData.isSuspendedOperation = false;
 
             this._operationsSuspended = false;
         }
 
-        return operationRequestData;
+        return operationData;
     }
 
-    completeOperation(completedOperationData)
+    completedOperationDataToBuffer(completedOperationData)
     {
-        let bufferArray = completedOperationData.completedOperationArray;
+        let completedArrays = completedOperationData.completedArrays;
 
-        if(completedOperationData.functionData.type === IS_BufferFunctionType.SuspendedOperations)
+        for(const [channelNumber, completedArray] of Object.entries(completedArrays))
         {
-            this._suspendedOperationsArray = new Float32Array(this.length);
-        }
-
-        if(completedOperationData.isSuspendedOperation)
-        {
-            this._suspendedOperationsArray = bufferArray;
-        }
-        else
-        {
-            this._buffer.copyToChannel(bufferArray, completedOperationData.channelNumber);
+            this._buffer.copyToChannel(completedArray, parseInt(channelNumber));
         }
 
-        if(this.printOperations)
-        {
-            this.print();
-        }
+        this.operationsComplete();
     }
 
     operationsComplete()
@@ -216,7 +196,16 @@ export class IS_Buffer extends IS_Object
     {
         while(this._awaitingBuffer.length > 0)
         {
-            this._awaitingBuffer.shift().buffer = this.buffer;
+            let awaitingBuffer = this._awaitingBuffer.shift();
+
+            if(awaitingBuffer.isISBufferSource || awaitingBuffer.isISConvolver)
+            {
+                awaitingBuffer.buffer = this.buffer;
+            }
+            else if(awaitingBuffer.isISBufferRegistryData)
+            {
+                awaitingBuffer.getAwaitedBuffer(this);
+            }
         }
     }
 
@@ -236,7 +225,6 @@ export class IS_Buffer extends IS_Object
     // OPERATION SUSPENSION
     suspendOperations()
     {
-        this._suspendedOperationsArray = new Float32Array(this._length);
         this._operationsSuspended = true;
     }
 
@@ -401,7 +389,7 @@ export class IS_Buffer extends IS_Object
         return this;
     }
 
-    // TODO: dealing with multiple frequencies
+    // TODO: MULTIPLE FREQUENCIES / ARGUMENT ARRAYS
     sine(frequency = 1)
     {
         this._setOperationRequestFunctionData
@@ -572,23 +560,6 @@ export class IS_Buffer extends IS_Object
 
         let bufferData = new Float32Array(this.length);
         this.buffer.copyFromChannel(bufferData, channel, 0);
-
-        for(let sample= 0; sample < bufferData.length; sample++)
-        {
-            bufferData[sample] = (0.5 * (100 + (Math.floor(bufferData[sample] * 100))));
-        }
-
-        BufferPrint.print(bufferData);
-    }
-
-    printSuspendedOperations(channel = 0, tag)
-    {
-        if (tag)
-        {
-            console.log(tag)
-        }
-
-        let bufferData = [...this._suspendedOperationsArray];
 
         for(let sample= 0; sample < bufferData.length; sample++)
         {

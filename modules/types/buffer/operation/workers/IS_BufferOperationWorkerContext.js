@@ -1,9 +1,6 @@
-import wasmInit,
-{
-	is_wasm_buffer_operation
-} from "../../../../../pkg/wasm_sibling.js";
-
+import wasmInit, { is_wasm_buffer_operation } from "../../../../../pkg/wasm_sibling.js";
 const rustWasm = await wasmInit("../../../../../pkg/wasm_sibling_bg.wasm");
+import { IS_WASMOperationData } from "./IS_WASMOperationData.js";
 
 function INITIALIZE_MESSAGE_LISTENER()
 {
@@ -34,6 +31,7 @@ function WORKER(operationWASMRequestMessage)
 }
 
 // TODO: Make this less terrible (but good job getting a proof of concept)
+//  https://rustwasm.github.io/wasm-bindgen/examples/import-js.html <- importing custom classes to WASM from JS
 function DO_WORK(operationWASMRequestMessage)
 {
 	// TODO: Suspended Operations -> should be fairly manageable in WASM by creating a temporary array
@@ -41,40 +39,21 @@ function DO_WORK(operationWASMRequestMessage)
 	// TODO: Buffer function type -> this will actually have to wait until that buffer is ready,
 	//  which will likely need to be handled by one IS_Buffer putting in a request to another, the former
 	//  of which doesn't attempt any of it's operations until the other has been completed
-	console.log(operationWASMRequestMessage);
-
-	// TODO: Figure out a way to send all this as a single data type that WASM can just
-	//  swallow wholesale and spit back a completed array
-	let bufferLengthInSamples = operationWASMRequestMessage.bufferLength;
-	let functionTypes = "";
-	let operatorTypes = "";
-	let argumentArray = [];
-	let argumentSliceData = [];
-	let argumentOffset = 0;
 
 	let operationRequests = operationWASMRequestMessage.operationRequests;
+	let WASMOperationData = [];
 
 	for(let operationIndex = 0; operationIndex < operationRequests.length; operationIndex++)
 	{
-		let operation = operationRequests[operationIndex];
-		functionTypes += operation.functionData.functionType.toLowerCase() + "\n";
-		operatorTypes += operation.operatorType.toLowerCase() + "\n" ;
-
-		let functionArgs = operation.functionData.functionArgs;
-
-		argumentArray.push(...functionArgs);
-		argumentSliceData.push(argumentOffset, functionArgs.length);
-		argumentOffset += functionArgs.length;
+		let operationData = operationRequests[operationIndex];
+		let wasmOperationData = new IS_WASMOperationData(operationData);
+		WASMOperationData.push(wasmOperationData);
 	}
-
-	let argumentArrayAsFloatArray = new Float32Array(argumentArray);
-	let argumentSliceDataAsUIntArray = new Uint32Array(argumentSliceData);
 
 	operationWASMRequestMessage.completedOperationArray = is_wasm_buffer_operation
 	(
-		bufferLengthInSamples,
-		functionTypes, operatorTypes,
-		argumentArrayAsFloatArray, argumentSliceDataAsUIntArray
+		operationWASMRequestMessage.bufferLength,
+		WASMOperationData
 	);
 
 	return operationWASMRequestMessage;

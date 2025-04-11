@@ -168,7 +168,6 @@ export class IS_Buffer extends IS_Object
         {
             operationData.isSuspendedOperation = false;
             operationData.channelNumber = channel;
-            operationData.currentBufferArray = this.buffer.getChannelData(channel);
 
             this._operationsSuspended = false;
         }

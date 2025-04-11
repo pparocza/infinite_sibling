@@ -9,6 +9,8 @@ export class IS_BufferOperationWASMRequest
 		this.operationRequests = operationRequests;
 		this.bufferLength = bufferLength;
 		this.bufferUUID = bufferUUID;
+
+		// This is returned from WASM
 		this.completedOperationArray = null;
 	}
 }

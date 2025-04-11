@@ -17,71 +17,60 @@ extern "C"
     fn log(s: &str);
 }
 
-// TODO: Anti-aliasing (sawooth, square)
-// TODO: Fast Sine
+// TODO: would be really nice to put this in a separate file (crate?)
+#[wasm_bindgen(module ="/modules/types/buffer/operation/workers/IS_WASMOperationData.js")]
+extern "C"
+{
+    type IS_WASMOperationData;
+
+    #[wasm_bindgen(constructor)]
+    fn new() -> IS_WASMOperationData;
+
+    #[wasm_bindgen(method, getter)]
+    fn operatorType(this: &IS_WASMOperationData) -> String;
+
+    #[wasm_bindgen(method, getter)]
+    fn functionType(this: &IS_WASMOperationData) -> String;
+
+    #[wasm_bindgen(method, getter)]
+    fn functionArgs(this: &IS_WASMOperationData) -> Vec<f32>;
+
+    #[wasm_bindgen(method, getter)]
+    fn isSuspendedOperation(this: &IS_WASMOperationData) -> bool;
+}
 
 #[wasm_bindgen]
 pub fn is_wasm_buffer_operation
 (
-    buffer_length: u32,
-    function_type_as_string: &str, operator_type_as_string: &str,
-    function_arguments: &[f32], argument_slice_data: &[u32]
+    buffer_length: u32, operations: Vec<IS_WASMOperationData>
 ) -> Vec<f32>
 {
-    let function_type_iter = function_type_as_string.lines();
-    let operator_type_iter = operator_type_as_string.lines();
-
-    let mut function_types: Vec<&str> = Vec::new();
-    let mut operator_types: Vec<&str> = Vec::new();
-    let mut argument_slices: Vec<Vec<f32>> = Vec::new();
-
-    for function_type in function_type_iter
-    {
-        function_types.push(function_type);
-    }
-
-    for operator_type in operator_type_iter
-    {
-        operator_types.push(operator_type);
-    }
-
-    for argument_slice_index in 0..argument_slice_data.len() / 2
-    {
-        let index = argument_slice_index * 2;
-        let slice_offset = argument_slice_data[index];
-        let slice_length = argument_slice_data[index + 1];
-        let slice_start = slice_offset;
-        let slice_end = slice_offset + slice_length;
-
-        let mut arg_vec: Vec<f32> = Vec::new();
-
-        for argument_index in slice_start..slice_end
-        {
-            arg_vec.push(function_arguments[argument_index as usize]);
-        }
-
-        argument_slices.push(arg_vec);
-    }
-
     let mut function_buffer: Vec<f32> = vec![0.0; buffer_length as usize];
+    let n_operations = operations.len();
 
-    for operation_index in 0..function_types.len()
+    for operation_index in 0..n_operations
     {
+        let operation = &operations[operation_index];
+
         let operation_request = OperationRequestData::new
         (
-            function_types[operation_index],
-            operator_types[operation_index],
-            buffer_length,
-            &argument_slices[operation_index]
+            operation.functionType().as_str(),
+            operation.operatorType().as_str(),
+            operation.functionArgs()
         );
 
-        operate(operation_request, &mut function_buffer);
+        operate(buffer_length, operation_request, &mut function_buffer);
     }
 
     function_buffer
 }
 
-fn operate(operation_request: OperationRequestData, function_buffer: &mut Vec<f32>)
+fn operate
+(
+    buffer_length: u32,
+    operation_request: OperationRequestData,
+    function_buffer: &mut Vec<f32>
+)
 {
     let time_increment: f32 = 1.0 / function_buffer.len() as f32;
     let mut current_sample: u32 = 0;
@@ -100,7 +89,7 @@ fn operate(operation_request: OperationRequestData, function_buffer: &mut Vec<f3
         operation_request.operator_type
     );
 
-    while current_sample < operation_request.buffer_length_in_samples
+    while current_sample < buffer_length
     {
         current_array_value = function_buffer[current_sample as usize];
 
@@ -117,25 +106,23 @@ struct OperationRequestData
 {
     pub function_type: ISBufferFunctionType,
     pub operator_type: ISBufferOperatorType,
-    pub function_arguments: Vec<f32>,
-    // Ultimately this should be in a hashtable with the buffer id
-    pub buffer_length_in_samples: u32
+    pub function_arguments: Vec<f32>
 }
 
 impl OperationRequest for OperationRequestData
 {
     fn new
     (
-        function_type_as_string: &str, operator_type_as_string: &str,
-        buffer_length_in_samples: u32, function_arguments: &[f32]
+        function_type_as_string: &str,
+        operator_type_as_string: &str,
+        function_arguments: Vec<f32>
     ) -> OperationRequestData
     {
         OperationRequestData
         {
             function_type: function_type_string_to_enum(function_type_as_string),
             operator_type: operator_type_string_to_enum(operator_type_as_string),
-            buffer_length_in_samples: buffer_length_in_samples,
-            function_arguments: function_arguments.to_vec()
+            function_arguments: function_arguments
         }
     }
 }
@@ -144,8 +131,9 @@ pub trait OperationRequest
 {
     fn new
     (
-        function_type_as_string: &str, operator_type_as_string: &str,
-        buffer_length_in_samples: u32, function_arguments: &[f32]
+        function_type_as_string: &str,
+        operator_type_as_string: &str,
+        function_arguments: Vec<f32>
     ) -> OperationRequestData;
 }
 

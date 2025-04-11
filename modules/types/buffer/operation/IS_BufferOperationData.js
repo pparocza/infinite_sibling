@@ -6,15 +6,13 @@ export class IS_BufferOperationData
 {
 	constructor(iSOperatorType = null, iSFunctionData = null, bufferUuid = null)
 	{
-		this.operatorType = iSOperatorType;
 		this.functionData = iSFunctionData;
+		this.operatorType = iSOperatorType;
 
 		this.isSuspendedOperation = false;
 
 		this.bufferUuid = bufferUuid;
 
 		this.channelNumber = 0;
-
-		this.completedOperationArray = null;
 	}
 }

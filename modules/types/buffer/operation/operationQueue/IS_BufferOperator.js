@@ -6,7 +6,7 @@ export const IS_BufferOperator =
 {
 	_progress: 0,
 	_progressIncrement: 0,
-	_queueLength: 0,
+	_registryLength: 0,
 	_progressListeners: [],
 
 	_waiters : [],
@@ -16,6 +16,8 @@ export const IS_BufferOperator =
 	Operate()
 	{
 		let operationRegistry = IS_BufferOperationRegistry.registry;
+
+		this._updateProgress();
 
 		for(const [bufferUUID, registryData] of Object.entries(operationRegistry))
 		{
@@ -48,6 +50,8 @@ export const IS_BufferOperator =
 	{
 		IS_BufferOperationRegistry.fulfillOperationRequest(completedOperationData);
 
+		this._updateProgress();
+
 		if(IS_BufferOperationRegistry.isEmpty)
 		{
 			this._handleQueueComplete();
@@ -63,15 +67,13 @@ export const IS_BufferOperator =
 	// TODO: resolve this with new structure
 	_updateProgress()
 	{
-		let registryLength = IS_BufferOperationRegistry.length;
-
-		if(registryLength === 0)
+		if(this._registryLength === 0)
 		{
-			let currentOperationRequestQueueLength = IS_BufferOperationRegistry.length;
-			this._queueLength = Math.max(1, currentOperationRequestQueueLength);
+			let currentOperationRequestQueueLength = IS_BufferOperationRegistry.length - 1;
+			this._registryLength = Math.max(1, currentOperationRequestQueueLength);
 		}
 
-		this._progress = this._progressIncrement++ / this._queueLength;
+		this._progress = this._progressIncrement++ / this._registryLength;
 
 		this._updateProgressListeners();
 	},

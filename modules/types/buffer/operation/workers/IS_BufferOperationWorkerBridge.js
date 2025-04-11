@@ -25,7 +25,7 @@ export const IS_BufferOperationWorkerBridge =
 
 	ReturnCompletedOperation(completedOperationData)
 	{
-		IS_BufferOperator.CompleteOperation(completedOperationData);
+		IS_BufferOperator.ReceiveCompletedOperation(completedOperationData);
 	}
 }
 

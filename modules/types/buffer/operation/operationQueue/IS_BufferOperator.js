@@ -41,13 +41,10 @@ export const IS_BufferOperator =
 
 	requestOperation(iSAudioBuffer, bufferOperationData)
 	{
-		IS_BufferOperationRegistry.addOperationRequest
-		(
-			iSAudioBuffer, bufferOperationData
-		);
+		IS_BufferOperationRegistry.addOperationRequest(iSAudioBuffer, bufferOperationData);
 	},
 
-	CompleteOperation(completedOperationData)
+	ReceiveCompletedOperation(completedOperationData)
 	{
 		IS_BufferOperationRegistry.fulfillOperationRequest(completedOperationData);
 

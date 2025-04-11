@@ -31,7 +31,7 @@ export class IS_BufferOperationRegistryData
 
 	completeOperation(completedOperationData)
 	{
-		this._buffer.completeOperation(completedOperationData);
+		this._buffer.completedOperationDataToBuffer(completedOperationData);
 	}
 
 	addOperationData(bufferOperationData)
@@ -52,6 +52,8 @@ export class IS_BufferOperationRegistryData
 	{
 		let bufferUUID = iSAudioBuffer.uuid;
 		let bufferArray = new Float32Array(iSAudioBuffer.length);
+
+		// TODO: This needs to go back to each channel
 		iSAudioBuffer.buffer.copyFromChannel(bufferArray, 0);
 
 		this._awaiting[bufferUUID].functionData.functionArgs = bufferArray;

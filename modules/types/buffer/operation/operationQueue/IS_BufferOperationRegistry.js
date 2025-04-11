@@ -38,10 +38,9 @@ export const IS_BufferOperationRegistry =
 	fulfillOperationRequest(completedOperationData)
 	{
 		let bufferUuid = completedOperationData.bufferUUID;
-		let completedOperationArray = completedOperationData.completedOperationArray;
 
 		let registryData = this._registry[bufferUuid];
-		registryData.completeOperation(completedOperationArray);
+		registryData.completeOperation(completedOperationData);
 
 		this._removeCompletedOperations(bufferUuid);
 	},

@@ -151,6 +151,7 @@ export class IS_Buffer extends IS_Object
         (
             this._operationRequestData.operatorType,
             this._operationRequestData.functionData,
+            channel,
             this._uuid
         );
 
@@ -161,7 +162,6 @@ export class IS_Buffer extends IS_Object
         else
         {
             operationData.isSuspendedOperation = false;
-            operationData.channelNumber = channel;
 
             this._operationsSuspended = false;
         }
@@ -169,10 +169,15 @@ export class IS_Buffer extends IS_Object
         return operationData;
     }
 
-    completeOperation(completedOperationArray)
+    completedOperationDataToBuffer(completedOperationData)
     {
-        // TODO: CHANNEL HANDLING
-        this._buffer.copyToChannel(completedOperationArray, 0);
+        let completedArrays = completedOperationData.completedArrays;
+
+        for(const [channelNumber, completedArray] of Object.entries(completedArrays))
+        {
+            this._buffer.copyToChannel(completedArray, parseInt(channelNumber));
+        }
+
         this.operationsComplete();
     }
 

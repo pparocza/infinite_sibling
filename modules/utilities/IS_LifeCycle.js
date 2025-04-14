@@ -18,10 +18,17 @@ export const IS_LifeCycle =
 
 	_beforeReady()
 	{
-		IS_BufferOperator.registerWaiter(this);
-		console.log("Starting Buffer Operations!");
-		this._start = Date.now();
-		IS_BufferOperator.Operate();
+		if(IS_BufferOperator.OperationsPending)
+		{
+			IS_BufferOperator.registerWaiter(this);
+			console.log("Starting Buffer Operations!");
+			this._start = Date.now();
+			IS_BufferOperator.Operate();
+		}
+		else
+		{
+			this._ready();
+		}
 	},
 
 	endWait(waitingOn)

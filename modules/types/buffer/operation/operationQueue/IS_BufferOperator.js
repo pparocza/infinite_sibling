@@ -12,6 +12,7 @@ export const IS_BufferOperator =
 	_waiters : [],
 
 	get Progress() { return this._progress; },
+	get OperationsPending() { return IS_BufferOperationRegistry.length > 0; },
 
 	Operate()
 	{

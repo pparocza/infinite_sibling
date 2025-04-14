@@ -141,11 +141,10 @@ export class IS_Node extends IS_Object
         return this._analyser;
     }
 
-    // TODO: Something that isn't just the first value of the analysis buffer
     get outputValue()
     {
         this.analyser.getFloatTimeDomainData(this._analyserData);
-        return this._analyserData[0];
+        return Math.max(...this._analyserData);
     }
 
     _handleNetworkMembership(toNode)

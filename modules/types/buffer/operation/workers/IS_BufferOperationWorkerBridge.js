@@ -31,17 +31,16 @@ export const IS_BufferOperationWorkerBridge =
 
 const BUFFER_WORKER_CONTEXT = initializeBufferWorkerContext();
 
+
 function initializeBufferWorkerContext()
 {
-	let bufferWorkerContext = new Worker
-	(
-		new URL('./IS_BufferOperationWorkerContext.js', import.meta.url),
-		{ type: 'module' }
-	);
+	const workerURL = new URL('./IS_BufferOperationWorkerContext.js', import.meta.url);
 
+	let bufferWorkerContext = new Worker( workerURL, { type: 'module' } );
 	bufferWorkerContext.addEventListener
 	(
-		"message", (message) => { bufferWorkerCallback(message); }
+		"message",
+		(message) => { bufferWorkerCallback(message); }
 	);
 
 	return bufferWorkerContext;

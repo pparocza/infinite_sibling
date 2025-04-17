@@ -68,7 +68,7 @@ export class InfiniteSibling
         NETWORK REGISTRY
     */
     get NetworkRegistry() { return IS_NetworkRegistry; }
-    
+
     /*
         LIFE CYCLE
     */
@@ -166,9 +166,11 @@ export class InfiniteSibling
     }
 
     createDelay(delayTime = 1, feedbackPercent = 0.25, wetMix = 0.5,
-                maxDelayTime = 1)
+                maxDelayTime = null)
     {
-        return new IS_Delay(this, delayTime, feedbackPercent, wetMix, maxDelayTime);
+        let maxTime = maxDelayTime === null ? delayTime : maxDelayTime;
+
+        return new IS_Delay(this, delayTime, feedbackPercent, wetMix, maxTime);
     }
 
     createStereoPanner(pan = 0)

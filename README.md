@@ -17,4 +17,4 @@ Package of custom audio tools made with the Web Audio API
 
 ### Exported Recordings
 
-[infinite sibling bandcamp](https://infinitesibling.bandcamp.com/)
+[bandcamp](https://infinitesibling.bandcamp.com/)

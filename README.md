@@ -23,10 +23,10 @@ Package of custom audio tools made with the Web Audio API
 
 ### WAC 2021
 
-[Paper](https://drive.google.com/file/d/14FMfwc50zoxagC_6sPxgEM19JyBcnfHL/view?usp=sharing)
-[Presentation](https://studio.youtube.com/video/JSNgcxIQ_vw/edit)
+- [Paper](https://drive.google.com/file/d/14FMfwc50zoxagC_6sPxgEM19JyBcnfHL/view?usp=sharing)
+- [Presentation](https://studio.youtube.com/video/JSNgcxIQ_vw/edit)
 
 ### Audio Mostly 2021
 
-[Presentation](https://www.youtube.com/watch?v=BzwNK9uYl48)
-[Program](https://audiomostly.com/2021/program/conference-program/)
+- [Presentation](https://www.youtube.com/watch?v=BzwNK9uYl48)
+- [Program](https://audiomostly.com/2021/program/conference-program/)

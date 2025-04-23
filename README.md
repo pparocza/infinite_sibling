@@ -15,6 +15,6 @@ Package of custom audio tools made with the Web Audio API
 [peach address](https://pparocza.github.io/peach_address/) // [target equals blank](https://pparocza.github.io/target_equals_blank/) // [stack](https://pparocza.github.io/stack/) // 
 [community infinite](https://pparocza.github.io/community_infinite/) // [from stone](https://pparocza.github.io/from_stone/) // [lotus ampersand](https://pparocza.github.io/lotus_ampersand/)
 
-## Exported Output
+### Exported Recordings
 
-[infinite sibling](https://infinitesibling.bandcamp.com/)
+[bandcamp](https://infinitesibling.bandcamp.com/)

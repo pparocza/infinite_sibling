@@ -1,7 +1,7 @@
 import { IS_StartableNode } from "../IS_StartableNode.js";
 import { IS_Type } from "../../../enums/IS_Type.js";
 import { BufferPrint } from "../../../utilities/BufferPrint.js";
-import { IS_StartableNodeAudioParameter } from "../../../types/parameter/IS_StartableNodeAudioParameter.js";
+import { IS_StartableNodeAudioParameter } from "../../../types/parameter/audio/IS_StartableNodeAudioParameter.js";
 
 export class IS_BufferSource extends IS_StartableNode
 {

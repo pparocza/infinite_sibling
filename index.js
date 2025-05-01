@@ -29,7 +29,7 @@ export { IS_StereoDelay } from "./modules/nodes/custom/IS_StereoDelay.js";
 export { IS_Array } from "./modules/types/array/IS_Array.js"
 export { IS_Buffer } from "./modules/types/buffer/IS_Buffer.js";
 export { IS_Object } from "./modules/types/IS_Object.js"
-export { IS_AudioParameter } from "./modules/types/parameter/IS_AudioParameter.js";
+export { IS_AudioParameter } from "./modules/types/parameter/audio/IS_AudioParameter.js";
 export { IS_Scale } from "./modules/types/array/IS_Scale.js";
 export { IS_SequenceArray } from "./modules/types/array/IS_SequenceArray.js";
 export { IS_Schedule } from "./modules/types/schedule/IS_Schedule.js"

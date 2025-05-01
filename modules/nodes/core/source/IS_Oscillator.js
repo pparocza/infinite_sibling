@@ -1,5 +1,5 @@
 import { IS_StartableNode } from "../IS_StartableNode.js";
-import { IS_StartableNodeAudioParameter } from "../../../types/parameter/IS_StartableNodeAudioParameter.js";
+import { IS_StartableNodeAudioParameter } from "../../../types/parameter/audio/IS_StartableNodeAudioParameter.js";
 import { IS_Type } from "../../../enums/IS_Type.js";
 
 export class IS_Oscillator extends IS_StartableNode

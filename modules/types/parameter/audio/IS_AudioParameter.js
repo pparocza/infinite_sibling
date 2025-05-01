@@ -1,5 +1,5 @@
-import { IS_Object } from "../IS_Object.js";
-import { IS_Type } from "../../enums/IS_Type.js";
+import { IS_Object } from "../../IS_Object.js";
+import { IS_Type } from "../../../enums/IS_Type.js";
 
 export class IS_AudioParameter extends IS_Object
 {

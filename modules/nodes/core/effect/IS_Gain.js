@@ -1,5 +1,5 @@
 import { IS_Effect } from "./IS_Effect.js";
-import { IS_AudioParameter } from "../../../types/parameter/IS_AudioParameter.js";
+import { IS_AudioParameter } from "../../../types/parameter/audio/IS_AudioParameter.js";
 import { IS_Type } from "../../../enums/IS_Type.js";
 
 export class IS_Gain extends IS_Effect

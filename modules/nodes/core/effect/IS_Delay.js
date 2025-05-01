@@ -1,5 +1,5 @@
 import { IS_MixEffect } from "./IS_MixEffect.js";
-import { IS_AudioParameter } from "../../../types/parameter/IS_AudioParameter.js";
+import { IS_AudioParameter } from "../../../types/parameter/audio/IS_AudioParameter.js";
 import { IS_Type } from "../../../enums/IS_Type.js";
 
 export class IS_Delay extends IS_MixEffect

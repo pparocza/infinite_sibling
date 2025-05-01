@@ -1,7 +1,7 @@
 import { IS_Object } from "../../types/IS_Object.js";
 import { IS_Type } from "../../enums/IS_Type.js";
 import { Utilities } from "../../utilities/Utilities.js";
-import { IS_AudioParameter } from "../../types/parameter/IS_AudioParameter.js";
+import { IS_AudioParameter } from "../../types/parameter/audio/IS_AudioParameter.js";
 import { IS_NetworkRegistry } from "../network/IS_NetworkRegistry.js";
 
 export class IS_Node extends IS_Object
@@ -74,6 +74,15 @@ export class IS_Node extends IS_Object
         }
     }
 
+    connectToInput(...audioNodes)
+    {
+        for(let nodeIndex = 0; nodeIndex < audioNodes.length; nodeIndex++)
+        {
+            let node = audioNodes[nodeIndex];
+            node.connect(this.input);
+        }
+    }
+
     connectToMainOutput()
     {
         this._output.connect(this._siblingContext.output);
@@ -117,7 +126,8 @@ export class IS_Node extends IS_Object
         audioNode.connect(this._output);
     }
 
-    _initializeAnalyser(fftSize = 2048)
+    // TODO: Smaller fftSize?
+    _initializeAnalyser(fftSize = 32)
     {
         if(this._analyser !== null)
         {
@@ -128,8 +138,8 @@ export class IS_Node extends IS_Object
         analyser.fftSize = fftSize;
 
         this._analyser = analyser;
-        this._analyserData = new Float32Array(this._analyser.fftSize);
-        this._analyser.getFloatTimeDomainData(this._analyserData);
+        this._analyserFrequencyData = new Float32Array(this._analyser.fftSize);
+        this._analyserTimeDomainData = new Float32Array(this._analyser.fftSize);
 
         this._output.connect(this._analyser);
     }
@@ -141,10 +151,17 @@ export class IS_Node extends IS_Object
         return this._analyser;
     }
 
+    get frequencyBins()
+    {
+        this.analyser.getFloatFrequencyData(this._analyserFrequencyData);
+        return this._analyserFrequencyData;
+    }
+
     get outputValue()
     {
-        this.analyser.getFloatTimeDomainData(this._analyserData);
-        return Math.max(...this._analyserData);
+        // TODO: https://developer.mozilla.org/en-US/docs/Web/API/AnalyserNode/maxDecibels
+        this.analyser.getFloatTimeDomainData(this._analyserFrequencyData);
+        return Math.max(...this._analyserFrequencyData);
     }
 
     _handleNetworkMembership(toNode)

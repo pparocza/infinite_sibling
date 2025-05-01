@@ -41,7 +41,11 @@ export class IS_SequenceArray extends IS_Array
         let possibleDurationsArray;
 
         // Ensure that timeBetweenStarts is an IS_Array
-        if(possibleDurations.iSType !== undefined && possibleDurations.iSType === IS_Type.IS_Array)
+        if
+        (
+            possibleDurations.iSType !== undefined &&
+            possibleDurations.iSType === IS_Type.IS_Data.IS_Array
+        )
         {
             possibleDurationsArray = possibleDurations;
         }

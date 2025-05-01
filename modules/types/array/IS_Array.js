@@ -295,10 +295,7 @@ export class IS_Array extends IS_Object
     {
         if(this.urnValueCopy.length === 0)
         {
-            for(let urnIndex = 0; urnIndex < this.value.length; urnIndex++)
-            {
-                this.urnValueCopy.push(this.value[urnIndex]);
-            }
+            this.urnValueCopy = [...this.value];
         }
 
         let randomIndex = IS_Random.Int(0, this.urnValueCopy.length);

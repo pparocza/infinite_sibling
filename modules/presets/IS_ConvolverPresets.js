@@ -12,7 +12,7 @@ export class IS_ConvolverPresets extends IS_Object
 
     stereoNoiseReverb(length = 3)
     {
-        let buffer = this._siblingContext.createBuffer(1, length);
+        let buffer = this._siblingContext.createBuffer(2, length);
 
         buffer.noise().add();
         buffer.inverseSawtooth(2).multiply();

@@ -5,6 +5,8 @@ export const IS_BufferOperationWorkerBridge =
 {
 	requestOperation(operationRegistryData)
 	{
+		console.log(operationRegistryData);
+
 		let operationWASMRequest = new IS_BufferOperationWASMRequest
 		(
 			operationRegistryData.operationRequests,

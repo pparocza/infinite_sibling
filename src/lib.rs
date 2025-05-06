@@ -34,7 +34,8 @@ pub fn is_wasm_buffer_operation
         (
             operation.functionType().as_str(),
             operation.operatorType().as_str(),
-            operation.functionArgs()
+            operation.functionArgs(),
+            operation.otherBuffer()
         );
 
         if operation.isSuspendedOperation()
@@ -72,11 +73,31 @@ fn operate
     let mut current_increment: f32 = 0.0;
     let mut function_value: f32 = 0.0;
     let mut sample_value: f32 = 0.0;
-    let mut current_array_value: f32 = 0.0;
+    let mut current_sample_value: f32 = 0.0;
+
+    // TODO: resolve all of this extremely janky splice handling
+    let splice_string = match operation_request.function_type
+    {
+        ISBufferFunctionType::Splice => "splice",
+        _ => "undefined"
+    };
+
+    let function_is_splice = splice_string == "splice";
+
+    let mut splice_lower_bound: u32 = 0;
+    let mut splice_upper_bound: u32 = 1;
+
+    if function_is_splice
+    {
+        splice_lower_bound = operation_request.function_arguments[1] as u32;
+        splice_upper_bound = operation_request.function_arguments[2] as u32;
+    }
 
     let buffer_function = &is_function::is_wasm_buffer_function
     (
-        operation_request.function_type, &operation_request.function_arguments
+        operation_request.function_type,
+        &operation_request.function_arguments,
+        &operation_request.other_buffer
     );
 
     let operator = &is_operator::is_wasm_buffer_operator
@@ -86,10 +107,28 @@ fn operate
 
     while current_sample < buffer_length
     {
-        current_array_value = buffer_to_operate_on[current_sample as usize];
+        current_sample_value = buffer_to_operate_on[current_sample as usize];
 
-        function_value = buffer_function.evaluate(current_increment, current_sample);
-        sample_value = operator.operate(current_array_value, function_value);
+        function_value = buffer_function.evaluate
+        (
+            current_increment, current_sample, current_sample_value
+        );
+
+        if function_is_splice
+        {
+            if current_sample < splice_lower_bound || current_sample > splice_upper_bound
+            {
+                sample_value = current_sample_value;
+            }
+            else
+            {
+                sample_value = operator.operate(current_sample_value, function_value);
+            }
+        }
+        else
+        {
+            sample_value = operator.operate(current_sample_value, function_value);
+        }
 
         buffer_to_operate_on[current_sample as usize] = sample_value;
         current_increment = current_increment + time_increment;

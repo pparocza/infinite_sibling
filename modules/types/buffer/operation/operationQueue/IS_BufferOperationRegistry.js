@@ -40,7 +40,11 @@ export const IS_BufferOperationRegistry =
 		let bufferUuid = completedOperationData.bufferUUID;
 
 		let registryData = this._registry[bufferUuid];
-		registryData.completeOperation(completedOperationData);
+
+		if(registryData)
+		{
+			registryData.completeOperation(completedOperationData);
+		}
 
 		this._removeCompletedOperations(bufferUuid);
 	},

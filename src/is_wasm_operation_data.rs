@@ -18,5 +18,8 @@ extern "C"
     pub fn functionArgs(this: &IS_WASMOperationData) -> Vec<f32>;
 
     #[wasm_bindgen(method, getter)]
+    pub fn otherBuffer(this: &IS_WASMOperationData) -> Vec<f32>;
+
+    #[wasm_bindgen(method, getter)]
     pub fn isSuspendedOperation(this: &IS_WASMOperationData) -> bool;
 }

@@ -2,7 +2,9 @@ use crate::is_buffer_function::*;
 
 pub fn is_wasm_buffer_function<'a>
 (
-    function_type: ISBufferFunctionType, function_arguments: &'a Vec<f32>
+    function_type: ISBufferFunctionType,
+    function_arguments: &'a Vec<f32>,
+    other_buffer: &'a Vec<f32>,
 ) -> Box<dyn ISEvaluateFunction<'a> + 'a>
 {
     match function_type
@@ -22,7 +24,7 @@ pub fn is_wasm_buffer_function<'a>
 
         ISBufferFunctionType::Buffer =>
         {
-            Box::new(ISBufferAsFunction { buffer_function: function_arguments } )
+            Box::new(ISBufferAsFunction { buffer_function: other_buffer } )
         }
 
         ISBufferFunctionType::Constant =>
@@ -98,6 +100,20 @@ pub fn is_wasm_buffer_function<'a>
 
         ISBufferFunctionType::Sine => { Box::new(ISSine{frequency: function_arguments[0]})},
 
+        ISBufferFunctionType::Splice =>
+        {
+            Box::new
+            (
+                ISSplice
+                {
+                    splice_buffer: other_buffer,
+                    crop_start_sample: function_arguments[1] as u32,
+                    crop_end_sample: function_arguments[2] as u32,
+                    insert_start_sample: function_arguments[3] as u32
+                }
+            )
+        }
+
         ISBufferFunctionType::Square =>
         {
             Box::new(ISSquare { duty_cycle: function_arguments[0] } )
@@ -142,6 +158,7 @@ pub fn function_type_string_to_enum(function_type: &str) -> ISBufferFunctionType
         "rampband" => ISBufferFunctionType::RampBand,
         "sawtooth" => ISBufferFunctionType::Sawtooth,
         "sine" => ISBufferFunctionType::Sine,
+        "splice" => ISBufferFunctionType::Splice,
         "square" => ISBufferFunctionType::Square,
         "suspendedoperations" => ISBufferFunctionType::SuspendedOperations,
         "triangle" => ISBufferFunctionType::Triangle,

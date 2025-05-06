@@ -13,6 +13,7 @@ export const IS_BufferFunctionType =
 	RampBand: "RampBand",
 	Sawtooth: "Sawtooth",
 	Sine: "Sine",
+	Splice: "Splice",
 	Square: "Square",
 	SuspendedOperations: "SuspendedOperations",
 	Triangle: "Triangle",

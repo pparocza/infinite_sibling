@@ -23,10 +23,8 @@ import { IS_Effect } from "./nodes/core/effect/IS_Effect.js";
 import { IS_NodeMatrix } from "./nodes/custom/IS_NodeMatrix.js";
 
 // enums
-import { IS_Interval } from "./enums/IS_Interval.js";
 import { IS_KeyboardNote } from "./enums/IS_KeyboardNote.js";
 import { IS_Mode } from "./enums/IS_Mode.js";
-import { IS_Type } from "./enums/IS_Type.js";
 
 // types
 import { IS_Array } from "./types/array/IS_Array.js";

@@ -79,6 +79,7 @@ export class IS_Buffer extends IS_Object
         this._buffer.duration = this._duration;
     }
 
+    // TODO: lengthInSamples and lengthInSeconds
     get length() { return this._length; }
     set length(value)
     {
@@ -136,7 +137,7 @@ export class IS_Buffer extends IS_Object
 
     _requestOperationForAllChannels()
     {
-        for(let channelIndex = 0; channelIndex < this.numberOfChannels; channelIndex++)
+        for(let channelIndex = 0; channelIndex < this._numberOfChannels; channelIndex++)
         {
             let operationData = this._createOperationRequest(channelIndex);
             IS_BufferOperator.requestOperation(this, operationData);
@@ -279,50 +280,6 @@ export class IS_Buffer extends IS_Object
         else
         {
             this._handleOtherBufferAsFunction(IS_BufferOperatorType.Subtract, buffer);
-        }
-    }
-
-    spliceBuffer(buffer, cropStartPercent, cropEndPercent, insertPercent)
-    {
-        let otherBuffer = null;
-        let nowBuffering = null;
-        let otherNowBuffering = null;
-
-        if(buffer.isISBuffer)
-        {
-            otherBuffer = buffer.buffer;
-        }
-        else
-        {
-            otherBuffer = buffer;
-        }
-
-        let cropStartSample = Math.round(otherBuffer.length * cropStartPercent);
-        let cropEndSample = Math.round(otherBuffer.length * cropEndPercent);
-
-        let cropLength = cropEndSample - cropStartSample;
-
-        let cropArray = [];
-
-        for (let channel= 0; channel < this.numberOfChannels; channel++)
-        {
-            nowBuffering = this.buffer.getChannelData(channel);
-            otherNowBuffering = otherBuffer.getChannelData(channel);
-
-            // crop the buffer values
-            for (let cropSample= 0; cropSample < cropLength; cropSample++)
-            {
-                cropArray[cropSample] = otherNowBuffering[cropSample + cropStartSample];
-            }
-
-            // reinsert the cropped values at the new position
-            for (let insertSample= 0; insertSample < cropLength; insertSample++)
-            {
-                if (insertSample + insertSample <= nowBuffering.length)
-                {
-                    nowBuffering[insertSample + insertSample] += cropArray[insertSample];
-                }
-            }
         }
     }
 
@@ -553,6 +510,22 @@ export class IS_Buffer extends IS_Object
         return this;
     }
 
+    splice(otherBuffer, cropStartPercent, cropEndPercent, insertPercent)
+    {
+        let cropStartSample = Math.round(otherBuffer.length * cropStartPercent);
+        let cropEndSample = Math.round(otherBuffer.length * cropEndPercent);
+        let insertStartSample = Math.round(this._length * insertPercent);
+
+        this._setOperationRequestFunctionData
+        (
+            IS_BufferFunctionType.Splice,
+            otherBuffer, cropStartSample, cropEndSample, insertStartSample
+        );
+
+        return this;
+    }
+
+/*
     movingAverage(windowSize)
     {
         let newBuffers = [];
@@ -609,6 +582,7 @@ export class IS_Buffer extends IS_Object
             }
         }
     }
+*/
 
     // UTILITY
     amplitude(value)

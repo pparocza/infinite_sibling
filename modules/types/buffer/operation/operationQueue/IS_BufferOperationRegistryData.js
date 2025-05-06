@@ -26,7 +26,12 @@ export class IS_BufferOperationRegistryData
 
 	awaitBuffer(iSBuffer, bufferOperationData)
 	{
-		this._awaiting[iSBuffer.uuid] = bufferOperationData;
+		if(!this._awaiting[iSBuffer.uuid])
+		{
+			this._awaiting[iSBuffer.uuid] = [];
+		}
+
+		this._awaiting[iSBuffer.uuid].push(bufferOperationData);
 	}
 
 	completeOperation(completedOperationData)
@@ -38,11 +43,17 @@ export class IS_BufferOperationRegistryData
 	{
 		let functionData = bufferOperationData.functionData;
 
-		if(functionData.functionType === IS_BufferFunctionType.Buffer)
+		switch(functionData.functionType)
 		{
-			let iSBuffer = functionData.functionArgs[0];
-			iSBuffer.requestBuffer(this);
-			this.awaitBuffer(iSBuffer, bufferOperationData);
+			case IS_BufferFunctionType.Buffer:
+			case IS_BufferFunctionType.Splice:
+				// TODO: magic number [0] here and below not great
+				let iSBuffer = functionData.functionArgs[0];
+				iSBuffer.requestBuffer(this);
+				this.awaitBuffer(iSBuffer, bufferOperationData);
+				break;
+			default:
+				break;
 		}
 
 		this._operationRequests.push(bufferOperationData);
@@ -53,10 +64,21 @@ export class IS_BufferOperationRegistryData
 		let bufferUUID = iSAudioBuffer.uuid;
 		let bufferArray = new Float32Array(iSAudioBuffer.length);
 
+
 		// TODO: This needs to go back to each channel
 		iSAudioBuffer.buffer.copyFromChannel(bufferArray, 0);
 
-		this._awaiting[bufferUUID].functionData.functionArgs = bufferArray;
+		let awaiting = this._awaiting[bufferUUID];
+
+		if(awaiting)
+		{
+			for(let awaitingIndex = 0; awaitingIndex < awaiting.length; awaitingIndex++)
+			{
+				let functionData = awaiting[awaitingIndex].functionData;
+				functionData.functionArgs[0] = bufferArray;
+				functionData.otherBuffer = bufferArray;
+			}
+		}
 
 		delete this._awaiting[bufferUUID];
 

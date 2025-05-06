@@ -1,7 +1,6 @@
 import { IS_BufferOperationWorkerBridge } from "../workers/IS_BufferOperationWorkerBridge.js";
 import { IS_BufferOperationRegistry } from "./IS_BufferOperationRegistry.js";
 
-
 export const IS_BufferOperator =
 {
 	_progress: 0,

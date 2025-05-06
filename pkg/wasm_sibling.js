@@ -196,6 +196,13 @@ function __wbg_get_imports() {
         getDataViewMemory0().setInt32(arg0 + 4 * 1, len1, true);
         getDataViewMemory0().setInt32(arg0 + 4 * 0, ptr1, true);
     };
+    imports.wbg.__wbg_otherBuffer_95f932ba1efe0897 = function(arg0, arg1) {
+        const ret = arg1.otherBuffer;
+        const ptr1 = passArrayF32ToWasm0(ret, wasm.__wbindgen_malloc);
+        const len1 = WASM_VECTOR_LEN;
+        getDataViewMemory0().setInt32(arg0 + 4 * 1, len1, true);
+        getDataViewMemory0().setInt32(arg0 + 4 * 0, ptr1, true);
+    };
     imports.wbg.__wbg_random_3ad904d98382defe = function() {
         const ret = Math.random();
         return ret;

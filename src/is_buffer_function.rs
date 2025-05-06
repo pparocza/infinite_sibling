@@ -1,15 +1,19 @@
 use crate::TWO_PI;
+use crate::is_log;
 
 pub enum ISBufferFunctionType
 {
     AmplitudeModulatedSine, Buffer, Constant, FrequencyModulatedSine, Impulse, InverseSawtooth,
-    Noise, NoiseBand, Pulse, QuantizedArrayBuffer, Ramp, RampBand, Sawtooth, Sine, Square,
-    SuspendedOperations, Triangle, UnipolarNoise, UnipolarSine, Undefined
+    Noise, NoiseBand, Pulse, QuantizedArrayBuffer, Ramp, RampBand, Sawtooth, Sine, Splice,
+    Square, SuspendedOperations, Triangle, UnipolarNoise, UnipolarSine, Undefined
 }
 
 pub trait ISEvaluateFunction<'a>
 {
-    fn evaluate(&self, current_increment: f32, current_sample: u32) -> f32;
+    fn evaluate
+    (
+        &self, current_increment: f32, current_sample: u32, current_sample_value: f32
+    ) -> f32;
 }
 
 pub struct ISAmplitudeModulatedSine
@@ -21,7 +25,10 @@ pub struct ISAmplitudeModulatedSine
 
 impl ISEvaluateFunction<'_> for ISAmplitudeModulatedSine
 {
-    fn evaluate(&self, current_increment: f32, current_sample: u32) -> f32
+    fn evaluate
+    (
+        &self, current_increment: f32, current_sample: u32, current_sample_value: f32
+    ) -> f32
     {
         let modulator_amplitude = self.modulator_gain *
             f32::sin(self.modulator_frequency * current_increment * TWO_PI);
@@ -39,7 +46,10 @@ pub struct ISBufferAsFunction<'a>
 }
 impl ISEvaluateFunction<'_> for ISBufferAsFunction<'_>
 {
-    fn evaluate(&self, current_increment: f32, current_sample: u32) -> f32
+    fn evaluate
+    (
+        &self, current_increment: f32, current_sample: u32, current_sample_value: f32
+    ) -> f32
     {
         if current_sample <= self.buffer_function.len() as u32
         {
@@ -47,7 +57,7 @@ impl ISEvaluateFunction<'_> for ISBufferAsFunction<'_>
         }
         else
         {
-            0.0
+            current_sample_value
         }
     }
 }
@@ -59,7 +69,13 @@ pub struct ISConstant
 }
 impl ISEvaluateFunction<'_> for ISConstant
 {
-    fn evaluate(&self, current_increment: f32, current_sample: u32) -> f32 { self.value }
+    fn evaluate
+    (
+        &self, current_increment: f32, current_sample: u32, current_sample_value: f32
+    ) -> f32
+    {
+        self.value
+    }
 }
 
 pub struct ISFrequencyModulatedSine
@@ -70,7 +86,10 @@ pub struct ISFrequencyModulatedSine
 }
 impl ISEvaluateFunction<'_> for ISFrequencyModulatedSine
 {
-    fn evaluate(&self, current_increment: f32, current_sample: u32) -> f32
+    fn evaluate
+    (
+        &self, current_increment: f32, current_sample: u32, current_sample_value: f32
+    ) -> f32
     {
         let modulation_value = self.modulator_gain *
             f32::sin(current_increment * self.modulator_frequency * TWO_PI);
@@ -85,7 +104,10 @@ impl ISEvaluateFunction<'_> for ISFrequencyModulatedSine
 pub struct ISImpulse {}
 impl ISEvaluateFunction<'_> for ISImpulse
 {
-    fn evaluate(&self, current_increment: f32, current_sample: u32) -> f32
+    fn evaluate
+    (
+        &self, current_increment: f32, current_sample: u32, current_sample_value: f32
+    ) -> f32
     {
         if current_sample == 0
         {
@@ -104,7 +126,10 @@ pub struct ISInverseSawtooth
 }
 impl ISEvaluateFunction<'_> for ISInverseSawtooth
 {
-    fn evaluate(&self, current_increment: f32, current_sample: u32) -> f32
+    fn evaluate
+    (
+        &self, current_increment: f32, current_sample: u32, current_sample_value: f32
+    ) -> f32
     {
         f32::powf(1.0 - current_increment, self.exponent)
     }
@@ -113,7 +138,10 @@ impl ISEvaluateFunction<'_> for ISInverseSawtooth
 pub struct ISNoise {}
 impl ISEvaluateFunction<'_> for ISNoise
 {
-    fn evaluate(&self, current_increment: f32, current_sample: u32) -> f32
+    fn evaluate
+    (
+        &self, current_increment: f32, current_sample: u32, current_sample_value: f32
+    ) -> f32
     {
         let mut sample_value = js_sys::Math::random() as f32;
         (sample_value * 2.0) - 1.0
@@ -123,7 +151,10 @@ impl ISEvaluateFunction<'_> for ISNoise
 pub struct ISNoiseBand {}
 impl ISEvaluateFunction<'_> for ISNoiseBand
 {
-    fn evaluate(&self, current_increment: f32, current_sample: u32) -> f32
+    fn evaluate
+    (
+        &self, current_increment: f32, current_sample: u32, current_sample_value: f32
+    ) -> f32
     {
         // TODO: The function arguments from JS contain arrays, and function_arguments is an array
         //  of floats
@@ -158,7 +189,10 @@ pub struct ISPulse
 }
 impl ISEvaluateFunction<'_> for ISPulse
 {
-    fn evaluate(&self, current_increment: f32, current_sample: u32) -> f32
+    fn evaluate
+    (
+        &self, current_increment: f32, current_sample: u32, current_sample_value: f32
+    ) -> f32
     {
         let in_cycle_bounds =
             current_increment >= self.pulse_start_percent &&
@@ -183,7 +217,11 @@ pub struct ISQuantizedArrayBuffer<'a>
 }
 impl ISEvaluateFunction<'_> for ISQuantizedArrayBuffer<'_>
 {
-    fn evaluate(&self, current_increment: f32, current_sample: u32) -> f32 {
+    fn evaluate
+    (
+        &self, current_increment: f32, current_sample: u32, current_sample_value: f32
+    ) -> f32
+    {
         let quantization_value = self.arguments[0];
         let n_values = (self.arguments.len() - 1) as u32;
 
@@ -211,7 +249,10 @@ pub struct ISRamp
 }
 impl ISEvaluateFunction<'_> for ISRamp
 {
-    fn evaluate(&self, current_increment: f32, current_sample: u32) -> f32
+    fn evaluate
+    (
+        &self, current_increment: f32, current_sample: u32, current_sample_value: f32
+    ) -> f32
     {
         let ramp_start = self.ramp_start;
         let ramp_end = self.ramp_end;
@@ -250,7 +291,13 @@ impl ISEvaluateFunction<'_> for ISRamp
 pub struct ISRampBand {}
 impl ISEvaluateFunction<'_> for ISRampBand
 {
-    fn evaluate(&self, current_increment: f32, current_sample: u32) -> f32 { 1.0 + 0.0 }
+    fn evaluate
+    (
+        &self, current_increment: f32, current_sample: u32, current_sample_value: f32
+    ) -> f32
+    {
+        1.0
+    }
 }
 
 pub struct ISSawtooth
@@ -259,7 +306,10 @@ pub struct ISSawtooth
 }
 impl ISEvaluateFunction<'_> for ISSawtooth
 {
-    fn evaluate(&self, current_increment: f32, current_sample: u32) -> f32
+    fn evaluate
+    (
+        &self, current_increment: f32, current_sample: u32, current_sample_value: f32
+    ) -> f32
     {
         f32::powf(current_increment, self.exponent)
     }
@@ -271,9 +321,38 @@ pub struct ISSine
 }
 impl ISEvaluateFunction<'_> for ISSine
 {
-    fn evaluate(&self, current_increment: f32, current_sample: u32) -> f32
+    fn evaluate
+    (
+        &self, current_increment: f32, current_sample: u32, current_sample_value: f32
+    ) -> f32
     {
         f32::sin(current_increment * self.frequency * TWO_PI)
+    }
+}
+
+pub struct ISSplice<'a>
+{
+    pub splice_buffer: &'a[f32],
+    pub crop_start_sample: u32,
+    pub crop_end_sample: u32,
+    pub insert_start_sample: u32
+}
+
+impl ISEvaluateFunction<'_> for ISSplice<'_>
+{
+    fn evaluate
+    (
+        &self, current_increment: f32, current_sample: u32, current_sample_value: f32
+    ) -> f32
+    {
+        if current_sample >= self.insert_start_sample && current_sample <= self.crop_end_sample
+        {
+            self.splice_buffer[current_sample as usize]
+        }
+        else
+        {
+            current_sample_value
+        }
     }
 }
 
@@ -283,7 +362,10 @@ pub struct ISSquare
 }
 impl ISEvaluateFunction<'_> for ISSquare
 {
-    fn evaluate(&self, current_increment: f32, current_sample: u32) -> f32
+    fn evaluate
+    (
+        &self, current_increment: f32, current_sample: u32, current_sample_value: f32
+    ) -> f32
     {
         if current_increment < self.duty_cycle
         {
@@ -302,7 +384,10 @@ pub struct ISSuspendedOperations<'a>
 }
 impl ISEvaluateFunction<'_> for ISSuspendedOperations<'_>
 {
-    fn evaluate(&self, current_increment: f32, current_sample: u32) -> f32
+    fn evaluate
+    (
+        &self, current_increment: f32, current_sample: u32, current_sample_value: f32
+    ) -> f32
     {
         if current_sample <= self.suspended_array.len() as u32
         {
@@ -310,7 +395,7 @@ impl ISEvaluateFunction<'_> for ISSuspendedOperations<'_>
         }
         else
         {
-            0.0
+            current_sample_value
         }
     }
 }
@@ -321,7 +406,10 @@ pub struct ISTriangle
 }
 impl ISEvaluateFunction<'_> for ISTriangle
 {
-    fn evaluate(&self, current_increment: f32, current_sample: u32) -> f32
+    fn evaluate
+    (
+        &self, current_increment: f32, current_sample: u32, current_sample_value: f32
+    ) -> f32
     {
         let mut sample_value = current_increment;
 
@@ -342,7 +430,10 @@ impl ISEvaluateFunction<'_> for ISTriangle
 pub struct ISUnipolarNoise {}
 impl ISEvaluateFunction<'_> for ISUnipolarNoise
 {
-    fn evaluate(&self, current_increment: f32, current_sample: u32) -> f32
+    fn evaluate
+    (
+        &self, current_increment: f32, current_sample: u32, current_sample_value: f32
+    ) -> f32
     {
         js_sys::Math::random() as f32
     }
@@ -354,7 +445,10 @@ pub struct ISUnipolarSine
 }
 impl ISEvaluateFunction<'_> for ISUnipolarSine
 {
-    fn evaluate(&self, current_increment: f32, current_sample: u32) -> f32
+    fn evaluate
+    (
+        &self, current_increment: f32, current_sample: u32, current_sample_value: f32
+    ) -> f32
     {
         let sample_value = f32::sin(current_increment * self.frequency * TWO_PI);
         sample_value * 0.5 + 0.5

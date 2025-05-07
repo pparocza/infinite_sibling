@@ -51,6 +51,18 @@ pub fn is_wasm_buffer_operation
                 operate(buffer_length, operation_request, &mut function_buffer);
                 suspension_buffer = vec![0.0; buffer_length as usize];
             }
+            else if operation.functionType() == "movingaverage"
+            {
+                moving_average(buffer_length, operation_request, &mut function_buffer);
+            }
+            else if operation.functionType() == "splice"
+            {
+
+            }
+            else if operation.functionType() == "normalize"
+            {
+
+            }
             else
             {
                 operate(buffer_length, operation_request, &mut function_buffer);
@@ -136,3 +148,97 @@ fn operate
     }
 }
 
+// TODO: break out a splice function as well
+fn moving_average
+(
+    buffer_length: u32,
+    operation_request: OperationRequestData,
+    buffer_to_operate_on: &mut Vec<f32>
+)
+{
+    let mut current_sample_index: u32 = 0;
+    let operation_buffer: &mut Vec<f32> = &mut vec![0.0; buffer_length as usize];
+
+    let mut accumulator = 0.0;
+    let window_size = operation_request.function_arguments[0] as u32;
+    let hanning_window = window_size / 2;
+
+    while current_sample_index < buffer_length
+    {
+        for offset_index in 0..window_size
+        {
+            let index = (current_sample_index + offset_index) - hanning_window;
+
+            if index > 0
+            {
+                let window_sample_index = index % buffer_length;
+                accumulator += buffer_to_operate_on[window_sample_index as usize];
+            }
+            else if index < 0
+            {
+                let window_sample_index = index + buffer_length;
+                accumulator += buffer_to_operate_on[window_sample_index as usize];
+            }
+        }
+
+        operation_buffer[current_sample_index as usize] = accumulator / window_size as f32;
+        accumulator = 0.0;
+        current_sample_index = current_sample_index + 1;
+    }
+
+    current_sample_index = 0;
+
+    while current_sample_index < buffer_length
+    {
+        let new_sample_value = operation_buffer[current_sample_index as usize];
+        buffer_to_operate_on[current_sample_index as usize] = new_sample_value;
+
+        current_sample_index = current_sample_index + 1;
+    }
+}
+
+
+/*
+pub struct ISMovingAverage
+{
+    pub window_size: u32,
+}
+impl ISEvaluateFunction<'_> for ISMovingAverage
+{
+    fn evaluate
+    (
+        &self, current_increment: f32, current_sample: u32, current_sample_value: f32
+    ) -> f32
+    {
+        let accumulator = 0;
+
+        let hanningWindow = Math.round(windowSize * 0.5);
+
+        for (let channel= 0; channel < this.buffer.numberOfChannels; channel++)
+        {
+            let nowBuffering = this.buffer.getChannelData(channel);
+            newBuffers[channel] = new Float32Array(this.buffer.length);
+
+            for (let sample= 0; sample < this.buffer.length; sample++)
+            {
+                for (let offset= 0; offset < windowSize; offset++)
+                {
+                    let index = (sample + offset) - hanningWindow;
+                    if (index > 0)
+                    {
+                        accumulator += nowBuffering[index % this.buffer.length];
+                    }
+                    else if (index < 0)
+                    {
+                        accumulator += nowBuffering[this.buffer.length + index];
+                    }
+                }
+                newBuffers[channel][sample] = accumulator / windowSize;
+                accumulator = 0;
+            }
+
+            this.buffer.copyToChannel(newBuffers[channel], channel);
+        }
+    }
+
+*/

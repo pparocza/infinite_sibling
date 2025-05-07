@@ -91,14 +91,20 @@ pub fn is_wasm_buffer_function<'a>
             )
         },
 
-        ISBufferFunctionType::RampBand => { Box::new(ISRampBand{}) },
+        ISBufferFunctionType::RampBand =>
+        {
+            Box::new(ISRampBand{})
+        },
 
         ISBufferFunctionType::Sawtooth =>
         {
             Box::new(ISSawtooth { exponent: function_arguments[0]})
         },
 
-        ISBufferFunctionType::Sine => { Box::new(ISSine{frequency: function_arguments[0]})},
+        ISBufferFunctionType::Sine =>
+        {
+            Box::new(ISSine{frequency: function_arguments[0]})
+        },
 
         ISBufferFunctionType::Splice =>
         {
@@ -150,8 +156,10 @@ pub fn function_type_string_to_enum(function_type: &str) -> ISBufferFunctionType
         "frequencymodulatedsine" => ISBufferFunctionType::FrequencyModulatedSine,
         "impulse" => ISBufferFunctionType::Impulse,
         "inversesawtooth" => ISBufferFunctionType::InverseSawtooth,
+        "movingaverage" => ISBufferFunctionType::MovingAverage,
         "noise" => ISBufferFunctionType::Noise,
         "noiseband" => ISBufferFunctionType::NoiseBand,
+        "normalize" => ISBufferFunctionType::Normalize,
         "pulse" => ISBufferFunctionType::Pulse,
         "quantizedarraybuffer" => ISBufferFunctionType::QuantizedArrayBuffer,
         "ramp" => ISBufferFunctionType::Ramp,

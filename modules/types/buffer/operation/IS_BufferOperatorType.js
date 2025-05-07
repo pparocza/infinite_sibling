@@ -1,7 +1,8 @@
 export const IS_BufferOperatorType =
 {
 	Add: "Add",
-	Subtract: "Subtract",
+	Divide: "Divide",
 	Multiply: "Multiply",
-	Divide: "Divide"
+	Replace: "Replace",
+	Subtract: "Subtract"
 }

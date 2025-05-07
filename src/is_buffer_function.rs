@@ -4,8 +4,9 @@ use crate::is_log;
 pub enum ISBufferFunctionType
 {
     AmplitudeModulatedSine, Buffer, Constant, FrequencyModulatedSine, Impulse, InverseSawtooth,
-    Noise, NoiseBand, Pulse, QuantizedArrayBuffer, Ramp, RampBand, Sawtooth, Sine, Splice,
-    Square, SuspendedOperations, Triangle, UnipolarNoise, UnipolarSine, Undefined
+    MovingAverage, Noise, NoiseBand, Normalize, Pulse, QuantizedArrayBuffer, Ramp, RampBand,
+    Sawtooth, Sine, Splice, Square, SuspendedOperations, Triangle, UnipolarNoise,
+    UnipolarSine, Undefined
 }
 
 pub trait ISEvaluateFunction<'a>

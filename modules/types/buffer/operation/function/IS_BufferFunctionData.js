@@ -1,5 +1,3 @@
-import { IS_BufferFunctionType } from "./IS_BufferFunctionType.js";
-
 export class IS_BufferFunctionData
 {
 	constructor(iSBufferFunctionType, ...functionArgs) {

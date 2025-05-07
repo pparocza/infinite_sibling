@@ -525,41 +525,16 @@ export class IS_Buffer extends IS_Object
         return this;
     }
 
-/*
-    movingAverage(windowSize)
+
+    movingAverage(windowSize = 36)
     {
-        let newBuffers = [];
-        let accumulator = 0;
+        this._setOperationRequestFunctionData(IS_BufferFunctionType.MovingAverage, windowSize);
+        this._setOperationRequestOperatorData(IS_BufferOperatorType.Replace);
 
-        let hanningWindow = Math.round(windowSize * 0.5);
-
-        for (let channel= 0; channel < this.buffer.numberOfChannels; channel++)
-        {
-            let nowBuffering = this.buffer.getChannelData(channel);
-            newBuffers[channel] = new Float32Array(this.buffer.length);
-
-            for (let sample= 0; sample < this.buffer.length; sample++)
-            {
-                for (let offset= 0; offset < windowSize; offset++)
-                {
-                    let index = (sample + offset) - hanningWindow;
-                    if (index > 0)
-                    {
-                        accumulator += nowBuffering[index % this.buffer.length];
-                    }
-                    else if (index < 0)
-                    {
-                        accumulator += nowBuffering[this.buffer.length + index];
-                    }
-                }
-                newBuffers[channel][sample] = accumulator / windowSize;
-                accumulator = 0;
-            }
-
-            this.buffer.copyToChannel(newBuffers[channel], channel);
-        }
+        this._requestOperation();
     }
 
+/*
     normalize(min = 0, max = 1)
     {
         let range = min - max;

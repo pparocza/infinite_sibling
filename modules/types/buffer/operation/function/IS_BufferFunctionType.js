@@ -5,6 +5,7 @@ export const IS_BufferFunctionType =
 	Constant: "Constant",
 	Impulse: "Impulse",
 	InverseSawtooth: "InverseSawtooth",
+	MovingAverage: "MovingAverage",
 	Noise: "Noise",
 	NoiseBand: "NoiseBand",
 	Pulse: "Pulse",

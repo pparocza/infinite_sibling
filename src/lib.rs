@@ -1,3 +1,4 @@
+use std::f32;
 use wasm_bindgen::prelude::*;
 use crate::is_function::*;
 use crate::is_operator::*;
@@ -57,11 +58,11 @@ pub fn is_wasm_buffer_operation
             }
             else if operation.functionType() == "splice"
             {
-                splice(buffer_length, operation_request, &mut function_buffer)
+                splice(buffer_length, operation_request, &mut function_buffer);
             }
             else if operation.functionType() == "normalize"
             {
-
+                normalize(buffer_length, operation_request, &mut function_buffer);
             }
             else
             {
@@ -226,5 +227,25 @@ fn normalize
     buffer_to_operate_on: &mut Vec<f32>
 )
 {
+    let mut current_sample: u32 = 0;
 
+    let normalize_max = operation_request.function_arguments[0];
+
+    let mut buffer_max = *buffer_to_operate_on
+        .iter()
+        .max_by(|x, y| x.abs().partial_cmp(&y.abs()).unwrap())
+        .unwrap();
+
+    buffer_max = f32::abs(buffer_max);
+
+    let normalize_factor = normalize_max / buffer_max;
+
+    while current_sample < buffer_length
+    {
+        let current_sample_value = buffer_to_operate_on[current_sample as usize];
+        let normalized_value = current_sample_value * normalize_factor;
+
+        buffer_to_operate_on[current_sample as usize] = normalized_value;
+        current_sample = current_sample + 1;
+    }
 }

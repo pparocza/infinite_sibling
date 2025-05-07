@@ -8,6 +8,7 @@ export const IS_BufferFunctionType =
 	MovingAverage: "MovingAverage",
 	Noise: "Noise",
 	NoiseBand: "NoiseBand",
+	Normalize: "Normalize",
 	Pulse: "Pulse",
 	QuantizedArrayBuffer: "QuantizedArrayBuffer",
 	Ramp: "Ramp",

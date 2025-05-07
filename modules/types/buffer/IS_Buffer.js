@@ -534,30 +534,13 @@ export class IS_Buffer extends IS_Object
         this._requestOperation();
     }
 
-/*
-    normalize(min = 0, max = 1)
+    normalize(targetMax = 1)
     {
-        let range = min - max;
-        let offset = min;
-        let bufferArray = new IS_Array();
-        let bufferArrayMax = 0;
-        let bufferArrayMin = 0;
-        let normalizedValue = 0;
+        this._setOperationRequestFunctionData(IS_BufferFunctionType.Normalize, targetMax);
+        this._setOperationRequestOperatorData(IS_BufferOperatorType.Replace);
 
-        for (let channel= 0; channel < this.buffer.numberOfChannels; channel++)
-        {
-            bufferArray.value = this.buffer.getChannelData(channel);
-            bufferArrayMax = bufferArray.max;
-            bufferArrayMin = bufferArray.min;
-
-            for (let sample= 0; sample < this.buffer.length; sample++)
-            {
-                normalizedValue = (bufferArray.value[sample] - bufferArrayMin) / (bufferArrayMax - bufferArrayMin);
-                bufferArray.value[sample] = (range * normalizedValue) + offset;
-            }
-        }
+        this._requestOperation();
     }
-*/
 
     // UTILITY
     amplitude(value)

@@ -193,25 +193,29 @@ fn splice
 
     let splice_lower_bound = operation_request.function_arguments[1] as u32;
     let splice_upper_bound = operation_request.function_arguments[2] as u32;
+    let insert_start_sample = operation_request.function_arguments[3] as u32;
+    let mut current_splice_sample = splice_lower_bound;
 
     while current_sample < buffer_length
     {
         current_sample_value = buffer_to_operate_on[current_sample as usize];
 
-        function_value = buffer_function.evaluate
-        (
-            current_increment, current_sample, current_sample_value
-        );
-
-        sample_value = operator.operate(current_sample_value, function_value);
-
-        if current_sample < splice_lower_bound || current_sample > splice_upper_bound
+        if current_sample < insert_start_sample || current_splice_sample >= splice_upper_bound
         {
             sample_value = current_sample_value;
         }
         else
         {
+            function_value = buffer_function.evaluate
+            (
+                current_increment,
+                current_splice_sample,
+                current_sample_value
+            );
+
             sample_value = operator.operate(current_sample_value, function_value);
+
+            current_splice_sample = current_splice_sample + 1;
         }
 
         buffer_to_operate_on[current_sample as usize] = sample_value;

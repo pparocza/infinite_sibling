@@ -346,7 +346,9 @@ impl ISEvaluateFunction<'_> for ISSplice<'_>
         &self, current_increment: f32, current_sample: u32, current_sample_value: f32
     ) -> f32
     {
-        if current_sample >= self.insert_start_sample && current_sample <= self.crop_end_sample
+        if current_sample >= self.insert_start_sample
+            && current_sample <= self.crop_end_sample
+            && current_sample <= (self.splice_buffer.len() - 1) as u32
         {
             self.splice_buffer[current_sample as usize]
         }

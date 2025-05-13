@@ -516,6 +516,8 @@ export class IS_Buffer extends IS_Object
         let cropEndSample = Math.round(otherBuffer.length * cropEndPercent);
         let insertStartSample = Math.round(this._length * insertPercent);
 
+        cropEndSample = Math.min(otherBuffer.length, cropEndSample);
+
         this._setOperationRequestFunctionData
         (
             IS_BufferFunctionType.Splice,

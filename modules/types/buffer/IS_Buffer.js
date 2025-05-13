@@ -23,7 +23,7 @@ export class IS_Buffer extends IS_Object
             sampleRate = siblingContext.sampleRate;
         }
 
-        let lengthSamples = siblingContext.Utility.SecondsToSamples(duration, sampleRate);
+        let lengthSamples = Math.round(siblingContext.Utility.SecondsToSamples(duration, sampleRate));
 
         this._numberOfChannels = numberOfChannels;
         this._duration = duration;

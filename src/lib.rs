@@ -194,6 +194,7 @@ fn splice
     let splice_lower_bound = operation_request.function_arguments[1] as u32;
     let splice_upper_bound = operation_request.function_arguments[2] as u32;
     let insert_start_sample = operation_request.function_arguments[3] as u32;
+
     let mut current_splice_sample = splice_lower_bound;
 
     while current_sample < buffer_length

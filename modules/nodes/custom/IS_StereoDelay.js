@@ -35,6 +35,8 @@ export class IS_StereoDelay extends IS_MixEffect
         this.configureMixIO(this._inputNode, this._outputNode);
     }
 
+    isISStereoDelay = true;
+
     get delayTimeLeft()
     {
         return this._delayTimeLeft;

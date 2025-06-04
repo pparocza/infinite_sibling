@@ -60,6 +60,7 @@ export class IS_Buffer extends IS_Object
         this._buffer = buffer.isISBuffer ? buffer.buffer : buffer;
     }
 
+    // TODO: async/await so that stuff waiting for this can update independently
     requestBuffer(awaitingBuffer)
     {
         if(this.bufferIsReady)

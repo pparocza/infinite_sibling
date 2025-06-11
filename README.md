@@ -23,7 +23,7 @@ Package of custom audio tools made with the Web Audio API
 
 ### WAC 2021
 
-[Presentation](https://studio.youtube.com/video/JSNgcxIQ_vw/edit)\
+[Presentation](https://www.youtube.com/watch?v=JSNgcxIQ_vw&feature=youtu.be)\
 [Paper](https://drive.google.com/file/d/14FMfwc50zoxagC_6sPxgEM19JyBcnfHL/view?usp=sharing)
 
 ### Audio Mostly 2021
